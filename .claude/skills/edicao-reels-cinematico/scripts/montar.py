@@ -52,6 +52,13 @@ def main():
 
     base = info_video(a.video)
     W, H, fps, dur = base["largura"], base["altura"], base["fps"], base["duracao"]
+    # a duração do container .mkv concatenado pode passar alguns quadros do conteúdo real;
+    # cortes.json (ao lado do corte) e o áudio mixado têm a duração exata
+    cortes = os.path.join(os.path.dirname(os.path.abspath(a.video)), "cortes.json")
+    if os.path.exists(cortes):
+        dur = min(dur, ler_json(cortes)["duracao"])
+    if a.audio:
+        dur = min(dur, info_video(a.audio)["duracao"])
     entradas = ["-i", a.video]
     n = 1
     g = []

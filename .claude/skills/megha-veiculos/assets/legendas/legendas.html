@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+/*__FONTES__*/
+:root {
+  --fonte-base: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --fonte-destaque: "Inter Display", "Inter", sans-serif;
+  --peso-base: 650;
+  --peso-destaque: 800;
+  --estilo-destaque: normal;
+  --cor-base: #FFFFFF;
+  --cor-destaque: #FFFFFF;
+  --caixa-base: none;
+  --caixa-destaque: none;
+  --caixa-apoio: uppercase;
+  --tracking-base: -0.01em;
+  --tracking-destaque: -0.035em;
+  --tracking-apoio: 0.14em;
+  --peso-apoio: 600;
+  --sombra: 0 2px 22px rgba(0,0,0,.38), 0 1px 3px rgba(0,0,0,.35);
+  --grad-1: var(--cor-destaque);
+  --grad-2: var(--cor-destaque);
+  --cor-brilho: transparent;
+  --opacidade-apoio: 1;
+}
+.gradiente .destaque .grande { background: linear-gradient(180deg, var(--grad-1) 10%, var(--grad-2) 95%);
+             -webkit-background-clip: text; background-clip: text; color: transparent;
+             text-shadow: none; padding: 0 0.04em; }
+.ouro .destaque .grande { background-image: linear-gradient(100deg, #B9811A 0%, #E8B33A 22%, #FFF6D6 42%, #F6CF63 55%, #C8901C 78%, #9C6A12 100%);
+             background-size: 260% 100%; -webkit-background-clip: text; background-clip: text;
+             color: transparent; text-shadow: none; padding: 0 0.05em; }
+.ouro .destaque .grande.letras { background-image: none; }
+.ouro .destaque .grande .letra, .ouro .destaque .grande .traco-ouro { background-image: linear-gradient(100deg, #B9811A 0%, #E8B33A 22%, #FFF6D6 42%, #F6CF63 55%, #C8901C 78%, #9C6A12 100%); }
+.destaque .grande .letra { display: inline-block; -webkit-background-clip: text; background-clip: text; color: transparent; }
+.traco { display: block; transform-origin: left center; border-radius: 99px; margin-top: 0.06em; }
+.lateral .fila { display: flex; align-items: center; justify-content: center; }
+.lateral .coluna { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+.lateral .coluna .linha { text-align: right; }
+.vermelho .destaque .grande, .vermelho .destaque .grande .letra {
+             background-image: linear-gradient(180deg, #FF6A5C 0%, #FF2B2B 38%, #F00A0A 70%, #B80000 100%);
+             -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+.vermelho .destaque .grande { padding: 0 0.04em; }
+.vermelho .destaque .grande.letras { background-image: none; }
+.destaque .apoio.conector .p { font-family: var(--fonte-conector, var(--fonte-base)); font-style: italic;
+             font-weight: 300; text-transform: none; letter-spacing: -0.01em; }
+.encaixe { text-align: left; }
+.encaixe .linha { display: block; }
+.encaixe .apoio .p { opacity: var(--opacidade-apoio); }
+html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+body { width: 100vw; height: 100vh; position: relative; -webkit-font-smoothing: antialiased; }
+.grupo { position: absolute; left: 0; right: 0; display: none; text-align: center; }
+.linha { white-space: nowrap; line-height: 1; display: block; }
+.p { display: inline-block; will-change: transform, opacity, filter; text-shadow: var(--sombra); }
+.normal .p { font-family: var(--fonte-base); font-weight: var(--peso-base); color: var(--cor-base);
+             text-transform: var(--caixa-base); letter-spacing: var(--tracking-base); }
+.destaque .grande { font-family: var(--fonte-destaque); font-weight: var(--peso-destaque);
+             font-style: var(--estilo-destaque); color: var(--cor-destaque);
+             text-transform: var(--caixa-destaque); letter-spacing: var(--tracking-destaque); }
+.destaque .apoio .p { font-family: var(--fonte-apoio, var(--fonte-base)); font-weight: var(--peso-apoio); color: var(--cor-base);
+             text-transform: var(--caixa-apoio); letter-spacing: var(--tracking-apoio); }
+</style>
+</head>
+<body>
+<script>
+window.DADOS = /*__DADOS__*/null;
+</script>
+<script>
+(function () {
+  const D = window.DADOS;
+  const W = innerWidth, H = innerHeight;
+  const cfg = Object.assign({
+    tamanho_base: 0.070,      // fração da largura
+    tamanho_destaque_max: 0.21,
+    largura_max: 0.80,
+    posicao_y: 0.64,          // centro do bloco (fração da altura)
+    entrada: 0.20,            // s de animação de entrada por palavra
+    entrada_destaque: 0.34,
+    saida: 0.12,
+    antecipacao: 0.04,        // palavra aparece um pouco antes de ser falada
+    desfoque: 7,
+    deslocamento: 0.018,      // fração da altura
+    modo: "revelar"           // "revelar" (palavra por palavra) | "grupo" (grupo inteiro)
+  }, D.config || {});
+  window.DURACAO = D.duracao;
+  if (cfg.gradiente === 'ouro') document.body.classList.add('ouro');
+  else if (cfg.gradiente === 'vermelho') document.body.classList.add('vermelho');
+  else if (cfg.gradiente) document.body.classList.add('gradiente');
+
+  const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out
+  const easeIn = x => x * x * x;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const base = cfg.tamanho_base * W;
+  const larguraMax = cfg.largura_max * W;
+
+  // largura real do texto (um div .linha é bloco: o retângulo dele ocupa a tela toda)
+  function larg(el) { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; }
+  function itG_ok(its) { return its.some(i => i.papel === 'grande'); }
+  function span(txt, cls) {
+    const s = document.createElement('span');
+    s.className = 'p ' + (cls || ''); s.textContent = txt; return s;
+  }
+
+  // ---------- montagem e medição de cada grupo ----------
+  // A medição só vale depois que as fontes carregam; por isso tudo roda dentro de montar().
+  let grupos = [];
+  function montar() {
+  document.querySelectorAll('.grupo').forEach(e => e.remove());
+  grupos = D.grupos.map((g, gi) => {
+    const el = document.createElement('div');
+    const idx = g.palavras.findIndex(p => p.destaque);
+    const anim = g.animacao || cfg.animacao, lock = g.lockup || cfg.lockup;
+    const itens = [];
+    if (idx < 0) {
+      el.className = 'grupo normal';
+      const linha = document.createElement('div'); linha.className = 'linha';
+      linha.style.fontSize = base + 'px';
+      g.palavras.forEach((p, k) => {
+        const s = span(p.texto);
+        if (k > 0) linha.appendChild(document.createTextNode(' '));
+        linha.appendChild(s); itens.push({ el: s, p, papel: 'normal' });
+      });
+      el.appendChild(linha); el._linha = linha;
+      document.body.appendChild(el); el.style.display = 'block';
+      const w = larg(linha);
+      if (w > larguraMax) linha.style.fontSize = (base * larguraMax / w) + 'px';
+    } else {
+      // Lockup editorial: palavra destacada grande; as de apoio, pequenas,
+      // encaixadas na largura dela (acima as anteriores, abaixo as seguintes).
+      el.className = 'grupo destaque';
+      const antes = g.palavras.slice(0, idx), depois = g.palavras.slice(idx + 1);
+      const mk = (lista, papel) => {
+        const l = document.createElement('div'); l.className = 'linha apoio';
+        lista.forEach((p, k) => {
+          const s = span(p.texto);
+          if (k > 0) l.appendChild(document.createTextNode(' '));
+          l.appendChild(s); itens.push({ el: s, p, papel });
+        });
+        return l;
+      };
+      const lA = antes.length ? mk(antes, 'acima') : null;
+      if (lA && g.conector) lA.classList.add('conector');
+      const grande = document.createElement('div'); grande.className = 'linha';
+      const sg = span(g.palavras[idx].texto, 'grande'); grande.appendChild(sg);
+      const itG = { el: sg, p: g.palavras[idx], papel: 'grande' };
+      itens.push(itG);
+      if (['letras', 'digitar', 'espalhar', 'revelar', 'aleatorio', 'palavras'].includes(anim)) {
+        // cada letra vira um elemento; o degradê é contínuo porque cada letra recebe o
+        // pedaço certo dele (posição calculada depois da medição)
+        const txt = sg.textContent; sg.textContent = ''; sg.classList.add('letras');
+        itG.letras = [...txt].map(c => { const l = document.createElement('span');
+          l.className = 'letra'; l.textContent = c === ' ' ? '\u00a0' : c; sg.appendChild(l); return l; });
+      }
+      const lD = depois.length ? mk(depois, 'abaixo') : null;
+      if (lock === 'lateral') {
+        el.classList.add('lateral');
+        const fila = document.createElement('div'); fila.className = 'fila';
+        const col = document.createElement('div'); col.className = 'coluna';
+        [lA, lD].forEach(x => x && col.appendChild(x));
+        if (lA || lD) fila.appendChild(col);
+        fila.appendChild(grande); el.appendChild(fila);
+      } else {
+        [lA, grande, lD].forEach(x => x && el.appendChild(x));
+      }
+      document.body.appendChild(el); el.style.display = 'block';
+
+      let tam = cfg.tamanho_destaque_max * W;
+      grande.style.fontSize = tam + 'px';
+      let wg = larg(grande);
+      if (wg > larguraMax) { tam *= larguraMax / wg; grande.style.fontSize = tam + 'px'; wg = larguraMax; }
+      grande.style.lineHeight = '0.9';
+      if (lock === 'lateral') {
+        // apoio em coluna à esquerda da palavra grande, alinhado à direita e centrado na altura
+        const fa = tam * (cfg.proporcao_apoio || 0.26);
+        [lA, lD].forEach(l => { if (l) { l.style.fontSize = fa + 'px'; l.style.lineHeight = '1.05'; } });
+        const col = el.querySelector('.coluna');
+        if (col) col.style.marginRight = (tam * 0.10) + 'px';
+        const total = (col ? col.getBoundingClientRect().width + tam * 0.10 : 0) + wg;
+        if (total > larguraMax) {
+          const k = larguraMax / total; tam *= k; wg *= k;
+          grande.style.fontSize = tam + 'px';
+          [lA, lD].forEach(l => { if (l) l.style.fontSize = (fa * k) + 'px'; });
+          if (col) col.style.marginRight = (tam * 0.10) + 'px';
+        }
+        el.classList.add('encaixe');
+        el.style.left = 'auto'; el.style.right = 'auto';
+        el.style.width = Math.min(W * 0.94, (col ? col.getBoundingClientRect().width + tam * 0.10 : 0) + larg(grande) + 4) + 'px';
+      } else if (lock === 'encaixe') {
+        // Lockup compacto: apoio pequeno e leve, colado na palavra grande —
+        // o que vem antes fica acima, alinhado à esquerda; o que vem depois, abaixo, à direita.
+        el.classList.add('encaixe');
+        el.style.left = 'auto'; el.style.right = 'auto';
+        el.style.width = wg + 'px';
+        const fa = tam * (cfg.proporcao_apoio || 0.30);
+        if (lA) { lA.style.fontSize = fa + 'px'; lA.style.textAlign = 'left';
+                  lA.style.margin = `0 0 ${-tam * 0.10}px ${tam * 0.03}px`; lA.style.position = 'relative'; lA.style.zIndex = 2; }
+        if (lD) { lD.style.fontSize = fa + 'px'; lD.style.textAlign = 'right';
+                  lD.style.margin = `${-tam * 0.06}px ${tam * 0.03}px 0 0`; lD.style.position = 'relative'; lD.style.zIndex = 2; }
+        [lA, lD].forEach(l => { if (!l) return;
+          const w = larg(l);
+          if (w > wg * 1.15) l.style.fontSize = (fa * wg * 1.15 / w) + 'px'; });
+      } else
+      [lA, lD].forEach(l => {
+        if (!l) return;
+        l.style.fontSize = '100px';
+        const w0 = larg(l);
+        // apoio ocupa a largura exata da palavra grande, dentro de limites legíveis
+        let f = 100 * wg / w0;
+        f = clamp(f, tam * 0.16, tam * 0.36);
+        l.style.fontSize = f + 'px';
+        l.style.margin = (l === lA ? `0 0 ${tam * 0.06}px` : `${tam * 0.08}px 0 0`);
+      });
+      if (lock !== 'encaixe' && lock !== 'lateral') {
+        // empilhado e centralizado; vira posicionável pela largura do conteúdo
+        const wmax = Math.max(wg, ...[lA, lD].filter(Boolean).map(larg));
+        el.classList.add('encaixe'); el.style.textAlign = 'center';
+        el.style.left = 'auto'; el.style.right = 'auto'; el.style.width = (wmax + 4) + 'px';
+      }
+    }
+    if (itG_ok(itens)) {
+      const itG2 = itens.find(i => i.papel === 'grande');
+      if (itG2.letras) {
+        const ww = larg(itG2.el);
+        const x0 = itG2.letras[0].offsetLeft;
+        itG2.letras.forEach(l => { l._x = l.offsetLeft - x0; });
+        itG2.ww = ww;
+        if (cfg.gradiente === 'ouro') itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
+        // índice da palavra de cada letra (para a animação palavra a palavra)
+        let w = 0; itG2.letras.forEach(l => { if (l.textContent === '\u00a0') w++; l._w_idx = w; });
+        itG2.nPal = w + 1;
+      }
+      if (anim === 'partir') {
+        // segunda cópia da palavra: metade de cima e metade de baixo entram de lados opostos
+        itG2.el.parentNode.style.position = 'relative';
+        const c = itG2.el.cloneNode(true);
+        c.style.position = 'absolute'; c.style.left = itG2.el.offsetLeft + 'px'; c.style.top = itG2.el.offsetTop + 'px';
+        c.style.opacity = 0;
+        itG2.el.parentNode.appendChild(c); itG2.clone = c;
+      }
+      if (anim === 'digitar') {
+        const cur = document.createElement('span');
+        cur.style.cssText = 'position:absolute;width:0.07em;height:0.78em;border-radius:2px;background:#F6CF63;box-shadow:0 0 14px rgba(255,196,70,.8)';
+        itG2.el.style.position = 'relative';
+        itG2.el.appendChild(cur); itG2.cursor = cur;
+        itG2.letras.forEach(l => { l._w = l.offsetWidth; });
+        cur.style.top = '0.12em';
+      }
+      if (anim === 'mascara' && cfg.traco !== false) {
+        // traço dourado sob a palavra (criado depois da medição para não alterar a largura)
+        const tam2 = parseFloat(itG2.el.parentNode.style.fontSize);
+        const tr = document.createElement('div'); tr.className = 'traco traco-ouro';
+        tr.style.width = larg(itG2.el) + 'px';
+        tr.style.height = Math.max(3, tam2 * 0.045) + 'px';
+        tr.style.backgroundSize = '260% 100%';
+        tr.style.boxShadow = '0 0 18px rgba(255,196,70,.55)';
+        itG2.el.parentNode.appendChild(tr); itG2.traco = tr;
+      }
+    }
+    const h = el.getBoundingClientRect().height;
+    // zonas: trechos em que a legenda muda de altura ou some (ex.: quando entra um CTA)
+    const ini0 = Math.min(...g.palavras.map(p => p.inicio));
+    const zona = (cfg.zonas || []).find(z => ini0 < z.ate && g.fim > z.de);
+    if (zona && zona.ocultar) g.oculto = true;
+    let py = zona && zona.posicao_y != null ? zona.posicao_y : cfg.posicao_y;
+    if (g.y != null) py = g.y;
+    el.style.top = (py * H - h / 2) + 'px';
+    if (el.classList.contains('encaixe')) {
+      const wEl = el.getBoundingClientRect().width;
+      const px = g.x != null ? g.x : 0.5;
+      el.style.left = Math.min(W - wEl - W * 0.06, Math.max(W * 0.06, px * W - wEl / 2)) + 'px';
+    }
+    // regra do rosto: nada pode ficar sobre o rosto.
+    //  - legenda pequena: desce para baixo do rosto (ou sobe acima dele se não couber);
+    //  - palavra de lockup que cruza o rosto: vai para trás da pessoa.
+    const prof = g.profundidade || 'frente';
+    itens.forEach(it => { it.atras = prof === 'atras' && it.papel === 'grande'; });
+    if (g.rosto) {
+      const F = { l: g.rosto.x0 * W, r: g.rosto.x1 * W, t: g.rosto.y0 * H, b: g.rosto.y1 * H };
+      const cruza = rc => rc.right > F.l && rc.left < F.r && rc.bottom > F.t && rc.top < F.b;
+      if (idx < 0) {
+        const rc = el.getBoundingClientRect();
+        if (cruza(rc)) {
+          const hh = rc.height;
+          let novo = F.b + H * 0.025;
+          if (novo + hh > H * 0.80) novo = F.t - hh - H * 0.02;
+          if (novo < H * 0.12) itens.forEach(it => { it.atras = true; });
+          else el.style.top = novo + 'px';
+        }
+      } else {
+        itens.forEach(it => { if (cruza(it.el.getBoundingClientRect())) it.atras = true; });
+      }
+    }
+    // camadas: o que está "atrás" é desenhado na camada atrás da pessoa; o resto, na frente
+    if (cfg.camada && cfg.camada !== 'todas') {
+      const algumAtras = itens.some(it => it.atras);
+      if (cfg.camada === 'atras') {
+        if (!algumAtras) g.oculto = true;
+        itens.forEach(it => { if (!it.atras) it.escondido = true; });
+      } else {
+        itens.forEach(it => { if (it.atras) it.escondido = true; });
+      }
+    }
+    el.style.display = 'none';
+    const inicio = Math.min(...g.palavras.map(p => p.inicio)) - cfg.antecipacao;
+    return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto, anim };
+  });
+  // um grupo termina (com a saída já concluída) quando o próximo começa: nunca se sobrepõem
+  grupos.forEach((g, k) => { const n = grupos[k + 1]; if (n && n.inicio < g.fim) g.fim = n.inicio; });
+  }
+
+  // ---------- estado de cada quadro ----------
+  window.renderFrame = function (t) {
+    for (const g of grupos) {
+      const visivel = !g.oculto && t >= g.inicio - 0.001 && t < g.fim;
+      g.el.style.display = visivel ? 'block' : 'none';
+      if (!visivel) continue;
+      const iniSaida = g.fim - cfg.saida;
+      const fora = t > iniSaida ? easeIn(clamp((t - iniSaida) / cfg.saida, 0, 1)) : 0;
+      const linhaN = g.el._linha;
+      if (!g.destaque && linhaN && (cfg.modo === 'karaoke' || cfg.modo === 'deslizar')) {
+        const e0 = ease(clamp((t - g.inicio) / (cfg.modo === 'deslizar' ? 0.30 : 0.16), 0, 1));
+        if (cfg.modo === 'deslizar') {
+          // a frase inteira entra por uma máscara da esquerda e sai pela direita
+          const sai = clamp((t - (g.fim - cfg.saida)) / cfg.saida, 0, 1);
+          linhaN.style.display = 'inline-block';
+          linhaN.style.clipPath = `inset(-30% ${((1 - e0) * 100).toFixed(2)}% -30% ${(easeIn(sai) * 100).toFixed(2)}%)`;
+          linhaN.style.transform = `translateX(${(-(1 - e0) * W * 0.03 + easeIn(sai) * W * 0.02).toFixed(2)}px)`;
+          g.itens.forEach(it => { it.el.style.opacity = it.escondido ? 0 : 1; it.el.style.filter = 'none'; it.el.style.transform = 'none'; });
+        } else {
+          // karaokê: a frase aparece inteira; cada palavra acende quando é falada
+          linhaN.style.opacity = (e0 * (1 - fora)).toFixed(4);
+          linhaN.style.display = 'inline-block';
+          linhaN.style.transform = `scale(${(0.94 + 0.06 * e0).toFixed(4)}) translateY(${(-fora * H * 0.008).toFixed(2)}px)`;
+          linhaN.style.filter = fora > 0 ? `blur(${(fora * 5).toFixed(2)}px)` : 'none';
+          g.itens.forEach(it => {
+            const aceso = ease(clamp((t - (it.p.inicio - 0.03)) / 0.12, 0, 1));
+            it.el.style.opacity = it.escondido ? 0 : (0.38 + 0.62 * aceso).toFixed(4);
+            it.el.style.transform = `translateY(${(-(aceso * (1 - clamp((t - it.p.inicio - 0.12) / 0.25, 0, 1))) * H * 0.004).toFixed(2)}px)`;
+            it.el.style.filter = 'none';
+          });
+        }
+        continue;
+      }
+      g.itens.forEach((it, k) => {
+        if (it.escondido) { it.el.style.opacity = 0; if (it.clone) it.clone.style.opacity = 0; if (it.cursor) it.cursor.style.opacity = 0; return; }
+        if (g.destaque && g.anim && g.anim !== 'subir' && g.anim !== 'padrao') {
+          animarEspecial(it, g, t, fora); return;
+        }
+        const ini = (cfg.modo === 'grupo' ? g.inicio + k * 0.035 : it.p.inicio - cfg.antecipacao);
+        const d = it.papel === 'grande' ? cfg.entrada_destaque : cfg.entrada;
+        const x = clamp((t - ini) / d, 0, 1), e = ease(x);
+        let op = e * (1 - fora);
+        let blur = (1 - e) * cfg.desfoque + fora * cfg.desfoque * 0.6;
+        let ty = 0, sc = 1, ls = null, sat = null, tx = 0;
+        const desl = cfg.deslocamento * H;
+        if (g.anim === 'subir' && g.destaque) {
+          // entra subindo e ganhando foco e cor; cresce devagar enquanto está na tela
+          const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
+          const deriva = 1 + (cfg.deriva || 0.035) * vida;
+          if (it.papel === 'grande') {
+            ty = desl * 2.2 * (1 - e); sc = (1.04 - 0.04 * e) * deriva; sat = e;
+            blur = (1 - e) * cfg.desfoque * 2 + fora * cfg.desfoque * 1.4;
+          } else {
+            tx = (it.papel === 'acima' ? -1 : 1) * W * 0.02 * (1 - e);
+            ty = desl * 0.4 * (1 - e); sc = deriva;
+          }
+          ty -= fora * desl * 0.8;
+          it.el.style.opacity = op.toFixed(4);
+          const brilho = it.papel === 'grande' && cfg.brilho ? ` drop-shadow(0 0 ${cfg.brilho}px var(--cor-brilho))` : '';
+          const f = (blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '') + (sat !== null && sat < 0.999 ? ` saturate(${sat.toFixed(3)})` : '') + brilho;
+          it.el.style.filter = f.trim() || 'none';
+          it.el.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+          if (it.papel === 'grande' && cfg.gradiente === 'ouro') {
+            // reflexo de luz atravessando a palavra logo depois da entrada
+            const r = clamp((t - ini - 0.10) / 0.85, 0, 1);
+            it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+          }
+          return;
+        }
+        if (cfg.modo === 'crescer' && it.papel === 'normal') {
+          // palavra surge desfocada e pequena e cresce até o tamanho final
+          sc = 0.78 + 0.22 * e;
+        } else if (it.papel === 'grande') {
+          sc = 1.10 - 0.10 * e;
+          ls = (0.05 * (1 - e)).toFixed(4);
+        } else if (it.papel === 'acima') {
+          ty = -desl * 0.6 * (1 - e);
+        } else {
+          ty = desl * (1 - e);
+        }
+        ty -= fora * desl * 0.4;
+        it.el.style.opacity = op.toFixed(4);
+        it.el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
+        it.el.style.transform = `translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+        if (ls !== null) it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${ls}em)`;
+      });
+    }
+  };
+  function brilhoF(it) { return it.papel === 'grande' && cfg.brilho ? ` drop-shadow(0 0 ${cfg.brilho}px var(--cor-brilho))` : ''; }
+  function animarEspecial(it, g, t, fora) {
+    const desl = cfg.deslocamento * H;
+    const ini = it.p.inicio - cfg.antecipacao;
+    if (it.papel !== 'grande') {
+      // apoio: entra antes da ênfase com deslize curto; sai junto
+      const e = ease(clamp((t - ini) / cfg.entrada, 0, 1));
+      const dx = { mascara: -W * 0.025, deslize: -W * 0.04, partir: W * 0.02 }[g.anim] || 0;
+      const dy = { letras: desl * 0.8, flip: desl * 0.6, abrir: -desl * 0.5, impacto: 0 }[g.anim] || desl * 0.4;
+      it.el.style.opacity = (e * (1 - fora)).toFixed(4);
+      it.el.style.transform = `translate(${(dx * (1 - e)).toFixed(2)}px, ${(dy * (1 - e) - fora * desl * 0.5).toFixed(2)}px)`;
+      it.el.style.filter = (1 - e) * 5 + fora * 5 > 0.05 ? `blur(${((1 - e) * 5 + fora * 5).toFixed(2)}px)` : 'none';
+      return;
+    }
+    const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
+    const deriva = 1 + (cfg.deriva || 0.03) * vida;
+    const sweep = (atraso, dur) => {
+      const r = clamp((t - ini - atraso) / dur, 0, 1);
+      return `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+    };
+    const saiG = easeIn(clamp((t - (g.fim - cfg.saida * 1.3)) / (cfg.saida * 1.3), 0, 1));
+    const fim = (op, tf, blur) => {
+      it.el.style.opacity = (op * (1 - saiG)).toFixed(4);
+      const b = blur + saiG * 10;
+      it.el.style.filter = ((b > 0.05 ? `blur(${b.toFixed(2)}px)` : '') + brilhoF(it)).trim() || 'none';
+      it.el.style.transform = tf;
+    };
+    if (g.anim === 'impacto') {
+      // bate na tela: vem grande e desfocada, encaixa com um tranco curto
+      const x = clamp((t - ini) / 0.26, 0, 1), e = ease(x);
+      const tremor = t > ini + 0.24 ? Math.exp(-(t - ini - 0.24) * 14) : 0;
+      const jx = Math.sin((t - ini) * 95) * W * 0.008 * tremor, jy = Math.cos((t - ini) * 80) * W * 0.006 * tremor;
+      it.el.style.backgroundPosition = sweep(0.32, 0.8);
+      fim(Math.min(1, x * 3), `translate(${jx.toFixed(2)}px, ${jy.toFixed(2)}px) scale(${((2.3 - 1.3 * e) * deriva).toFixed(4)})`, (1 - e) * 14);
+      return;
+    }
+    if (g.anim === 'deslize') {
+      // atravessa da esquerda com rastro de movimento e freia no lugar
+      const e = ease(clamp((t - ini) / 0.45, 0, 1));
+      it.el.style.transformOrigin = 'left center';
+      it.el.style.backgroundPosition = sweep(0.40, 0.8);
+      fim(Math.min(1, e * 2), `translateX(${(-(1 - e) * W * 0.45).toFixed(2)}px) scaleX(${(1 + 0.6 * (1 - e)).toFixed(4)}) scale(${deriva.toFixed(4)})`, (1 - e) * 18);
+      return;
+    }
+    if (g.anim === 'flip') {
+      // gira no eixo horizontal como uma placa virando
+      const e = ease(clamp((t - ini) / 0.5, 0, 1));
+      it.el.style.transformOrigin = 'center bottom';
+      it.el.style.backgroundPosition = sweep(0.42, 0.8);
+      fim(Math.min(1, e * 2.2), `perspective(${W}px) rotateX(${((1 - e) * 92).toFixed(2)}deg) scale(${deriva.toFixed(4)})`, (1 - e) * 4);
+      return;
+    }
+    if (g.anim === 'abrir') {
+      // espaçamento enorme que se fecha até a palavra ficar compacta
+      const e = 1 - Math.pow(1 - clamp((t - ini) / 0.75, 0, 1), 4);
+      const ls = 0.85 * (1 - e), fs = parseFloat(getComputedStyle(it.el).fontSize), n = it.p.texto.length;
+      it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${ls.toFixed(4)}em)`;
+      it.el.style.backgroundPosition = sweep(0.6, 0.8);
+      fim(Math.min(1, e * 1.6), `translateX(${(-(n - 1) * ls * fs / 2).toFixed(2)}px) scale(${deriva.toFixed(4)})`, (1 - e) * 8);
+      return;
+    }
+    if (g.anim === 'partir') {
+      // metade de cima vem da esquerda, metade de baixo da direita; encontram-se no centro
+      const e = ease(clamp((t - ini) / 0.5, 0, 1));
+      const d = (1 - e) * W * 0.3;
+      it.el.style.clipPath = 'inset(-40% -10% 50% -10%)';
+      it.clone.style.clipPath = 'inset(50% -10% -40% -10%)';
+      it.el.style.backgroundPosition = sweep(0.45, 0.8); it.clone.style.backgroundPosition = it.el.style.backgroundPosition;
+      fim(Math.min(1, e * 2), `translateX(${(-d).toFixed(2)}px) scale(${deriva.toFixed(4)})`, (1 - e) * 10);
+      it.clone.style.opacity = it.el.style.opacity; it.clone.style.filter = it.el.style.filter;
+      it.clone.style.transform = `translateX(${d.toFixed(2)}px) scale(${deriva.toFixed(4)})`;
+      return;
+    }
+    if (g.anim === 'digitar') {
+      // letra a letra, como digitada, com cursor dourado piscando
+      const n = it.letras.length, livre = Math.max(0.3, g.fim - ini);
+      const passo = Math.min(0.065, (livre * 0.4) / n);
+      let k = -1;
+      it.letras.forEach((l, i) => {
+        const ti = ini + i * passo, x = clamp((t - ti) / 0.07, 0, 1);
+        if (t >= ti) k = i;
+        l.style.opacity = t >= ti ? 1 : 0;
+        l.style.transform = `scale(${(1.25 - 0.25 * ease(x)).toFixed(4)})`;
+        l.style.filter = 'none';
+        l.style.backgroundPosition = `${((it.ww - it.ww * 2.6) * (1 - clamp((t - ini - n * passo) / 0.8, 0, 1)) - l._x).toFixed(2)}px 0`;
+      });
+      const fimDig = ini + n * passo;
+      const pisca = t < fimDig ? 1 : (Math.floor((t - fimDig) / 0.22) % 2 === 0 ? 1 : 0) * (t < fimDig + 0.9 ? 1 : 0);
+      if (it.cursor) {
+        const l = it.letras[Math.max(0, k)];
+        it.cursor.style.left = (k < 0 ? 0 : l._x + l._w + 2) + 'px';
+        it.cursor.style.opacity = t >= ini ? pisca : 0;
+      }
+      fim(1, `scale(${deriva.toFixed(4)})`, 0);
+      return;
+    }
+    if (['espalhar', 'revelar', 'aleatorio', 'palavras'].includes(g.anim)) {
+      const n = it.letras.length, livre = Math.max(0.4, g.fim - ini);
+      const fs = parseFloat(getComputedStyle(it.el).fontSize);
+      // ordem pseudoaleatória estável (mesma a cada quadro)
+      if (!it.ordem) { it.ordem = it.letras.map((_, i) => i).sort((a, b) => ((a * 7919 + 13) % 31) - ((b * 7919 + 13) % 31)); }
+      it.letras.forEach((l, i) => {
+        let op = 1, tf = 'none', bl = 0;
+        if (g.anim === 'espalhar') {
+          // letras afastadas, girando no eixo vertical, que se juntam no centro
+          const dur = Math.min(0.75, livre * 0.45);
+          const e = ease(clamp((t - ini - 0.03 * Math.abs(i - (n - 1) / 2)) / dur, 0, 1));
+          const centro = (n - 1) / 2, afast = (i - centro) * fs * 0.55 * (1 - e);
+          const giro = (i % 2 ? 1 : -1) * 180 * (1 - e);
+          op = Math.min(1, e * 2.5); bl = (1 - e) * 6;
+          tf = `translateX(${afast.toFixed(2)}px) perspective(${(fs * 6).toFixed(0)}px) rotateY(${giro.toFixed(1)}deg)`;
+        } else if (g.anim === 'revelar') {
+          // letra a letra da esquerda para a direita, caindo levemente no lugar
+          const passo = Math.min(0.05, livre * 0.35 / n);
+          const e = ease(clamp((t - ini - i * passo) / 0.22, 0, 1));
+          op = e; bl = (1 - e) * 5;
+          tf = `translateY(${(-(1 - e) * 0.25).toFixed(3)}em) scale(${(1.15 - 0.15 * e).toFixed(4)})`;
+        } else if (g.anim === 'aleatorio') {
+          // letras acendem em ordem embaralhada e encaixam com um pequeno pulo
+          const passo = Math.min(0.055, livre * 0.4 / n);
+          const k = it.ordem.indexOf(i);
+          const e = ease(clamp((t - ini - k * passo) / 0.2, 0, 1));
+          op = e; bl = (1 - e) * 4;
+          tf = `scale(${(1.6 - 0.6 * e).toFixed(4)})`;
+        } else {
+          // palavras: cada palavra da ênfase sobe e entra em sequência
+          const e = ease(clamp((t - ini - l._w_idx * 0.16) / 0.38, 0, 1));
+          op = e; bl = (1 - e) * 6;
+          tf = `translateY(${((1 - e) * 0.5).toFixed(3)}em)`;
+        }
+        l.style.opacity = (op * (1 - saiG)).toFixed(4);
+        l.style.transform = tf;
+        const b = bl + saiG * 8;
+        l.style.filter = b > 0.05 ? `blur(${b.toFixed(2)}px)` : 'none';
+      });
+      it.el.style.opacity = 1;
+      it.el.style.filter = brilhoF(it).trim() || 'none';
+      it.el.style.transform = `scale(${deriva.toFixed(4)})`;
+      return;
+    }
+    if (g.anim === 'letras') {
+      // onda de letras: cada uma sobe, gira levemente e ganha foco, em cascata
+      // a cascata se ajusta ao tempo disponível: em grupos curtos ela acelera
+      const n = it.letras.length, livre = Math.max(0.3, g.fim - ini);
+      const dl = Math.min(0.38, livre * 0.30), passo = Math.min(0.045, (livre * 0.28) / n);
+      const r = clamp((t - ini - 0.10 - n * passo) / Math.min(0.9, livre * 0.6), 0, 1), rr = 1 - Math.pow(1 - r, 3);
+      const S = it.ww * 2.6;
+      it.letras.forEach((l, i) => {
+        const e = ease(clamp((t - ini - i * passo) / dl, 0, 1));
+        const sai = easeIn(clamp((t - (g.fim - cfg.saida - (n - 1 - i) * 0.012)) / cfg.saida, 0, 1));
+        l.style.opacity = (e * (1 - sai)).toFixed(4);
+        l.style.transform = `translateY(${((1 - e) * 0.55 - sai * 0.15).toFixed(3)}em) rotate(${((1 - e) * -8).toFixed(2)}deg) scale(${(1.18 - 0.18 * e).toFixed(4)})`;
+        l.style.filter = (1 - e) * 10 + sai * 8 > 0.05 ? `blur(${((1 - e) * 10 + sai * 8).toFixed(2)}px)` : 'none';
+        l.style.backgroundPosition = `${((it.ww - S) * (1 - rr) - l._x).toFixed(2)}px 0`;
+      });
+      it.el.style.opacity = 1;
+      it.el.style.filter = brilhoF(it).trim() || 'none';
+      it.el.style.transform = `scale(${deriva.toFixed(4)})`;
+      return;
+    }
+    // máscara (padrão para outros nomes): revela da esquerda para a direita enquanto o espaçamento fecha; traço se desenha embaixo
+    const e = ease(clamp((t - ini) / 0.55, 0, 1));
+    const sai = easeIn(clamp((t - (g.fim - cfg.saida * 1.4)) / (cfg.saida * 1.4), 0, 1));
+    it.el.style.opacity = 1;
+    it.el.style.clipPath = `inset(-40% ${((1 - e) * 112 - 10).toFixed(2)}% -40% ${(sai * 112 - 10).toFixed(2)}%)`;
+    it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${(0.22 * (1 - e)).toFixed(4)}em)`;
+    it.el.style.transform = `translateX(${(-(1 - e) * W * 0.02).toFixed(2)}px) scale(${deriva.toFixed(4)})`;
+    it.el.style.filter = brilhoF(it).trim() || 'none';
+    const r = clamp((t - ini - 0.30) / 0.85, 0, 1);
+    it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+    if (it.traco) {
+      const et = ease(clamp((t - ini - 0.25) / 0.5, 0, 1));
+      it.traco.style.transform = `scaleX(${(et * (1 - sai)).toFixed(4)})`;
+      it.traco.style.opacity = (1 - sai).toFixed(3);
+    }
+  }
+  // força o download de todas as fontes usadas antes de medir
+  const amostra = document.createElement('div');
+  amostra.style.cssText = 'position:absolute;opacity:0;left:-9999px';
+  amostra.innerHTML = '<span class="normal"><span class="p">Áa</span></span>' +
+    '<span class="destaque"><span class="p grande">Áa</span><span class="apoio"><span class="p">Áa</span></span></span>';
+  document.body.appendChild(amostra);
+  window.PRONTO = document.fonts.ready
+    .then(() => new Promise(r => requestAnimationFrame(r)))
+    .then(() => { montar(); window.renderFrame(0); });
+})();
+</script>
+</body>
+</html>

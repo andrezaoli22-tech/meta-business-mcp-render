@@ -39,8 +39,8 @@
 .lateral .coluna { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
 .lateral .coluna .linha { text-align: right; }
 .vermelho .destaque .grande, .vermelho .destaque .grande .letra {
-             background-image: linear-gradient(180deg, #FF6A5C 0%, #FF2B2B 38%, #F00A0A 70%, #B80000 100%);
-             -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+             background-image: none; -webkit-background-clip: border-box; background-clip: border-box;
+             color: var(--cor-destaque); text-shadow: 0 3px 18px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); }
 .vermelho .destaque .grande { padding: 0 0.04em; }
 .vermelho .destaque .grande.letras { background-image: none; }
 .destaque .apoio.conector .p { font-family: var(--fonte-conector, var(--fonte-base)); font-style: italic;

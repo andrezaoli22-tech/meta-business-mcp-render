@@ -1,12 +1,12 @@
 ---
 name: megha-veiculos
-description: Legendas e edição no padrão visual da Megha Veículos (loja de seminovos), copiado do formato de referência aprovado pela marca — frase fina em minúsculas surgindo palavra a palavra, blocos de ênfase com linha pequena em CAIXA ALTA + palavra gigante Poppins Black em VERMELHO BRILHANTE com brilho, conectores em itálico fino, letras que se espalham e se juntam, letra a letra, letras em ordem aleatória, máscara, palavra a palavra. Use sempre que o vídeo for da Megha Veículos ou o usuário pedir "padrão Megha", "legenda vermelha da Megha" ou "no formato da referência da Megha", inclusive quando ele só mandar o vídeo de um carro da Megha pedindo legenda. Para outras marcas use a skill edicao-reels-cinematico.
+description: Legendas e edição no padrão visual da Megha Veículos (loja de seminovos), copiado do formato de referência aprovado pela marca — frase fina em minúsculas surgindo palavra a palavra, blocos de ênfase com linha pequena em CAIXA ALTA + palavra gigante Poppins Black em VERMELHO SÓLIDO (#C8281C), conectores em itálico fino, letras que se espalham e se juntam, letra a letra, letras em ordem aleatória, máscara, palavra a palavra. Use sempre que o vídeo for da Megha Veículos ou o usuário pedir "padrão Megha", "legenda vermelha da Megha" ou "no formato da referência da Megha", inclusive quando ele só mandar o vídeo de um carro da Megha pedindo legenda. Para outras marcas use a skill edicao-reels-cinematico.
 compatibility: ffmpeg/ffprobe, Python 3 (faster-whisper, numpy, scipy, onnxruntime instalados sob demanda), Node com Playwright/Chromium. Fontes Poppins e Montserrat Alternates baixadas do Google Fonts na primeira vez.
 ---
 
 # Megha Veículos — legendas no formato da referência
 
-Skill independente: tem cópia própria de todos os scripts (não depende nem altera a skill `edicao-reels-cinematico`). O formato foi tirado de um vídeo de referência de loja de seminovos e adaptado à cor da Megha: **vermelho brilhante**. Leia `references/formato.md` antes de montar as legendas: ele descreve cada elemento da referência e quando usar cada animação.
+Skill independente: tem cópia própria de todos os scripts (não depende nem altera a skill `edicao-reels-cinematico`). O formato foi tirado de um vídeo de referência de loja de seminovos e adaptado à cor da Megha: **vermelho sólido #C8281C, sem degradê**. Leia `references/formato.md` antes de montar as legendas: ele descreve cada elemento da referência e quando usar cada animação.
 
 Scripts em `scripts/` (rode com `python3 <skill>/scripts/X.py`; cada um tem `--help`).
 

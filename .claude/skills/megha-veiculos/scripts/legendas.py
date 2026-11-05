@@ -41,7 +41,7 @@ CACHE_FONTES = os.path.expanduser("~/.cache/edicao-reels/fontes")
 # Estilos. "google" lista famílias a baixar no formato da API css2 do Google Fonts.
 ESTILOS = {
     "megha": {
-        "desc": "Megha Veículos: frase fina (Montserrat Alternates Light) + bloco com linha CAIXA ALTA (Poppins SemiBold) e ênfase Poppins Black vermelha brilhante; conectores em itálico fino.",
+        "desc": "Megha Veículos: frase fina (Montserrat Alternates Light) + bloco com linha CAIXA ALTA (Poppins SemiBold) e ênfase Poppins Black em vermelho sólido #C8281C; conectores em itálico fino.",
         "google": ["Poppins:ital,wght@0,500;0,600;0,700;0,800;0,900;1,300;1,400",
                    "Montserrat Alternates:wght@300;400;500"],
         "vars": {"--fonte-base": '"Montserrat Alternates", "Poppins", sans-serif', "--peso-base": "300",
@@ -51,10 +51,11 @@ ESTILOS = {
                  "--fonte-apoio": '"Poppins", sans-serif',
                  "--caixa-apoio": "uppercase", "--tracking-apoio": "-0.01em", "--peso-apoio": "600",
                  "--fonte-conector": '"Poppins", sans-serif',
-                 "--cor-brilho": "rgba(255, 30, 30, 0.60)",
+                 "--cor-destaque": "#C8281C",          # vermelho sólido da marca (sem degradê)
+                 "--cor-brilho": "rgba(200, 40, 28, 0.0)",
                  "--sombra": "0 2px 16px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4)"},
         "config": {"tamanho_base": 0.058, "tamanho_destaque_max": 0.21, "lockup": "empilhado",
-                   "animacao": "espalhar", "gradiente": "vermelho", "brilho": 22, "modo": "crescer",
+                   "animacao": "espalhar", "gradiente": "vermelho", "brilho": 0, "modo": "crescer",
                    "traco": False, "desfoque": 7, "deriva": 0.02, "posicao_y": 0.58}},
     "editorial": {
         "desc": "Sans limpa nas frases + serifada itálica no destaque. Sofisticado, de revista.",

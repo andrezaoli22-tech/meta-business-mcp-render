@@ -12,12 +12,12 @@ A referência é um reels de loja de seminovos (apresentadora + planos de carros
 ## 2. Bloco de ênfase
 ```
      TEM GENTE QUE VENDE      ← linha de cima: Poppins SemiBold, CAIXA ALTA, branca, letras juntas
-        CARROS                ← ênfase: Poppins Black, CAIXA ALTA, vermelho brilhante com brilho
+        CARROS                ← ênfase: Poppins Black, CAIXA ALTA, vermelho sólido
  PROCEDÊNCIA E TRANQUILIDADE  ← (opcional) linha de baixo: igual à de cima
 ```
 - A linha de cima ocupa quase a largura da palavra grande; tudo centralizado (`lockup: "empilhado"`).
 - **Conector** em vez de linha de cima quando a frase começa com ligação curta: "pensando em", "e não", "e tem" — Poppins Light Itálico, minúsculas (`"conector": true`).
-- Vermelho: degradê vertical #FF6A5C → #FF2B2B → #F00A0A → #B80000 + brilho vermelho em volta. Não use o reflexo dourado.
+- Vermelho **sólido, sem degradê e sem brilho**: #C8281C (tirado da peça de marca "Condições Especiais"), com sombra escura suave só para leitura.
 - Frequência: uma ênfase por frase forte (a cada 3–6 s).
 
 ## 3. Animações da ênfase (uma diferente para cada ênfase do vídeo)

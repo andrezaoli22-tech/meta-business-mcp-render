@@ -174,7 +174,17 @@ window.DADOS = /*__DADOS__*/null;
       const px = g.x != null ? g.x : 0.5;
       el.style.left = Math.min(W - wEl - W * 0.06, Math.max(W * 0.06, px * W - wEl / 2)) + 'px';
     }
-    if (cfg.camada && cfg.camada !== 'todas' && (g.profundidade || 'frente') !== cfg.camada) g.oculto = true;
+    // camadas: num grupo "atrás", só a palavra grande vai para trás da pessoa;
+    // as palavras de apoio continuam na frente, legíveis
+    if (cfg.camada && cfg.camada !== 'todas') {
+      const prof = g.profundidade || 'frente';
+      if (cfg.camada === 'atras') {
+        if (prof !== 'atras') g.oculto = true;
+        else itens.forEach(it => { if (it.papel !== 'grande') it.escondido = true; });
+      } else if (prof === 'atras') {
+        itens.forEach(it => { if (it.papel === 'grande') it.escondido = true; });
+      }
+    }
     el.style.display = 'none';
     const inicio = Math.min(...g.palavras.map(p => p.inicio)) - cfg.antecipacao;
     return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto };
@@ -192,6 +202,7 @@ window.DADOS = /*__DADOS__*/null;
       const iniSaida = g.fim - cfg.saida;
       const fora = t > iniSaida ? easeIn(clamp((t - iniSaida) / cfg.saida, 0, 1)) : 0;
       g.itens.forEach((it, k) => {
+        if (it.escondido) { it.el.style.opacity = 0; return; }
         const ini = (cfg.modo === 'grupo' ? g.inicio + k * 0.035 : it.p.inicio - cfg.antecipacao);
         const d = it.papel === 'grande' ? cfg.entrada_destaque : cfg.entrada;
         const x = clamp((t - ini) / d, 0, 1), e = ease(x);

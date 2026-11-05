@@ -30,11 +30,30 @@ O estilo `dourado` usa o lockup **encaixado**: as palavras de apoio são pequena
 
 Personalize com `--cor-destaque`, `--cor-base`, `--fonte-base`, `--fonte-destaque` e `--posicao-y`. Uma fonte da marca vai em `assets/fontes/` e é chamada pelo nome do arquivo.
 
+## Variações de movimento (para vídeos da mesma série não ficarem iguais)
+Combine as três chaves em `config` do `legendas.json`. Cada combinação dá uma "assinatura" diferente com a mesma tipografia:
+
+| chave | opções | efeito |
+|---|---|---|
+| `animacao` (ênfase) | `subir` | entra subindo, ganhando foco e cor; reflexo de luz atravessa |
+| | `letras` | onda de letras: cada letra sobe, gira de leve e ganha foco em cascata (o tempo se ajusta ao grupo) |
+| | `mascara` | revela da esquerda para a direita, espaçamento fecha, traço dourado se desenha embaixo |
+| `lockup` | `encaixe` | apoio pequeno colado: antes acima-esquerda, depois abaixo-direita |
+| | `empilhado` | apoio centralizado acima/abaixo, ajustado à largura da ênfase |
+| | `lateral` | apoio em coluna à esquerda da ênfase, alinhado à direita |
+| `modo` (legenda pequena) | `revelar` | palavra por palavra conforme a fala |
+| | `karaoke` | frase inteira aparece; cada palavra acende quando é falada |
+| | `deslizar` | frase entra por máscara da esquerda e sai pela direita |
+
+Exemplo usado numa série de 3 vídeos: (1) `subir` + `encaixe` + `revelar`; (2) `letras` + `empilhado` + `karaoke`; (3) `mascara` + `lateral` + `deslizar`.
+
+Grupos de ênfase precisam de tempo na tela (mais de ~1 s depois da palavra): se o grupo seguinte começa logo, junte as palavras seguintes no mesmo grupo como apoio (`"aqui faz DINHEIRO de verdade"`).
+
 ## Ajustes avançados
 Em `legendas.json`, a chave `"config"` aceita: `tamanho_base` (fração da largura, padrão 0,07), `tamanho_destaque_max` (0,21–0,28), `largura_max` (0,80), `posicao_y` (0,64), `entrada`, `entrada_destaque`, `saida`, `antecipacao`, `desfoque`, `deslocamento`, `modo` e `zonas` (`[{"de":6.8,"ate":8.8,"posicao_y":0.36}]` ou `{"ocultar":true}`).
 
 ## Profundidade
-Com `--matte` no `agrupar`, cada lockup recebe `profundidade` (`atras`/`frente`), `y` e `x`. Atrás: a palavra grande cruza o topo da cabeça, centrada na pessoa, e a cabeça cobre parte das letras (como nos vídeos de referência de imóveis). Na frente: altura do peito, centralizado. A intercalação deixa o vídeo dinâmico sem repetir o truque. Para forçar um lado em um grupo, edite `profundidade` em `legendas.json`; para todos, use `--profundidade atras|frente`.
+Com `--matte` no `agrupar`, cada lockup recebe `profundidade` (`atras`/`frente`), `y` e `x`. Atrás: a palavra grande fica no topo da cabeça, centrada na pessoa, com a parte de baixo escondida atrás do cabelo — nunca cruzando o rosto. Só palavras de 6+ letras vão para trás (curtas sumiriam); a curta vai para a frente e a próxima longa assume a vez. Só a palavra grande vai para trás: as de apoio ficam sempre na frente. Na frente: altura do peito (nunca sobre o rosto), centralizado. A intercalação deixa o vídeo dinâmico sem repetir o truque. Para forçar um lado em um grupo, edite `profundidade` em `legendas.json`; para todos, use `--profundidade atras|frente`.
 
 ## Legibilidade
 - A sombra é difusa e não há contorno grosso. Se o fundo for muito claro ou movimentado, aumente o contraste escurecendo levemente a área com a vinheta da grade, em vez de pôr caixa atrás do texto.

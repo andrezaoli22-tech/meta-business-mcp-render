@@ -31,6 +31,13 @@
 .ouro .destaque .grande { background-image: linear-gradient(100deg, #B9811A 0%, #E8B33A 22%, #FFF6D6 42%, #F6CF63 55%, #C8901C 78%, #9C6A12 100%);
              background-size: 260% 100%; -webkit-background-clip: text; background-clip: text;
              color: transparent; text-shadow: none; padding: 0 0.05em; }
+.ouro .destaque .grande.letras { background-image: none; }
+.ouro .destaque .grande .letra, .ouro .destaque .grande .traco-ouro { background-image: linear-gradient(100deg, #B9811A 0%, #E8B33A 22%, #FFF6D6 42%, #F6CF63 55%, #C8901C 78%, #9C6A12 100%); }
+.destaque .grande .letra { display: inline-block; -webkit-background-clip: text; background-clip: text; color: transparent; }
+.traco { display: block; transform-origin: left center; border-radius: 99px; margin-top: 0.06em; }
+.lateral .fila { display: flex; align-items: center; justify-content: center; }
+.lateral .coluna { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+.lateral .coluna .linha { text-align: right; }
 .encaixe { text-align: left; }
 .encaixe .linha { display: block; }
 .encaixe .apoio .p { opacity: var(--opacidade-apoio); }
@@ -81,6 +88,7 @@ window.DADOS = /*__DADOS__*/null;
 
   // largura real do texto (um div .linha é bloco: o retângulo dele ocupa a tela toda)
   function larg(el) { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; }
+  function itG_ok(its) { return its.some(i => i.papel === 'grande'); }
   function span(txt, cls) {
     const s = document.createElement('span');
     s.className = 'p ' + (cls || ''); s.textContent = txt; return s;
@@ -104,7 +112,7 @@ window.DADOS = /*__DADOS__*/null;
         if (k > 0) linha.appendChild(document.createTextNode(' '));
         linha.appendChild(s); itens.push({ el: s, p, papel: 'normal' });
       });
-      el.appendChild(linha);
+      el.appendChild(linha); el._linha = linha;
       document.body.appendChild(el); el.style.display = 'block';
       const w = larg(linha);
       if (w > larguraMax) linha.style.fontSize = (base * larguraMax / w) + 'px';
@@ -125,9 +133,26 @@ window.DADOS = /*__DADOS__*/null;
       const lA = antes.length ? mk(antes, 'acima') : null;
       const grande = document.createElement('div'); grande.className = 'linha';
       const sg = span(g.palavras[idx].texto, 'grande'); grande.appendChild(sg);
-      itens.push({ el: sg, p: g.palavras[idx], papel: 'grande' });
+      const itG = { el: sg, p: g.palavras[idx], papel: 'grande' };
+      itens.push(itG);
+      if (cfg.animacao === 'letras') {
+        // cada letra vira um elemento; o degradê é contínuo porque cada letra recebe o
+        // pedaço certo dele (posição calculada depois da medição)
+        const txt = sg.textContent; sg.textContent = ''; sg.classList.add('letras');
+        itG.letras = [...txt].map(c => { const l = document.createElement('span');
+          l.className = 'letra'; l.textContent = c === ' ' ? '\u00a0' : c; sg.appendChild(l); return l; });
+      }
       const lD = depois.length ? mk(depois, 'abaixo') : null;
-      [lA, grande, lD].forEach(x => x && el.appendChild(x));
+      if (cfg.lockup === 'lateral') {
+        el.classList.add('lateral');
+        const fila = document.createElement('div'); fila.className = 'fila';
+        const col = document.createElement('div'); col.className = 'coluna';
+        [lA, lD].forEach(x => x && col.appendChild(x));
+        if (lA || lD) fila.appendChild(col);
+        fila.appendChild(grande); el.appendChild(fila);
+      } else {
+        [lA, grande, lD].forEach(x => x && el.appendChild(x));
+      }
       document.body.appendChild(el); el.style.display = 'block';
 
       let tam = cfg.tamanho_destaque_max * W;
@@ -135,7 +160,23 @@ window.DADOS = /*__DADOS__*/null;
       let wg = larg(grande);
       if (wg > larguraMax) { tam *= larguraMax / wg; grande.style.fontSize = tam + 'px'; wg = larguraMax; }
       grande.style.lineHeight = '0.9';
-      if (cfg.lockup === 'encaixe') {
+      if (cfg.lockup === 'lateral') {
+        // apoio em coluna à esquerda da palavra grande, alinhado à direita e centrado na altura
+        const fa = tam * (cfg.proporcao_apoio || 0.26);
+        [lA, lD].forEach(l => { if (l) { l.style.fontSize = fa + 'px'; l.style.lineHeight = '1.05'; } });
+        const col = el.querySelector('.coluna');
+        if (col) col.style.marginRight = (tam * 0.10) + 'px';
+        const total = (col ? col.getBoundingClientRect().width + tam * 0.10 : 0) + wg;
+        if (total > larguraMax) {
+          const k = larguraMax / total; tam *= k; wg *= k;
+          grande.style.fontSize = tam + 'px';
+          [lA, lD].forEach(l => { if (l) l.style.fontSize = (fa * k) + 'px'; });
+          if (col) col.style.marginRight = (tam * 0.10) + 'px';
+        }
+        el.classList.add('encaixe');
+        el.style.left = 'auto'; el.style.right = 'auto';
+        el.style.width = Math.min(W * 0.94, (col ? col.getBoundingClientRect().width + tam * 0.10 : 0) + larg(grande) + 4) + 'px';
+      } else if (cfg.lockup === 'encaixe') {
         // Lockup compacto: apoio pequeno e leve, colado na palavra grande —
         // o que vem antes fica acima, alinhado à esquerda; o que vem depois, abaixo, à direita.
         el.classList.add('encaixe');
@@ -160,6 +201,32 @@ window.DADOS = /*__DADOS__*/null;
         l.style.fontSize = f + 'px';
         l.style.margin = (l === lA ? `0 0 ${tam * 0.06}px` : `${tam * 0.08}px 0 0`);
       });
+      if (cfg.lockup !== 'encaixe' && cfg.lockup !== 'lateral') {
+        // empilhado e centralizado; vira posicionável pela largura do conteúdo
+        const wmax = Math.max(wg, ...[lA, lD].filter(Boolean).map(larg));
+        el.classList.add('encaixe'); el.style.textAlign = 'center';
+        el.style.left = 'auto'; el.style.right = 'auto'; el.style.width = (wmax + 4) + 'px';
+      }
+    }
+    if (itG_ok(itens)) {
+      const itG2 = itens.find(i => i.papel === 'grande');
+      if (itG2.letras) {
+        const ww = larg(itG2.el);
+        const x0 = itG2.letras[0].offsetLeft;
+        itG2.letras.forEach(l => { l._x = l.offsetLeft - x0; });
+        itG2.ww = ww;
+        itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
+      }
+      if (cfg.animacao === 'mascara') {
+        // traço dourado sob a palavra (criado depois da medição para não alterar a largura)
+        const tam2 = parseFloat(itG2.el.parentNode.style.fontSize);
+        const tr = document.createElement('div'); tr.className = 'traco traco-ouro';
+        tr.style.width = larg(itG2.el) + 'px';
+        tr.style.height = Math.max(3, tam2 * 0.045) + 'px';
+        tr.style.backgroundSize = '260% 100%';
+        tr.style.boxShadow = '0 0 18px rgba(255,196,70,.55)';
+        itG2.el.parentNode.appendChild(tr); itG2.traco = tr;
+      }
     }
     const h = el.getBoundingClientRect().height;
     // zonas: trechos em que a legenda muda de altura ou some (ex.: quando entra um CTA)
@@ -201,8 +268,36 @@ window.DADOS = /*__DADOS__*/null;
       if (!visivel) continue;
       const iniSaida = g.fim - cfg.saida;
       const fora = t > iniSaida ? easeIn(clamp((t - iniSaida) / cfg.saida, 0, 1)) : 0;
+      const linhaN = g.el._linha;
+      if (!g.destaque && linhaN && (cfg.modo === 'karaoke' || cfg.modo === 'deslizar')) {
+        const e0 = ease(clamp((t - g.inicio) / (cfg.modo === 'deslizar' ? 0.30 : 0.16), 0, 1));
+        if (cfg.modo === 'deslizar') {
+          // a frase inteira entra por uma máscara da esquerda e sai pela direita
+          const sai = clamp((t - (g.fim - cfg.saida)) / cfg.saida, 0, 1);
+          linhaN.style.display = 'inline-block';
+          linhaN.style.clipPath = `inset(-30% ${((1 - e0) * 100).toFixed(2)}% -30% ${(easeIn(sai) * 100).toFixed(2)}%)`;
+          linhaN.style.transform = `translateX(${(-(1 - e0) * W * 0.03 + easeIn(sai) * W * 0.02).toFixed(2)}px)`;
+          g.itens.forEach(it => { it.el.style.opacity = 1; it.el.style.filter = 'none'; it.el.style.transform = 'none'; });
+        } else {
+          // karaokê: a frase aparece inteira; cada palavra acende quando é falada
+          linhaN.style.opacity = (e0 * (1 - fora)).toFixed(4);
+          linhaN.style.display = 'inline-block';
+          linhaN.style.transform = `scale(${(0.94 + 0.06 * e0).toFixed(4)}) translateY(${(-fora * H * 0.008).toFixed(2)}px)`;
+          linhaN.style.filter = fora > 0 ? `blur(${(fora * 5).toFixed(2)}px)` : 'none';
+          g.itens.forEach(it => {
+            const aceso = ease(clamp((t - (it.p.inicio - 0.03)) / 0.12, 0, 1));
+            it.el.style.opacity = (0.38 + 0.62 * aceso).toFixed(4);
+            it.el.style.transform = `translateY(${(-(aceso * (1 - clamp((t - it.p.inicio - 0.12) / 0.25, 0, 1))) * H * 0.004).toFixed(2)}px)`;
+            it.el.style.filter = 'none';
+          });
+        }
+        continue;
+      }
       g.itens.forEach((it, k) => {
         if (it.escondido) { it.el.style.opacity = 0; return; }
+        if (g.destaque && (cfg.animacao === 'letras' || cfg.animacao === 'mascara')) {
+          animarEspecial(it, g, t, fora); return;
+        }
         const ini = (cfg.modo === 'grupo' ? g.inicio + k * 0.035 : it.p.inicio - cfg.antecipacao);
         const d = it.papel === 'grande' ? cfg.entrada_destaque : cfg.entrada;
         const x = clamp((t - ini) / d, 0, 1), e = ease(x);
@@ -250,6 +345,57 @@ window.DADOS = /*__DADOS__*/null;
       });
     }
   };
+  function brilhoF(it) { return it.papel === 'grande' && cfg.brilho ? ` drop-shadow(0 0 ${cfg.brilho}px var(--cor-brilho))` : ''; }
+  function animarEspecial(it, g, t, fora) {
+    const desl = cfg.deslocamento * H;
+    const ini = it.p.inicio - cfg.antecipacao;
+    if (it.papel !== 'grande') {
+      // apoio: entra antes da ênfase com deslize curto; sai junto
+      const e = ease(clamp((t - ini) / cfg.entrada, 0, 1));
+      const dx = cfg.animacao === 'mascara' ? -W * 0.025 : 0, dy = cfg.animacao === 'letras' ? desl * 0.8 : 0;
+      it.el.style.opacity = (e * (1 - fora)).toFixed(4);
+      it.el.style.transform = `translate(${(dx * (1 - e)).toFixed(2)}px, ${(dy * (1 - e) - fora * desl * 0.5).toFixed(2)}px)`;
+      it.el.style.filter = (1 - e) * 5 + fora * 5 > 0.05 ? `blur(${((1 - e) * 5 + fora * 5).toFixed(2)}px)` : 'none';
+      return;
+    }
+    const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
+    const deriva = 1 + (cfg.deriva || 0.03) * vida;
+    if (cfg.animacao === 'letras') {
+      // onda de letras: cada uma sobe, gira levemente e ganha foco, em cascata
+      // a cascata se ajusta ao tempo disponível: em grupos curtos ela acelera
+      const n = it.letras.length, livre = Math.max(0.3, g.fim - ini);
+      const dl = Math.min(0.38, livre * 0.30), passo = Math.min(0.045, (livre * 0.28) / n);
+      const r = clamp((t - ini - 0.10 - n * passo) / Math.min(0.9, livre * 0.6), 0, 1), rr = 1 - Math.pow(1 - r, 3);
+      const S = it.ww * 2.6;
+      it.letras.forEach((l, i) => {
+        const e = ease(clamp((t - ini - i * passo) / dl, 0, 1));
+        const sai = easeIn(clamp((t - (g.fim - cfg.saida - (n - 1 - i) * 0.012)) / cfg.saida, 0, 1));
+        l.style.opacity = (e * (1 - sai)).toFixed(4);
+        l.style.transform = `translateY(${((1 - e) * 0.55 - sai * 0.15).toFixed(3)}em) rotate(${((1 - e) * -8).toFixed(2)}deg) scale(${(1.18 - 0.18 * e).toFixed(4)})`;
+        l.style.filter = (1 - e) * 10 + sai * 8 > 0.05 ? `blur(${((1 - e) * 10 + sai * 8).toFixed(2)}px)` : 'none';
+        l.style.backgroundPosition = `${((it.ww - S) * (1 - rr) - l._x).toFixed(2)}px 0`;
+      });
+      it.el.style.opacity = 1;
+      it.el.style.filter = brilhoF(it).trim() || 'none';
+      it.el.style.transform = `scale(${deriva.toFixed(4)})`;
+      return;
+    }
+    // máscara: revela da esquerda para a direita enquanto o espaçamento fecha; traço se desenha embaixo
+    const e = ease(clamp((t - ini) / 0.55, 0, 1));
+    const sai = easeIn(clamp((t - (g.fim - cfg.saida * 1.4)) / (cfg.saida * 1.4), 0, 1));
+    it.el.style.opacity = 1;
+    it.el.style.clipPath = `inset(-40% ${((1 - e) * 112 - 10).toFixed(2)}% -40% ${(sai * 112 - 10).toFixed(2)}%)`;
+    it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${(0.22 * (1 - e)).toFixed(4)}em)`;
+    it.el.style.transform = `translateX(${(-(1 - e) * W * 0.02).toFixed(2)}px) scale(${deriva.toFixed(4)})`;
+    it.el.style.filter = brilhoF(it).trim() || 'none';
+    const r = clamp((t - ini - 0.30) / 0.85, 0, 1);
+    it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+    if (it.traco) {
+      const et = ease(clamp((t - ini - 0.25) / 0.5, 0, 1));
+      it.traco.style.transform = `scaleX(${(et * (1 - sai)).toFixed(4)})`;
+      it.traco.style.opacity = (1 - sai).toFixed(3);
+    }
+  }
   // força o download de todas as fontes usadas antes de medir
   const amostra = document.createElement('div');
   amostra.style.cssText = 'position:absolute;opacity:0;left:-9999px';

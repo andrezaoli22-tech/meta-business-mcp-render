@@ -172,7 +172,7 @@ def agrupar(a):
         print(f"  {g['inicio']:7.2f}  {linha}{extra}")
 
 
-def posicionar_por_matte(grupos, matte, modo):
+def posicionar_por_matte(grupos, matte, modo, comecar="atras"):
     """Coloca cada lockup na altura da cabeça e alterna atrás/na frente da pessoa.
 
     atrás:   a palavra grande cruza o topo da cabeça (a pessoa cobre parte das letras)
@@ -186,7 +186,7 @@ def posicionar_por_matte(grupos, matte, modo):
         k = min(len(qs) - 1, max(0, int(round(t * fps))))
         return qs[k]
 
-    alterna = 0
+    alterna = 0 if comecar == "atras" else 1
     for g in grupos:
         if not any(p["destaque"] for p in g["palavras"]):
             continue
@@ -198,10 +198,19 @@ def posicionar_por_matte(grupos, matte, modo):
         if presente:
             topo = sum(q["topo"] for q in validas) / len(validas)
             cx = sum(q["cx"] for q in validas) / len(validas)
-            if modo == "atras" or (modo == "alternar" and alterna % 2 == 0 and topo > 0.10):
-                g["profundidade"], g["y"], g["x"] = "atras", max(0.16, topo + 0.035), cx
+            grande = next(p["texto"] for p in g["palavras"] if p["destaque"])
+            # atrás só com palavra longa (curta sumiria atrás da cabeça); a palavra fica no topo
+            # da cabeça, com a parte de baixo encostando no cabelo, nunca cruzando o rosto
+            vez_atras = modo == "atras" or (modo == "alternar" and alterna % 2 == 0 and topo > 0.10)
+            if vez_atras and len(grande) >= 6:
+                g["profundidade"], g["y"], g["x"] = "atras", max(0.15, topo + 0.012), cx
+            elif vez_atras:
+                # palavra curta: vai para a frente e guarda a vez de "atrás" para a próxima ênfase
+                g["profundidade"], g["y"], g["x"] = "frente", min(0.72, max(0.50, topo + 0.32)), 0.5
+                continue
             else:
-                g["profundidade"], g["y"], g["x"] = "frente", min(0.70, max(0.40, topo + 0.30)), 0.5
+                # na frente: sempre abaixo do rosto (peito), nunca sobre ele
+                g["profundidade"], g["y"], g["x"] = "frente", min(0.72, max(0.50, topo + 0.32)), 0.5
             alterna += 1
         else:
             g["profundidade"], g["y"], g["x"] = "frente", 0.42, 0.5

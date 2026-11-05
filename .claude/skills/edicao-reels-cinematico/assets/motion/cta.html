@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Chamada para ação: pílula que se desenha, texto que entra, seta com micro-pulso.
+     Parâmetros: texto, apoio (linha menor acima), cor, cor_fundo, cor_texto, fonte, posicao_y, duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#box{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:18px}
+#apoio{font-family:var(--f);font-weight:600;font-size:calc(var(--u)*2.7);letter-spacing:.18em;
+       text-transform:uppercase;color:var(--cor);text-shadow:0 2px 18px rgba(0,0,0,.4)}
+#pilula{position:relative;display:flex;align-items:center;gap:.6em;padding:.62em 1.25em;
+        border-radius:999px;background:var(--fundo);font-family:var(--f);font-weight:700;
+        font-size:calc(var(--u)*4.6);color:var(--texto);letter-spacing:-.01em;white-space:nowrap;
+        box-shadow:0 12px 50px rgba(0,0,0,.28)}
+#seta{display:inline-block;width:.8em;height:.8em}
+</style></head><body>
+<div id="box"><div id="apoio"></div><div id="pilula"><span id="txt"></span>
+<svg id="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+ stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={texto:"Link na bio",apoio:"",cor:"#FFFFFF",
+cor_fundo:"#F5F1EA",cor_texto:"#141414",fonte:'"Inter", sans-serif',posicao_y:0.7,duracao:3.5};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,box=document.getElementById('box'),pil=document.getElementById('pilula'),
+      txt=document.getElementById('txt'),apoio=document.getElementById('apoio'),seta=document.getElementById('seta');
+document.documentElement.style.cssText=`--u:${innerWidth/100}px;--cor:${P.cor};--fundo:${P.cor_fundo};
+  --texto:${P.cor_texto};--f:${P.fonte}`;
+txt.textContent=P.texto; apoio.textContent=P.apoio||''; if(!P.apoio) apoio.style.display='none';
+window.PRONTO=document.fonts.ready.then(()=>{box.style.top=(P.posicao_y*innerHeight-box.getBoundingClientRect().height/2)+'px';renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO, s=M.cubicIn(M.clamp((t-(D-0.35))/0.35));
+  const a=M.p(t,0,0.6), b=M.p(t,0.12,0.7), c=M.p(t,0.3,0.6);
+  apoio.style.opacity=a*(1-s); apoio.style.transform=`translateY(${(1-a)*14}px)`;
+  pil.style.clipPath=`inset(0 ${(1-b)*50}% 0 ${(1-b)*50}% round 999px)`;
+  pil.style.transform=`scale(${0.94+0.06*b - s*0.04})`; pil.style.opacity=1-s;
+  txt.style.opacity=c; txt.style.transform=`translateY(${(1-c)*10}px)`;
+  const pulso = t>1 ? Math.max(0,Math.sin((t-1)*Math.PI*1.2))**6 : 0;   // empurrão discreto e periódico
+  seta.style.transform=`translateX(${(1-c)*-8 + pulso*7}px)`; seta.style.opacity=c;
+};
+</script></body></html>

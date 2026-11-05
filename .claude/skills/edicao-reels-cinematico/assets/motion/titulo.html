@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Título cinematográfico: linha fina que se abre, título revelado por máscara,
+     subtítulo com tracking que se fecha. Parâmetros: titulo, subtitulo, cor, cor_linha,
+     fonte_titulo, fonte_sub, posicao_y (0..1), alinhamento (centro|esquerda), duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#box{position:absolute;left:8%;right:8%;display:flex;flex-direction:column;align-items:center}
+#box.esquerda{align-items:flex-start}
+.mask{overflow:hidden;padding:0.06em 0.04em}
+#tit{display:block;font-family:var(--ft);font-size:var(--tam);line-height:.95;color:var(--cor);
+     letter-spacing:-0.02em;white-space:nowrap;text-shadow:0 4px 40px rgba(0,0,0,.35)}
+#linha{height:2px;background:var(--cor-linha);margin:28px 0 22px;transform-origin:center}
+#box.esquerda #linha{transform-origin:left}
+#sub{font-family:var(--fs);font-size:calc(var(--tam)*.17);font-weight:600;letter-spacing:.3em;
+     text-transform:uppercase;color:var(--cor);opacity:.9;white-space:nowrap}
+</style></head><body>
+<div id="box"><div class="mask"><span id="tit"></span></div><div id="linha"></div><div id="sub"></div></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={titulo:"Título",subtitulo:"",cor:"#F5F1EA",
+cor_linha:"rgba(245,241,234,.7)",fonte_titulo:'"Instrument Serif", serif',fonte_sub:'"Inter", sans-serif',
+tamanho:0.13,posicao_y:0.42,alinhamento:"centro",duracao:3.2};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P, box=document.getElementById('box'), tit=document.getElementById('tit'),
+      sub=document.getElementById('sub'), linha=document.getElementById('linha');
+document.documentElement.style.cssText=`--ft:${P.fonte_titulo};--fs:${P.fonte_sub};--cor:${P.cor};
+  --cor-linha:${P.cor_linha};--tam:${P.tamanho*innerWidth}px`;
+if(P.alinhamento==='esquerda') box.classList.add('esquerda');
+tit.textContent=P.titulo; sub.textContent=P.subtitulo||''; if(!P.subtitulo) sub.style.display='none';
+window.PRONTO=document.fonts.ready.then(()=>{
+  const w=tit.getBoundingClientRect().width, max=innerWidth*0.84;
+  if(w>max) document.documentElement.style.setProperty('--tam',(P.tamanho*innerWidth*max/w)+'px');
+  linha.style.width=Math.min(tit.getBoundingClientRect().width*0.5,innerWidth*0.4)+'px';
+  box.style.top=(P.posicao_y*innerHeight-box.getBoundingClientRect().height/2)+'px';
+  renderFrame(0);
+});
+window.renderFrame=t=>{
+  const D=DURACAO, sai=M.cubicIn(M.clamp((t-(D-0.45))/0.45));
+  const l=M.p(t,0,0.7,M.inOut);
+  linha.style.transform=`scaleX(${l*(1-sai)})`;
+  const e=M.p(t,0.18,0.9);
+  tit.style.transform=`translateY(${(1-e)*105 + sai*-30}%)`;
+  tit.style.opacity=1-sai;
+  tit.style.filter=sai>0?`blur(${sai*8}px)`:'none';
+  const s=M.p(t,0.45,1.2,M.quart);
+  sub.style.opacity=s*(1-sai);
+  sub.style.letterSpacing=(0.3+0.5*(1-s))+'em';
+};
+</script></body></html>

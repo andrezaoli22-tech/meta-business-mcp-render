@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Palavra em tela cheia (interstício tipográfico): fundo sólido ou escurecido, uma ou
+     poucas palavras gigantes que entram com tracking se fechando. Bom para viradas de
+     ritmo, ganchos e respiros entre blocos. Use pouco: 1–2 por vídeo.
+     Parâmetros: texto, fundo ("#0E0E0E" | "escurecer" | "nenhum"), cor, fonte, estilo (normal|italic),
+     peso, caixa (none|uppercase), duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#fundo{position:absolute;inset:0}
+#txt{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;
+     font-family:var(--f);font-style:var(--st);font-weight:var(--w);text-transform:var(--cx);
+     color:var(--cor);line-height:.9;white-space:pre;letter-spacing:-.03em}
+</style></head><body>
+<div id="fundo"></div><div id="txt"></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={texto:"Agora.",fundo:"#0E0E0E",cor:"#F5F1EA",
+fonte:'"Instrument Serif", serif',estilo:"italic",peso:"400",caixa:"none",tamanho:0.26,duracao:1.4};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,fundo=document.getElementById('fundo'),txt=document.getElementById('txt');
+document.documentElement.style.cssText=`--f:${P.fonte};--st:${P.estilo};--w:${P.peso};--cx:${P.caixa};--cor:${P.cor}`;
+txt.textContent=P.texto;
+const esc = P.fundo==='escurecer';
+if(P.fundo!=='nenhum') fundo.style.background = esc ? 'rgba(0,0,0,.62)' : P.fundo;
+window.PRONTO=document.fonts.ready.then(()=>{
+  let tam=P.tamanho*innerWidth; txt.style.fontSize=tam+'px';
+  const w=txt.getBoundingClientRect().width; if(w>innerWidth*.88) txt.style.fontSize=(tam*innerWidth*.88/w)+'px';
+  renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO, s=M.cubicIn(M.clamp((t-(D-0.22))/0.22));
+  // fundo sólido corta seco (é um corte, não um fade); escurecer entra suave
+  fundo.style.opacity = esc ? M.p(t,0,0.25)*(1-s) : (t<D-0.04?1:0);
+  const e=M.p(t,0.02,0.55);
+  txt.style.opacity=e*(1-s);
+  txt.style.letterSpacing=(-0.03+0.12*(1-e))+'em';
+  txt.style.filter=`blur(${(1-e)*6+s*6}px)`;
+  txt.style.transform=`translateY(-50%) scale(${1+0.04*t/D})`;   // deriva lenta, dá vida sem chamar atenção
+};
+</script></body></html>

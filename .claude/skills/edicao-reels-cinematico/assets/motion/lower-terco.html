@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Identificação (nome + cargo) com barra de acento que cresce e textos revelados por máscara.
+     Parâmetros: nome, cargo, cor, cor_acento, fonte_nome, fonte_cargo, posicao_y, duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#box{position:absolute;left:7.5%;display:flex;align-items:stretch;gap:22px}
+#barra{width:5px;background:var(--acento);transform-origin:top;border-radius:2px}
+.mask{overflow:hidden}
+#nome{display:block;font-family:var(--fn);font-weight:700;font-size:calc(var(--u)*5.2);color:var(--cor);
+      letter-spacing:-.02em;line-height:1.05;white-space:nowrap;text-shadow:0 2px 24px rgba(0,0,0,.4)}
+#cargo{display:block;font-family:var(--fc);font-weight:500;font-size:calc(var(--u)*2.6);color:var(--cor);
+       opacity:.82;letter-spacing:.14em;text-transform:uppercase;margin-top:10px;white-space:nowrap;
+       text-shadow:0 2px 18px rgba(0,0,0,.45)}
+</style></head><body>
+<div id="box"><div id="barra"></div><div><div class="mask"><span id="nome"></span></div>
+<div class="mask"><span id="cargo"></span></div></div></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={nome:"Nome Sobrenome",cargo:"Cargo · Empresa",
+cor:"#FFFFFF",cor_acento:"#E9B44C",fonte_nome:'"Inter", sans-serif',fonte_cargo:'"Inter", sans-serif',
+posicao_y:0.74,duracao:4};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,box=document.getElementById('box'),barra=document.getElementById('barra'),
+      nome=document.getElementById('nome'),cargo=document.getElementById('cargo');
+document.documentElement.style.cssText=`--u:${innerWidth/100}px;--cor:${P.cor};--acento:${P.cor_acento};
+  --fn:${P.fonte_nome};--fc:${P.fonte_cargo}`;
+nome.textContent=P.nome; cargo.textContent=P.cargo;
+window.PRONTO=document.fonts.ready.then(()=>{box.style.top=(P.posicao_y*innerHeight)+'px';renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO, s=M.cubicIn(M.clamp((t-(D-0.4))/0.4));
+  barra.style.transform=`scaleY(${M.p(t,0,0.55,M.inOut)*(1-s)})`;
+  const n=M.p(t,0.15,0.8), c=M.p(t,0.32,0.8);
+  nome.style.transform=`translateY(${(1-n)*110}%)`;
+  cargo.style.transform=`translateY(${(1-c)*120}%)`;
+  nome.style.opacity=cargo.style.opacity=(1-s);
+  box.style.transform=`translateX(${-s*24}px)`;
+};
+</script></body></html>

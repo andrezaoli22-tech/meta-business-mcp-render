@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+/*__FONTES__*/
+:root {
+  --fonte-base: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --fonte-destaque: "Inter Display", "Inter", sans-serif;
+  --peso-base: 650;
+  --peso-destaque: 800;
+  --estilo-destaque: normal;
+  --cor-base: #FFFFFF;
+  --cor-destaque: #FFFFFF;
+  --caixa-base: none;
+  --caixa-destaque: none;
+  --caixa-apoio: uppercase;
+  --tracking-base: -0.01em;
+  --tracking-destaque: -0.035em;
+  --tracking-apoio: 0.14em;
+  --peso-apoio: 600;
+  --sombra: 0 2px 22px rgba(0,0,0,.38), 0 1px 3px rgba(0,0,0,.35);
+}
+html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+body { width: 100vw; height: 100vh; position: relative; -webkit-font-smoothing: antialiased; }
+.grupo { position: absolute; left: 0; right: 0; display: none; text-align: center; }
+.linha { white-space: nowrap; line-height: 1; display: block; }
+.p { display: inline-block; will-change: transform, opacity, filter; text-shadow: var(--sombra); }
+.normal .p { font-family: var(--fonte-base); font-weight: var(--peso-base); color: var(--cor-base);
+             text-transform: var(--caixa-base); letter-spacing: var(--tracking-base); }
+.destaque .grande { font-family: var(--fonte-destaque); font-weight: var(--peso-destaque);
+             font-style: var(--estilo-destaque); color: var(--cor-destaque);
+             text-transform: var(--caixa-destaque); letter-spacing: var(--tracking-destaque); }
+.destaque .apoio .p { font-family: var(--fonte-base); font-weight: var(--peso-apoio); color: var(--cor-base);
+             text-transform: var(--caixa-apoio); letter-spacing: var(--tracking-apoio); }
+</style>
+</head>
+<body>
+<script>
+window.DADOS = /*__DADOS__*/null;
+</script>
+<script>
+(function () {
+  const D = window.DADOS;
+  const W = innerWidth, H = innerHeight;
+  const cfg = Object.assign({
+    tamanho_base: 0.070,      // fração da largura
+    tamanho_destaque_max: 0.21,
+    largura_max: 0.80,
+    posicao_y: 0.64,          // centro do bloco (fração da altura)
+    entrada: 0.20,            // s de animação de entrada por palavra
+    entrada_destaque: 0.34,
+    saida: 0.12,
+    antecipacao: 0.04,        // palavra aparece um pouco antes de ser falada
+    desfoque: 7,
+    deslocamento: 0.018,      // fração da altura
+    modo: "revelar"           // "revelar" (palavra por palavra) | "grupo" (grupo inteiro)
+  }, D.config || {});
+  window.DURACAO = D.duracao;
+
+  const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out
+  const easeIn = x => x * x * x;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const base = cfg.tamanho_base * W;
+  const larguraMax = cfg.largura_max * W;
+
+  function span(txt, cls) {
+    const s = document.createElement('span');
+    s.className = 'p ' + (cls || ''); s.textContent = txt; return s;
+  }
+
+  // ---------- montagem e medição de cada grupo ----------
+  // A medição só vale depois que as fontes carregam; por isso tudo roda dentro de montar().
+  let grupos = [];
+  function montar() {
+  document.querySelectorAll('.grupo').forEach(e => e.remove());
+  grupos = D.grupos.map((g, gi) => {
+    const el = document.createElement('div');
+    const idx = g.palavras.findIndex(p => p.destaque);
+    const itens = [];
+    if (idx < 0) {
+      el.className = 'grupo normal';
+      const linha = document.createElement('div'); linha.className = 'linha';
+      linha.style.fontSize = base + 'px';
+      g.palavras.forEach((p, k) => {
+        const s = span(p.texto);
+        if (k > 0) linha.appendChild(document.createTextNode(' '));
+        linha.appendChild(s); itens.push({ el: s, p, papel: 'normal' });
+      });
+      el.appendChild(linha);
+      document.body.appendChild(el); el.style.display = 'block';
+      const w = linha.getBoundingClientRect().width;
+      if (w > larguraMax) linha.style.fontSize = (base * larguraMax / w) + 'px';
+    } else {
+      // Lockup editorial: palavra destacada grande; as de apoio, pequenas,
+      // encaixadas na largura dela (acima as anteriores, abaixo as seguintes).
+      el.className = 'grupo destaque';
+      const antes = g.palavras.slice(0, idx), depois = g.palavras.slice(idx + 1);
+      const mk = (lista, papel) => {
+        const l = document.createElement('div'); l.className = 'linha apoio';
+        lista.forEach((p, k) => {
+          const s = span(p.texto);
+          if (k > 0) l.appendChild(document.createTextNode(' '));
+          l.appendChild(s); itens.push({ el: s, p, papel });
+        });
+        return l;
+      };
+      const lA = antes.length ? mk(antes, 'acima') : null;
+      const grande = document.createElement('div'); grande.className = 'linha';
+      const sg = span(g.palavras[idx].texto, 'grande'); grande.appendChild(sg);
+      itens.push({ el: sg, p: g.palavras[idx], papel: 'grande' });
+      const lD = depois.length ? mk(depois, 'abaixo') : null;
+      [lA, grande, lD].forEach(x => x && el.appendChild(x));
+      document.body.appendChild(el); el.style.display = 'block';
+
+      let tam = cfg.tamanho_destaque_max * W;
+      grande.style.fontSize = tam + 'px';
+      let wg = grande.getBoundingClientRect().width;
+      if (wg > larguraMax) { tam *= larguraMax / wg; grande.style.fontSize = tam + 'px'; wg = larguraMax; }
+      grande.style.lineHeight = '0.9';
+      [lA, lD].forEach(l => {
+        if (!l) return;
+        l.style.fontSize = '100px';
+        const w0 = l.getBoundingClientRect().width;
+        // apoio ocupa a largura exata da palavra grande, dentro de limites legíveis
+        let f = 100 * wg / w0;
+        f = clamp(f, tam * 0.16, tam * 0.36);
+        l.style.fontSize = f + 'px';
+        l.style.margin = (l === lA ? `0 0 ${tam * 0.06}px` : `${tam * 0.08}px 0 0`);
+      });
+    }
+    const h = el.getBoundingClientRect().height;
+    // zonas: trechos em que a legenda muda de altura ou some (ex.: quando entra um CTA)
+    const ini0 = Math.min(...g.palavras.map(p => p.inicio));
+    const zona = (cfg.zonas || []).find(z => ini0 < z.ate && g.fim > z.de);
+    if (zona && zona.ocultar) g.oculto = true;
+    const py = zona && zona.posicao_y != null ? zona.posicao_y : cfg.posicao_y;
+    el.style.top = (py * H - h / 2) + 'px';
+    el.style.display = 'none';
+    const inicio = Math.min(...g.palavras.map(p => p.inicio)) - cfg.antecipacao;
+    return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto };
+  });
+  // um grupo termina (com a saída já concluída) quando o próximo começa: nunca se sobrepõem
+  grupos.forEach((g, k) => { const n = grupos[k + 1]; if (n && n.inicio < g.fim) g.fim = n.inicio; });
+  }
+
+  // ---------- estado de cada quadro ----------
+  window.renderFrame = function (t) {
+    for (const g of grupos) {
+      const visivel = !g.oculto && t >= g.inicio - 0.001 && t < g.fim;
+      g.el.style.display = visivel ? 'block' : 'none';
+      if (!visivel) continue;
+      const iniSaida = g.fim - cfg.saida;
+      const fora = t > iniSaida ? easeIn(clamp((t - iniSaida) / cfg.saida, 0, 1)) : 0;
+      g.itens.forEach((it, k) => {
+        const ini = (cfg.modo === 'grupo' ? g.inicio + k * 0.035 : it.p.inicio - cfg.antecipacao);
+        const d = it.papel === 'grande' ? cfg.entrada_destaque : cfg.entrada;
+        const x = clamp((t - ini) / d, 0, 1), e = ease(x);
+        let op = e * (1 - fora);
+        let blur = (1 - e) * cfg.desfoque + fora * cfg.desfoque * 0.6;
+        let ty = 0, sc = 1, ls = null;
+        const desl = cfg.deslocamento * H;
+        if (it.papel === 'grande') {
+          sc = 1.10 - 0.10 * e;
+          ls = (0.05 * (1 - e)).toFixed(4);
+        } else if (it.papel === 'acima') {
+          ty = -desl * 0.6 * (1 - e);
+        } else {
+          ty = desl * (1 - e);
+        }
+        ty -= fora * desl * 0.4;
+        it.el.style.opacity = op.toFixed(4);
+        it.el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
+        it.el.style.transform = `translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+        if (ls !== null) it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${ls}em)`;
+      });
+    }
+  };
+  // força o download de todas as fontes usadas antes de medir
+  const amostra = document.createElement('div');
+  amostra.style.cssText = 'position:absolute;opacity:0;left:-9999px';
+  amostra.innerHTML = '<span class="normal"><span class="p">Áa</span></span>' +
+    '<span class="destaque"><span class="p grande">Áa</span><span class="apoio"><span class="p">Áa</span></span></span>';
+  document.body.appendChild(amostra);
+  window.PRONTO = document.fonts.ready
+    .then(() => new Promise(r => requestAnimationFrame(r)))
+    .then(() => { montar(); window.renderFrame(0); });
+})();
+</script>
+</body>
+</html>

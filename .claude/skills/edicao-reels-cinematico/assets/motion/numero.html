@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Dado/estatística: número que conta até o valor com desaceleração, rótulo embaixo.
+     Parâmetros: valor (número), prefixo ("R$ "), sufixo ("%", "x", " mil"), casas (decimais),
+     rotulo, cor, cor_destaque, fonte_numero, fonte_rotulo, posicao_y, duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#box{position:absolute;left:0;right:0;text-align:center}
+#num{font-family:var(--fn);font-weight:800;font-size:calc(var(--u)*24);line-height:.9;color:var(--dest);
+     letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap;text-shadow:0 6px 50px rgba(0,0,0,.35)}
+#rot{font-family:var(--fr);font-weight:600;font-size:calc(var(--u)*3);letter-spacing:.2em;text-transform:uppercase;
+     color:var(--cor);margin-top:22px;text-shadow:0 2px 18px rgba(0,0,0,.4)}
+</style></head><body>
+<div id="box"><div id="num"></div><div id="rot"></div></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={valor:87,prefixo:"",sufixo:"%",casas:0,rotulo:"",
+cor:"#FFFFFF",cor_destaque:"#FFFFFF",fonte_numero:'"Inter", sans-serif',fonte_rotulo:'"Inter", sans-serif',
+posicao_y:0.45,duracao:3};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,box=document.getElementById('box'),num=document.getElementById('num'),rot=document.getElementById('rot');
+document.documentElement.style.cssText=`--u:${innerWidth/100}px;--cor:${P.cor};--dest:${P.cor_destaque};
+  --fn:${P.fonte_numero};--fr:${P.fonte_rotulo}`;
+rot.textContent=P.rotulo||''; if(!P.rotulo) rot.style.display='none';
+const fmt=v=>P.prefixo+v.toLocaleString('pt-BR',{minimumFractionDigits:P.casas,maximumFractionDigits:P.casas})+P.sufixo;
+window.PRONTO=document.fonts.ready.then(()=>{num.textContent=fmt(P.valor);
+  const w=num.getBoundingClientRect().width; if(w>innerWidth*.86) num.style.fontSize=(innerWidth/100*24*innerWidth*.86/w)+'px';
+  box.style.top=(P.posicao_y*innerHeight-box.getBoundingClientRect().height/2)+'px';renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO, s=M.cubicIn(M.clamp((t-(D-0.4))/0.4));
+  const c=M.p(t,0.05,Math.min(1.6,D*0.55),M.quart), e=M.p(t,0,0.5);
+  num.textContent=fmt(P.valor*c);
+  num.style.opacity=e*(1-s); num.style.filter=`blur(${(1-e)*10+s*8}px)`;
+  num.style.transform=`scale(${1.06-0.06*e})`;
+  const r=M.p(t,0.5,0.7); rot.style.opacity=r*(1-s); rot.style.transform=`translateY(${(1-r)*16}px)`;
+};
+</script></body></html>

@@ -41,6 +41,13 @@
 .vermelho .destaque .grande, .vermelho .destaque .grande .letra {
              background-image: none; -webkit-background-clip: border-box; background-clip: border-box;
              color: var(--cor-destaque); text-shadow: 0 3px 18px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); }
+/* vermelho reluzente: cor sólida em repouso; um reflexo de luz atravessa a palavra na entrada
+   (como o dourado da MRC, mas sem degradê permanente) */
+.reluz .destaque .grande:not(.letras), .reluz .destaque .grande .letra {
+             background-image: linear-gradient(100deg, var(--cor-destaque) 0%, var(--cor-destaque) 36%,
+               #FFB3A6 44%, #FFE6E0 47%, #FF8A7A 51%, var(--cor-destaque) 58%, var(--cor-destaque) 100%);
+             background-size: 260% 100%; background-position: 0% 0;
+             -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
 .vermelho .destaque .grande { padding: 0 0.04em; }
 .vermelho .destaque .grande.letras { background-image: none; }
 .destaque .apoio.conector .p { font-family: var(--fonte-conector, var(--fonte-base)); font-style: italic;
@@ -86,6 +93,7 @@ window.DADOS = /*__DADOS__*/null;
   window.DURACAO = D.duracao;
   if (cfg.gradiente === 'ouro') document.body.classList.add('ouro');
   else if (cfg.gradiente === 'vermelho') document.body.classList.add('vermelho');
+  else if (cfg.gradiente === 'vermelho-reluz') document.body.classList.add('vermelho', 'reluz');
   else if (cfg.gradiente) document.body.classList.add('gradiente');
 
   const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out
@@ -225,7 +233,7 @@ window.DADOS = /*__DADOS__*/null;
         const x0 = itG2.letras[0].offsetLeft;
         itG2.letras.forEach(l => { l._x = l.offsetLeft - x0; });
         itG2.ww = ww;
-        if (cfg.gradiente === 'ouro') itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
+        if (cfg.gradiente === 'ouro' || cfg.gradiente === 'vermelho-reluz') itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
         // índice da palavra de cada letra (para a animação palavra a palavra)
         let w = 0; itG2.letras.forEach(l => { if (l.textContent === '\u00a0') w++; l._w_idx = w; });
         itG2.nPal = w + 1;
@@ -526,6 +534,10 @@ window.DADOS = /*__DADOS__*/null;
           const e = ease(clamp((t - ini - l._w_idx * 0.16) / 0.38, 0, 1));
           op = e; bl = (1 - e) * 6;
           tf = `translateY(${((1 - e) * 0.5).toFixed(3)}em)`;
+        }
+        if (cfg.gradiente === 'vermelho-reluz' || cfg.gradiente === 'ouro') {
+          const S = it.ww * 2.6, r = clamp((t - ini - 0.35) / 0.9, 0, 1), rr = 1 - Math.pow(1 - r, 3);
+          l.style.backgroundPosition = `${((it.ww - S) * (1 - rr) - l._x).toFixed(2)}px 0`;
         }
         l.style.opacity = (op * (1 - saiG)).toFixed(4);
         l.style.transform = tf;

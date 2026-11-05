@@ -21,6 +21,10 @@ A referência é um reels de loja de seminovos (apresentadora + planos de carros
 - Letras **juntas** em tudo: frase comum com tracking -0,055em, linhas em caixa alta -0,035em. Nada de espaçamento aberto.
 - Frequência: uma ênfase por frase forte (a cada 3–6 s).
 
+## 2b. Variação "reluzente" e tamanho sutil
+- `"gradiente": "vermelho-reluz"` em `config`: a ênfase fica em vermelho sólido em repouso, e um reflexo de luz atravessa a palavra logo depois da entrada (como o dourado usado na MRC), com brilho vermelho em volta. Para um vermelho mais vivo, renderize com `--cor-destaque "#F2261A"`.
+- Versão menor e mais sutil: `"tamanho_destaque_max": 0.125, "tamanho_base": 0.047, "brilho": 14, "desfoque": 5, "deslocamento": 0.012`.
+
 ## 3. Animações da ênfase (uma diferente para cada ênfase do vídeo)
 | `animacao` | na referência | movimento | som |
 |---|---|---|---|

@@ -13,8 +13,12 @@ camadas.json — tudo que entra por cima da base, em ordem (tempos na linha do t
    "inicio_fonte": 1.0, "zoom": 1.0, "foco_x": 0.5, "foco_y": 0.5, "rampa": 1.06},
   {"tipo": "motion", "arquivo": "trabalho/titulo.mov",    "em": 0.0},
   {"tipo": "flash",  "em": 9.95, "dur": 0.12},           # flash branco curto de transição
-  {"tipo": "zoom",   "em": 14.0, "dur": 1.2, "de": 1.0, "ate": 1.08}   # push-in suave na base
+  {"tipo": "zoom",   "em": 14.0, "dur": 1.2, "de": 1.0, "ate": 1.08},  # push-in suave na base
+  {"tipo": "motion", "arquivo": "trabalho/numero.mov", "em": 3.0, "profundidade": "atras"}
 ]
+- "profundidade": "atras" coloca o grafismo atrás da pessoa (precisa de --matte).
+- Legendas com profundidade: --legendas (frente) + --legendas-atras + --matte.
+- --escala-saida 2 entrega em 4K: renderize legendas/motion com --escala 2.
 - broll: cobre a imagem mantendo a voz por baixo (L-cut natural). "rampa" = zoom lento ao longo do plano.
 - motion: camada transparente do motion.py. Legendas entram por último (sempre por cima).
 - A cor é aplicada à base + B-roll juntos, antes dos grafismos, para tudo casar.
@@ -45,6 +49,10 @@ def main():
     ap.add_argument("--balanco", action="store_true")
     ap.add_argument("--camadas")
     ap.add_argument("--legendas")
+    ap.add_argument("--legendas-atras", help="camada de legendas que passa ATRÁS da pessoa (precisa de --matte)")
+    ap.add_argument("--matte", help="matte.mkv do recortar.py (mesmo tamanho/tempo do --video)")
+    ap.add_argument("--escala-saida", type=float, default=1.0,
+                    help="amplia a saída (2 = 4K a partir de 1080x1920); legendas/motion devem vir já nesse tamanho")
     ap.add_argument("--saida", default="final.mp4")
     ap.add_argument("--qualidade", choices=["alta", "rascunho"], default="alta")
     ap.add_argument("--trecho", default="", help="ini:fim em segundos, para prévia")
@@ -128,8 +136,42 @@ def main():
         g.append(f"{rotulo}[fl{k}]overlay=enable='between(t,{t0 - d / 2},{t0 + d / 2})'[fo{k}]")
         rotulo = f"[fo{k}]"
 
+    # ---- ampliação (ex.: 1080p → 4K). Feita depois da cor para a grade não ser calculada 4x.
+    Wo, Ho = W, H
+    if a.escala_saida != 1.0:
+        Wo, Ho = int(round(W * a.escala_saida / 2) * 2), int(round(H * a.escala_saida / 2) * 2)
+        g.append(f"{rotulo}scale={Wo}:{Ho}:flags=lanczos[up]")
+        rotulo = "[up]"
+
+    # ---- profundidade: camadas atrás da pessoa e a pessoa recortada por cima delas
+    atras = [c for c in camadas if c["tipo"] == "motion" and c.get("profundidade") == "atras"]
+    if a.legendas_atras:
+        atras.append({"tipo": "motion", "arquivo": a.legendas_atras, "em": 0.0})
+    if atras:
+        if not a.matte:
+            erro("camadas atrás da pessoa precisam de --matte (gere com recortar.py)")
+        g.append(f"{rotulo}split[fundo][pessoa_src]")
+        rotulo = "[fundo]"
+        for k, c in enumerate(atras):
+            arq = c["arquivo"] if os.path.isabs(c["arquivo"]) or c["arquivo"] == a.legendas_atras else caminho(c["arquivo"])
+            entradas += ["-i", arq]
+            g.append(f"[{n}:v]format=rgba,setpts=PTS-STARTPTS+{c['em']}/TB[at{k}]")
+            g.append(f"{rotulo}[at{k}]overlay=eof_action=pass:format=auto[ao{k}]")
+            rotulo = f"[ao{k}]"
+            n += 1
+        entradas += ["-i", a.matte]
+        # onde há B-roll cobrindo a pessoa, o recorte é desligado
+        blank = "".join(f",drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t,{c['em']},{c['em'] + c['dur']})'"
+                        for c in camadas if c["tipo"] == "broll")
+        g.append(f"[{n}:v]format=gray,setpts=PTS-STARTPTS,scale={Wo}:{Ho}:flags=bicubic{blank}[mt]")
+        g.append("[pessoa_src]format=yuva444p[pes]")
+        g.append("[pes][mt]alphamerge[recorte]")
+        g.append(f"{rotulo}[recorte]overlay=format=auto[comp]")
+        rotulo = "[comp]"
+        n += 1
+
     # ---- motion + legendas (camadas com alfa)
-    graficos = [c for c in camadas if c["tipo"] == "motion"]
+    graficos = [c for c in camadas if c["tipo"] == "motion" and c.get("profundidade") != "atras"]
     if a.legendas:
         graficos.append({"tipo": "motion", "arquivo": a.legendas, "em": 0.0})
     for k, c in enumerate(graficos):

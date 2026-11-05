@@ -24,11 +24,17 @@ Só quando pedido. A palavra destacada vira o centro de um bloco tipográfico:
 | impacto | Inter 800 caixa-alta | Anton | fitness, esporte, lançamento, urgência |
 | moderno | Inter 600 | Inter 900 apertado | tech, SaaS, criador de conteúdo |
 | luxo | Cormorant 600 | Cormorant itálico, tracking largo | moda, imóveis, gastronomia, beleza premium |
+| dourado | Open Sans 700, letras juntas | Open Sans 800 CAIXA ALTA dourada com reflexo de luz e brilho | automotivo, imóveis, vendas premium |
+
+O estilo `dourado` usa o lockup **encaixado**: as palavras de apoio são pequenas, leves e coladas na palavra grande (antes dela: acima e à esquerda; depois: abaixo e à direita). Nada fica solto. A ênfase entra subindo, ganhando foco e cor, recebe um reflexo de luz que atravessa as letras e cresce devagar enquanto está na tela. Os mesmos recursos valem para qualquer estilo pela chave `config`: `"lockup": "encaixe"`, `"animacao": "subir"`, `"brilho": 20` (px de brilho em volta), `"gradiente": "ouro"`, `"deriva": 0.04`.
 
 Personalize com `--cor-destaque`, `--cor-base`, `--fonte-base`, `--fonte-destaque` e `--posicao-y`. Uma fonte da marca vai em `assets/fontes/` e é chamada pelo nome do arquivo.
 
 ## Ajustes avançados
 Em `legendas.json`, a chave `"config"` aceita: `tamanho_base` (fração da largura, padrão 0,07), `tamanho_destaque_max` (0,21–0,28), `largura_max` (0,80), `posicao_y` (0,64), `entrada`, `entrada_destaque`, `saida`, `antecipacao`, `desfoque`, `deslocamento`, `modo` e `zonas` (`[{"de":6.8,"ate":8.8,"posicao_y":0.36}]` ou `{"ocultar":true}`).
+
+## Profundidade
+Com `--matte` no `agrupar`, cada lockup recebe `profundidade` (`atras`/`frente`), `y` e `x`. Atrás: a palavra grande cruza o topo da cabeça, centrada na pessoa, e a cabeça cobre parte das letras (como nos vídeos de referência de imóveis). Na frente: altura do peito, centralizado. A intercalação deixa o vídeo dinâmico sem repetir o truque. Para forçar um lado em um grupo, edite `profundidade` em `legendas.json`; para todos, use `--profundidade atras|frente`.
 
 ## Legibilidade
 - A sombra é difusa e não há contorno grosso. Se o fundo for muito claro ou movimentado, aumente o contraste escurecendo levemente a área com a vinheta da grade, em vez de pôr caixa atrás do texto.

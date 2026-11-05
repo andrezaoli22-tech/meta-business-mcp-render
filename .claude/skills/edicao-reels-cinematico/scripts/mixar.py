@@ -65,6 +65,8 @@ def main():
     ap.add_argument("--lufs", type=float, default=-14.0)
     ap.add_argument("--true-peak", type=float, default=-1.0)
     ap.add_argument("--tratar-voz", choices=list(VOZ), default="padrao")
+    ap.add_argument("--manter-nivel", action="store_true",
+                    help="não normaliza nem limita: só soma os SFX ao áudio original (vídeo já finalizado)")
     a = ap.parse_args()
 
     dur = a.duracao or info_video(a.voz)["duracao"]
@@ -125,6 +127,12 @@ def main():
 
     g.append("".join(mix) + f"amix=inputs={len(mix)}:normalize=0:dropout_transition=0,"
              "alimiter=limit=0.95:attack=3:release=60[pre]")
+    if a.manter_nivel:
+        g[-1] = "".join(mix) + f"amix=inputs={len(mix)}:normalize=0:dropout_transition=0[pre]"
+        rodar(["ffmpeg", "-y", "-hide_banner", *entradas, "-filter_complex", ";".join(g),
+               "-map", "[pre]", "-t", f"{dur:.3f}", "-c:a", "pcm_s24le", a.saida])
+        print(f"OK → {a.saida}  ({dur:.2f}s, nível original mantido)")
+        return
     pre = os.path.splitext(a.saida)[0] + "_pre.wav"
     rodar(["ffmpeg", "-y", "-hide_banner", *entradas, "-filter_complex", ";".join(g),
            "-map", "[pre]", "-t", f"{dur:.3f}", "-c:a", "pcm_s24le", pre])

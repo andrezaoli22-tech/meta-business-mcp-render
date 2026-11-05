@@ -59,6 +59,10 @@ python3 scripts/legendas.py render projeto/trabalho/legendas.json --estilo edito
 ```
 O padrão são 2–3 palavras por vez, reveladas conforme a fala. **Só destaque palavras quando o usuário pedir** (ou quando ele pedir que você escolha). Aí escolha poucas: a palavra que carrega o sentido da frase, uma a cada 5–8 s no máximo. A palavra destacada vira um lockup, grande no centro, com as palavras de apoio pequenas encaixadas na largura dela. Para marcar à mão, ponha `"destaque": true` na palavra em `legendas.json`. Revise os grupos ali também: junte ou separe onde o sentido pedir.
 
+**Profundidade (texto atrás e na frente da pessoa).** Rode `python3 scripts/recortar.py corte.mkv --saida trabalho/matte.mkv` e passe `--matte trabalho/matte.json` no `agrupar`. Os lockups passam a ser posicionados pela cabeça e intercalam: um cruza a cabeça e fica **atrás** dela, o seguinte fica **na frente**, na altura do peito. Sem pessoa no quadro, o lockup fica na frente. O `render` gera então duas camadas (`legendas.mov` e `legendas_atras.mov`); a montagem usa `--legendas-atras` e `--matte`. Confira na prévia se nenhum lockup "na frente" cobre o rosto.
+
+**Efeitos de som nas ênfases.** `python3 scripts/legendas.py sfx legendas.json --saida trabalho/sfx_legendas.json --db -10` cria a lista com um brilho ao entrar em cada destaque e um brilho saindo nos lockups mais longos. Só as ênfases recebem som. Ajuste `--db` comparando com o volume do programa: o efeito deve ficar uns 8 a 10 dB abaixo da voz. Os sons estão em `assets/sfx/` (gerados por `scripts/gerar_sfx.py`): `brilho_entra`, `brilho_sai`, `deslize`, `whoosh`, `impacto`.
+
 Gere a prévia sobre o vídeo e abra as imagens antes do render completo. Verifique contraste, tamanho e se nada colide com o rosto ou com os grafismos. Se um CTA ou título ocupar a área da legenda, use `--zona de:ate:0.36` (sobe a legenda) ou `--zona de:ate:ocultar`. Estilos e regras de tipografia estão em `references/legendas.md`.
 
 ### 6. Cor
@@ -93,9 +97,18 @@ python3 scripts/analisar.py projeto/final.mp4 --saida projeto/qa --quadros 12
 ```
 `camadas.json` reúne B-roll, motion, flashes e push-ins (formato no `--help`). Faça um rascunho de um trecho primeiro. Na versão final, **abra `qa/folha.png` e confira** legenda sobre rosto, grafismo cortado, B-roll fora de cor, quadro preto e loudness perto de -14 LUFS. Só entregue depois disso. Ao entregar, diga ao usuário o que foi feito e quais decisões você tomou (o que cortou, por que destacou tal palavra, qual grade usou), para ele poder pedir ajustes.
 
+## Vídeo já editado: só legenda (e efeitos nas ênfases)
+Quando o usuário manda um vídeo pronto e pede só legenda, **não mexa em mais nada**: sem corte, sem cor, sem trilha nova, sem tratamento de voz. Fluxo:
+1. `transcrever.py` no vídeo e copie `palavras.json` para `palavras_editado.json` (a linha do tempo é a mesma).
+2. `recortar.py` no vídeo, se for usar profundidade; depois `legendas.py agrupar ... --matte` e revise os grupos.
+3. `legendas.py render` (com `--escala 2` se a entrega for em 4K) e `legendas.py sfx`.
+4. `mixar.py --voz video.mov --tratar-voz nenhum --manter-nivel --sfx sfx.json` (só soma os efeitos ao áudio original).
+5. `montar.py --video video.mov --sem-cor --audio audio.wav --legendas ... [--legendas-atras ... --matte ...] [--escala-saida 2]`.
+
 ## Formatos e entregas
 - Formato no `edl.json`: `"9:16"` (padrão), `"4:5"`, `"1:1"` ou `"16:9"`. Para várias versões, rode `cortar.py` com EDLs que mudam só `formato` e `foco_*`, e renderize legenda e motion no tamanho certo (`--largura/--altura`).
 - Safe zone do Reels: nada importante nos 12% de cima, nos 22% de baixo e nos 12% da direita (botões). As legendas já ficam em 64% da altura por padrão.
+- 4K: `montar.py --escala-saida 2` amplia o vídeo (lanczos) depois da cor; legendas e motion devem ser renderizados com `--escala 2`, para o texto sair nativo em 4K e não ampliado.
 - Exportação: H.264 High, BT.709, AAC 320k, 48 kHz, `+faststart`. É o que Instagram, TikTok e Meta Ads aceitam sem recomprimir mal.
 
 ## Quando algo não sai como esperado

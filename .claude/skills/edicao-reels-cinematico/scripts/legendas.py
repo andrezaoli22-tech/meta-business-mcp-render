@@ -65,6 +65,19 @@ ESTILOS = {
                  "--tracking-destaque": "-0.05em", "--caixa-apoio": "none",
                  "--tracking-apoio": "-0.01em", "--peso-apoio": "500"},
         "config": {}},
+    "dourado": {
+        "desc": "Open Sans negrito compacta + ênfase em CAIXA ALTA dourada com brilho passando. Lockup encaixado e animado.",
+        "google": ["Open Sans:wght@600;700;800"],
+        "vars": {"--fonte-base": '"Open Sans", sans-serif', "--peso-base": "700",
+                 "--tracking-base": "-0.035em", "--caixa-base": "none",
+                 "--fonte-destaque": '"Open Sans", sans-serif', "--peso-destaque": "800",
+                 "--caixa-destaque": "uppercase", "--tracking-destaque": "-0.045em",
+                 "--caixa-apoio": "none", "--tracking-apoio": "-0.03em", "--peso-apoio": "700",
+                 "--grad-1": "#FFF4CF", "--grad-2": "#D49A1E",
+                 "--cor-brilho": "rgba(255, 196, 70, 0.70)"},
+        "config": {"tamanho_base": 0.056, "tamanho_destaque_max": 0.17, "lockup": "encaixe",
+                   "animacao": "subir", "brilho": 20, "gradiente": "ouro", "proporcao_apoio": 0.34,
+                   "desfoque": 6, "deriva": 0.04}},
     "luxo": {
         "desc": "Serifada clássica com tracking aberto. Moda, imobiliário, gastronomia premium.",
         "google": ["Cormorant Garamond:ital,wght@0,500;0,600;1,500", "Inter:wght@500"],
@@ -146,6 +159,8 @@ def agrupar(a):
                       "palavras": [{"texto": limpar_texto(p["texto"], a.manter_pontuacao),
                                     "inicio": p["inicio"], "fim": p["fim"],
                                     "destaque": p["destaque"], "i": p.get("i")} for p in g]})
+    if a.matte:
+        posicionar_por_matte(saida, ler_json(a.matte), a.profundidade)
     salvar_json({"duracao": dados["duracao"], "estilo": a.estilo, "config": {}, "grupos": saida},
                 a.saida)
     n_dest = sum(1 for g in saida for p in g["palavras"] if p["destaque"])
@@ -153,7 +168,43 @@ def agrupar(a):
     for g in saida[:400]:
         linha = " ".join(("**" + p["texto"].upper() + "**") if p["destaque"] else p["texto"]
                          for p in g["palavras"])
-        print(f"  {g['inicio']:7.2f}  {linha}")
+        extra = f"   [{g['profundidade']}, y={g['y']:.2f}]" if "profundidade" in g else ""
+        print(f"  {g['inicio']:7.2f}  {linha}{extra}")
+
+
+def posicionar_por_matte(grupos, matte, modo):
+    """Coloca cada lockup na altura da cabeça e alterna atrás/na frente da pessoa.
+
+    atrás:   a palavra grande cruza o topo da cabeça (a pessoa cobre parte das letras)
+    frente:  o lockup fica na altura do peito, por cima da pessoa
+    Sem pessoa no quadro (B-roll), o lockup fica na frente, um pouco acima do centro.
+    """
+    qs = matte["quadros"]
+    fps = matte["fps"]
+
+    def quadro(t):
+        k = min(len(qs) - 1, max(0, int(round(t * fps))))
+        return qs[k]
+
+    alterna = 0
+    for g in grupos:
+        if not any(p["destaque"] for p in g["palavras"]):
+            continue
+        # amostra alguns instantes do grupo: a pessoa precisa estar lá o tempo todo
+        ts = [g["inicio"] + (g["fim"] - g["inicio"]) * f for f in (0.1, 0.5, 0.9)]
+        amostras = [quadro(t) for t in ts]
+        validas = [q for q in amostras if q.get("pessoa") and q.get("area", 0) > 0.05]
+        presente = len(validas) >= 2       # tolera um corte no meio do grupo
+        if presente:
+            topo = sum(q["topo"] for q in validas) / len(validas)
+            cx = sum(q["cx"] for q in validas) / len(validas)
+            if modo == "atras" or (modo == "alternar" and alterna % 2 == 0 and topo > 0.10):
+                g["profundidade"], g["y"], g["x"] = "atras", max(0.16, topo + 0.035), cx
+            else:
+                g["profundidade"], g["y"], g["x"] = "frente", min(0.70, max(0.40, topo + 0.30)), 0.5
+            alterna += 1
+        else:
+            g["profundidade"], g["y"], g["x"] = "frente", 0.42, 0.5
 
 
 def limpar_texto(t, manter):
@@ -285,9 +336,41 @@ const {{ chromium }} = require('playwright');
                 print(png)
         return
 
-    subprocess.run(["node", os.path.join(AQUI, "render_html.cjs"), "--html", arq_html,
-                    "--saida", a.saida, "--largura", str(a.largura), "--altura", str(a.altura),
-                    "--fps", str(a.fps), "--duracao", str(dados["duracao"])], check=True)
+    tem_atras = any(g.get("profundidade") == "atras" for g in dados["grupos"])
+    camadas = [("frente", a.saida)]
+    if tem_atras:
+        camadas.append(("atras", os.path.splitext(a.saida)[0] + "_atras" + os.path.splitext(a.saida)[1]))
+    for camada, destino in camadas:
+        html_c = montar_html(dados, estilo, extra_vars, {**extra_cfg, "camada": camada if tem_atras else "todas"})
+        arq_c = os.path.join(pasta, f"legendas_{camada}.html")
+        with open(arq_c, "w", encoding="utf-8") as f:
+            f.write(html_c)
+        subprocess.run(["node", os.path.join(AQUI, "render_html.cjs"), "--html", arq_c,
+                        "--saida", destino, "--largura", str(a.largura), "--altura", str(a.altura),
+                        "--fps", str(a.fps), "--duracao", str(dados["duracao"]),
+                        "--escala", str(a.escala)], check=True)
+    if tem_atras:
+        print(f"Camada atrás da pessoa: {camadas[1][1]} (use com montar.py --legendas-atras e --matte)")
+
+
+def sfx(a):
+    """Gera sfx.json com efeitos só nas ênfases: brilho ao entrar e, nos lockups longos, ao sair."""
+    dados = ler_json(a.legendas)
+    pasta_sfx = os.path.join(ASSETS, "sfx")
+    lista = []
+    antecip = 0.04
+    for g in dados["grupos"]:
+        dest = [p for p in g["palavras"] if p["destaque"]]
+        if not dest:
+            continue
+        t_ent = dest[0]["inicio"] - antecip
+        lista.append({"arquivo": os.path.join(pasta_sfx, a.entrada), "em": round(max(0, t_ent - 0.03), 3),
+                      "db": a.db})
+        if a.saida_sfx and g["fim"] - t_ent > 1.2:
+            lista.append({"arquivo": os.path.join(pasta_sfx, a.saida_sfx),
+                          "em": round(g["fim"] - 0.28, 3), "db": a.db - 5})
+    salvar_json(lista, a.saida)
+    print(f"{len(lista)} efeitos → {a.saida}")
 
 
 def main():
@@ -304,6 +387,8 @@ def main():
     g.add_argument("--destaques-idx", default="")
     g.add_argument("--estilo", default="editorial")
     g.add_argument("--manter-pontuacao", action="store_true")
+    g.add_argument("--matte", default="", help="matte.json do recortar.py: posiciona lockups pela cabeça")
+    g.add_argument("--profundidade", choices=["alternar", "atras", "frente"], default="alternar")
     r = sub.add_parser("render")
     r.add_argument("legendas")
     r.add_argument("--saida", default="legendas.mov")
@@ -321,12 +406,22 @@ def main():
     r.add_argument("--fps", type=float, default=30)
     r.add_argument("--previa", default="")
     r.add_argument("--fundo-video", default="")
+    r.add_argument("--escala", type=float, default=1.0,
+                   help="multiplica a resolução da saída (2 = 4K a partir do layout 1080x1920)")
+    x = sub.add_parser("sfx")
+    x.add_argument("legendas")
+    x.add_argument("--saida", default="sfx_legendas.json")
+    x.add_argument("--entrada", default="brilho_entra.wav")
+    x.add_argument("--saida-sfx", default="brilho_sai.wav")
+    x.add_argument("--db", type=float, default=-16)
     sub.add_parser("estilos")
     a = ap.parse_args()
     if a.cmd == "agrupar":
         agrupar(a)
     elif a.cmd == "render":
         render(a)
+    elif a.cmd == "sfx":
+        sfx(a)
     else:
         for n, e in ESTILOS.items():
             print(f"{n:10} {e['desc']}")

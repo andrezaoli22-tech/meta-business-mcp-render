@@ -20,7 +20,20 @@
   --tracking-apoio: 0.14em;
   --peso-apoio: 600;
   --sombra: 0 2px 22px rgba(0,0,0,.38), 0 1px 3px rgba(0,0,0,.35);
+  --grad-1: var(--cor-destaque);
+  --grad-2: var(--cor-destaque);
+  --cor-brilho: transparent;
+  --opacidade-apoio: 1;
 }
+.gradiente .destaque .grande { background: linear-gradient(180deg, var(--grad-1) 10%, var(--grad-2) 95%);
+             -webkit-background-clip: text; background-clip: text; color: transparent;
+             text-shadow: none; padding: 0 0.04em; }
+.ouro .destaque .grande { background-image: linear-gradient(100deg, #B9811A 0%, #E8B33A 22%, #FFF6D6 42%, #F6CF63 55%, #C8901C 78%, #9C6A12 100%);
+             background-size: 260% 100%; -webkit-background-clip: text; background-clip: text;
+             color: transparent; text-shadow: none; padding: 0 0.05em; }
+.encaixe { text-align: left; }
+.encaixe .linha { display: block; }
+.encaixe .apoio .p { opacity: var(--opacidade-apoio); }
 html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
 body { width: 100vw; height: 100vh; position: relative; -webkit-font-smoothing: antialiased; }
 .grupo { position: absolute; left: 0; right: 0; display: none; text-align: center; }
@@ -57,6 +70,8 @@ window.DADOS = /*__DADOS__*/null;
     modo: "revelar"           // "revelar" (palavra por palavra) | "grupo" (grupo inteiro)
   }, D.config || {});
   window.DURACAO = D.duracao;
+  if (cfg.gradiente === 'ouro') document.body.classList.add('ouro');
+  else if (cfg.gradiente) document.body.classList.add('gradiente');
 
   const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out
   const easeIn = x => x * x * x;
@@ -64,6 +79,8 @@ window.DADOS = /*__DADOS__*/null;
   const base = cfg.tamanho_base * W;
   const larguraMax = cfg.largura_max * W;
 
+  // largura real do texto (um div .linha é bloco: o retângulo dele ocupa a tela toda)
+  function larg(el) { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; }
   function span(txt, cls) {
     const s = document.createElement('span');
     s.className = 'p ' + (cls || ''); s.textContent = txt; return s;
@@ -89,7 +106,7 @@ window.DADOS = /*__DADOS__*/null;
       });
       el.appendChild(linha);
       document.body.appendChild(el); el.style.display = 'block';
-      const w = linha.getBoundingClientRect().width;
+      const w = larg(linha);
       if (w > larguraMax) linha.style.fontSize = (base * larguraMax / w) + 'px';
     } else {
       // Lockup editorial: palavra destacada grande; as de apoio, pequenas,
@@ -115,13 +132,28 @@ window.DADOS = /*__DADOS__*/null;
 
       let tam = cfg.tamanho_destaque_max * W;
       grande.style.fontSize = tam + 'px';
-      let wg = grande.getBoundingClientRect().width;
+      let wg = larg(grande);
       if (wg > larguraMax) { tam *= larguraMax / wg; grande.style.fontSize = tam + 'px'; wg = larguraMax; }
       grande.style.lineHeight = '0.9';
+      if (cfg.lockup === 'encaixe') {
+        // Lockup compacto: apoio pequeno e leve, colado na palavra grande —
+        // o que vem antes fica acima, alinhado à esquerda; o que vem depois, abaixo, à direita.
+        el.classList.add('encaixe');
+        el.style.left = 'auto'; el.style.right = 'auto';
+        el.style.width = wg + 'px';
+        const fa = tam * (cfg.proporcao_apoio || 0.30);
+        if (lA) { lA.style.fontSize = fa + 'px'; lA.style.textAlign = 'left';
+                  lA.style.margin = `0 0 ${-tam * 0.10}px ${tam * 0.03}px`; lA.style.position = 'relative'; lA.style.zIndex = 2; }
+        if (lD) { lD.style.fontSize = fa + 'px'; lD.style.textAlign = 'right';
+                  lD.style.margin = `${-tam * 0.06}px ${tam * 0.03}px 0 0`; lD.style.position = 'relative'; lD.style.zIndex = 2; }
+        [lA, lD].forEach(l => { if (!l) return;
+          const w = larg(l);
+          if (w > wg * 1.15) l.style.fontSize = (fa * wg * 1.15 / w) + 'px'; });
+      } else
       [lA, lD].forEach(l => {
         if (!l) return;
         l.style.fontSize = '100px';
-        const w0 = l.getBoundingClientRect().width;
+        const w0 = larg(l);
         // apoio ocupa a largura exata da palavra grande, dentro de limites legíveis
         let f = 100 * wg / w0;
         f = clamp(f, tam * 0.16, tam * 0.36);
@@ -134,8 +166,15 @@ window.DADOS = /*__DADOS__*/null;
     const ini0 = Math.min(...g.palavras.map(p => p.inicio));
     const zona = (cfg.zonas || []).find(z => ini0 < z.ate && g.fim > z.de);
     if (zona && zona.ocultar) g.oculto = true;
-    const py = zona && zona.posicao_y != null ? zona.posicao_y : cfg.posicao_y;
+    let py = zona && zona.posicao_y != null ? zona.posicao_y : cfg.posicao_y;
+    if (g.y != null) py = g.y;
     el.style.top = (py * H - h / 2) + 'px';
+    if (el.classList.contains('encaixe')) {
+      const wEl = el.getBoundingClientRect().width;
+      const px = g.x != null ? g.x : 0.5;
+      el.style.left = Math.min(W - wEl - W * 0.06, Math.max(W * 0.06, px * W - wEl / 2)) + 'px';
+    }
+    if (cfg.camada && cfg.camada !== 'todas' && (g.profundidade || 'frente') !== cfg.camada) g.oculto = true;
     el.style.display = 'none';
     const inicio = Math.min(...g.palavras.map(p => p.inicio)) - cfg.antecipacao;
     return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto };
@@ -158,8 +197,32 @@ window.DADOS = /*__DADOS__*/null;
         const x = clamp((t - ini) / d, 0, 1), e = ease(x);
         let op = e * (1 - fora);
         let blur = (1 - e) * cfg.desfoque + fora * cfg.desfoque * 0.6;
-        let ty = 0, sc = 1, ls = null;
+        let ty = 0, sc = 1, ls = null, sat = null, tx = 0;
         const desl = cfg.deslocamento * H;
+        if (cfg.animacao === 'subir' && g.destaque) {
+          // entra subindo e ganhando foco e cor; cresce devagar enquanto está na tela
+          const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
+          const deriva = 1 + (cfg.deriva || 0.035) * vida;
+          if (it.papel === 'grande') {
+            ty = desl * 2.2 * (1 - e); sc = (1.04 - 0.04 * e) * deriva; sat = e;
+            blur = (1 - e) * cfg.desfoque * 2 + fora * cfg.desfoque * 1.4;
+          } else {
+            tx = (it.papel === 'acima' ? -1 : 1) * W * 0.02 * (1 - e);
+            ty = desl * 0.4 * (1 - e); sc = deriva;
+          }
+          ty -= fora * desl * 0.8;
+          it.el.style.opacity = op.toFixed(4);
+          const brilho = it.papel === 'grande' && cfg.brilho ? ` drop-shadow(0 0 ${cfg.brilho}px var(--cor-brilho))` : '';
+          const f = (blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '') + (sat !== null && sat < 0.999 ? ` saturate(${sat.toFixed(3)})` : '') + brilho;
+          it.el.style.filter = f.trim() || 'none';
+          it.el.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+          if (it.papel === 'grande' && cfg.gradiente === 'ouro') {
+            // reflexo de luz atravessando a palavra logo depois da entrada
+            const r = clamp((t - ini - 0.10) / 0.85, 0, 1);
+            it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+          }
+          return;
+        }
         if (it.papel === 'grande') {
           sc = 1.10 - 0.10 * e;
           ls = (0.05 * (1 - e)).toFixed(4);

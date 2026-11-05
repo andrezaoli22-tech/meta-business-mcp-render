@@ -32,7 +32,8 @@ function args() {
   const transparente = !a.fundo || a.fundo === 'transparente';
 
   const browser = await chromium.launch({ args: ['--font-render-hinting=none', '--disable-lcd-text', '--allow-file-access-from-files'] });
-  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+  const ESC = +(a.escala || 1);
+  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: ESC });
   page.on('pageerror', e => console.error('erro na página:', e.message));
   await page.goto('file://' + path.resolve(a.html), { waitUntil: 'load' });
   await page.evaluate(() => document.fonts && document.fonts.ready);

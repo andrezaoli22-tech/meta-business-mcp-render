@@ -213,7 +213,15 @@ def posicionar_por_matte(grupos, matte, modo, comecar="atras"):
                 g["profundidade"], g["y"], g["x"] = "frente", min(0.72, max(0.50, topo + 0.32)), 0.5
             alterna += 1
         else:
-            g["profundidade"], g["y"], g["x"] = "frente", 0.42, 0.5
+            # sem pessoa grande no quadro; se houver alguém pequeno (plano aberto), o texto vai
+            # para cima da cabeça dele em vez de cair sobre o rosto
+            pequenas = [q for q in amostras if q.get("pessoa")]
+            y = 0.42
+            if pequenas:
+                topo = min(q["topo"] for q in pequenas)
+                if 0.30 < topo < 0.62:
+                    y = max(0.18, topo - 0.08)
+            g["profundidade"], g["y"], g["x"] = "frente", y, 0.5
 
 
 def limpar_texto(t, manter):

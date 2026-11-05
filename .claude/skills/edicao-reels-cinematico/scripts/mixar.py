@@ -129,6 +129,8 @@ def main():
              "alimiter=limit=0.95:attack=3:release=60[pre]")
     if a.manter_nivel:
         g[-1] = "".join(mix) + f"amix=inputs={len(mix)}:normalize=0:dropout_transition=0[pre]"
+        # 24 bits: testado contra ponto flutuante, é o que chega mais perto do nível original
+        # depois da codificação AAC final (o AAC lida pior com amostras acima de 0 dBFS)
         rodar(["ffmpeg", "-y", "-hide_banner", *entradas, "-filter_complex", ";".join(g),
                "-map", "[pre]", "-t", f"{dur:.3f}", "-c:a", "pcm_s24le", a.saida])
         print(f"OK → {a.saida}  ({dur:.2f}s, nível original mantido)")

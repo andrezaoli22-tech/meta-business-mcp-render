@@ -6,7 +6,7 @@ compatibility: ffmpeg/ffprobe, Python 3 (faster-whisper, numpy, scipy, onnxrunti
 
 # Megha Veículos — legendas no formato da referência
 
-Skill independente: tem cópia própria de todos os scripts (não depende nem altera a skill `edicao-reels-cinematico`). O formato foi tirado de um vídeo de referência de loja de seminovos e adaptado à cor da Megha: **vermelho sólido #C8281C, sem degradê**. Leia `references/formato.md` antes de montar as legendas: ele descreve cada elemento da referência e quando usar cada animação.
+Skill independente: tem cópia própria de todos os scripts (não depende nem altera a skill `edicao-reels-cinematico`). O formato foi tirado de um vídeo de referência de loja de seminovos e adaptado à cor da Megha: **vermelho sólido #C8281C com brilho, sem degradê**. Leia `references/formato.md` antes de montar as legendas: ele descreve cada elemento da referência e quando usar cada animação.
 
 Scripts em `scripts/` (rode com `python3 <skill>/scripts/X.py`; cada um tem `--help`).
 

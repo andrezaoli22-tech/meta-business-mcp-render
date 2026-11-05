@@ -45,17 +45,17 @@ ESTILOS = {
         "google": ["Poppins:ital,wght@0,500;0,600;0,700;0,800;0,900;1,300;1,400",
                    "Montserrat Alternates:wght@300;400;500"],
         "vars": {"--fonte-base": '"Montserrat Alternates", "Poppins", sans-serif', "--peso-base": "300",
-                 "--tracking-base": "-0.015em", "--caixa-base": "none",
+                 "--tracking-base": "-0.055em", "--caixa-base": "none",
                  "--fonte-destaque": '"Poppins", sans-serif', "--peso-destaque": "900",
                  "--caixa-destaque": "uppercase", "--tracking-destaque": "-0.02em",
                  "--fonte-apoio": '"Poppins", sans-serif',
-                 "--caixa-apoio": "uppercase", "--tracking-apoio": "-0.01em", "--peso-apoio": "600",
+                 "--caixa-apoio": "uppercase", "--tracking-apoio": "-0.035em", "--peso-apoio": "600",
                  "--fonte-conector": '"Poppins", sans-serif',
                  "--cor-destaque": "#C8281C",          # vermelho sólido da marca (sem degradê)
-                 "--cor-brilho": "rgba(200, 40, 28, 0.0)",
+                 "--cor-brilho": "rgba(235, 40, 25, 0.75)",   # brilho só na ênfase (cor sólida, sem degradê)
                  "--sombra": "0 2px 16px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4)"},
         "config": {"tamanho_base": 0.058, "tamanho_destaque_max": 0.21, "lockup": "empilhado",
-                   "animacao": "espalhar", "gradiente": "vermelho", "brilho": 0, "modo": "crescer",
+                   "animacao": "espalhar", "gradiente": "vermelho", "brilho": 20, "modo": "crescer",
                    "traco": False, "desfoque": 7, "deriva": 0.02, "posicao_y": 0.58}},
     "editorial": {
         "desc": "Sans limpa nas frases + serifada itálica no destaque. Sofisticado, de revista.",

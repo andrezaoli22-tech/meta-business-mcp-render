@@ -17,7 +17,8 @@ A referência é um reels de loja de seminovos (apresentadora + planos de carros
 ```
 - A linha de cima ocupa quase a largura da palavra grande; tudo centralizado (`lockup: "empilhado"`).
 - **Conector** em vez de linha de cima quando a frase começa com ligação curta: "pensando em", "e não", "e tem" — Poppins Light Itálico, minúsculas (`"conector": true`).
-- Vermelho **sólido, sem degradê e sem brilho**: #C8281C (tirado da peça de marca "Condições Especiais"), com sombra escura suave só para leitura.
+- Vermelho **sólido, sem degradê**: #C8281C (tirado da peça de marca "Condições Especiais"), **com brilho vermelho em volta** só na palavra de ênfase.
+- Letras **juntas** em tudo: frase comum com tracking -0,055em, linhas em caixa alta -0,035em. Nada de espaçamento aberto.
 - Frequência: uma ênfase por frase forte (a cada 3–6 s).
 
 ## 3. Animações da ênfase (uma diferente para cada ênfase do vídeo)

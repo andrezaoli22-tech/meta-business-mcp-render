@@ -4,12 +4,16 @@
 Uso:
   python gerar_sfx.py [--saida assets/sfx]
 
-Gera:
-  brilho_entra.wav  - cintilar ascendente com sino suave: texto dourado/brilhante aparecendo
-  brilho_sai.wav    - cintilar descendente e curto: brilho se apagando
-  deslize.wav       - sopro de ar suave: texto deslizando para dentro
-  whoosh.wav        - passagem rápida: transições e cortes com movimento
-  impacto.wav       - grave com cauda: entrada de título/número
+Gera (um som por tipo de animação de ênfase, para não repetir efeito no mesmo vídeo):
+  impacto.wav        - transiente + grave: ênfase "impacto"
+  tecla_1..3.wav     - teclas mecânicas: ênfase "digitar" (uma por letra, variando)
+  passagem.wav       - whoosh estéreo com doppler: ênfase "deslize"
+  virada.wav         - ar + placa assentando: ênfase "flip"
+  lamina.wav         - varredura metálica com anel: ênfase "mascara"
+  cascata.wav        - dedilhado ascendente: ênfase "letras"
+  subida_tonal.wav   - tensão que resolve em acorde: ênfase "abrir"
+  corte_metalico.wav - raspadas que se encontram num golpe: ênfase "partir"
+  inspiracao.wav     - sopro reverso: ênfase "subir"
 São discretos de propósito: ficam por baixo da voz e da trilha (use -14 a -22 dB).
 """
 import argparse
@@ -106,40 +110,107 @@ def main():
     a = ap.parse_args()
     os.makedirs(a.saida, exist_ok=True)
 
-    # brilho entrando: cintilar que sobe + sopro de ar + sino leve no ataque
-    d = 0.9
-    c = cintilar(d, True, 85)
-    s = np.zeros(int(d * SR)); b = sino(0.8) * 0.22; s[int(0.06 * SR):int(0.06 * SR) + len(b)] += b[:len(s) - int(0.06 * SR)]
-    x = c * 0.9 + ar(d, 0.22, 4000) * 0.12 + s
-    salvar(normal(reverb(x, 1.4, 0.4)), os.path.join(a.saida, "brilho_entra.wav"))
+    # ---- efeitos de ênfase: um por tipo de animação, para nunca repetir no mesmo vídeo
+    def env(n, a, d):
+        tt = np.arange(n) / SR
+        return np.minimum(1, tt / max(a, 1e-4)) * np.exp(-np.maximum(0, tt - a) * d)
 
-    # brilho saindo: cintilar descendente, mais curto e mais suave
-    d = 0.6
-    x = cintilar(d, False, 55, 2000, 7000) * 0.8 + ar(d, 0.03, 5000) * 0.06
-    salvar(normal(reverb(x, 1.1, 0.4), 0.75), os.path.join(a.saida, "brilho_sai.wav"))
+    def pan(x, de, ate):
+        p_ = np.linspace(de, ate, len(x))
+        return np.stack([x * np.cos((p_ + 1) * np.pi / 4), x * np.sin((p_ + 1) * np.pi / 4)], 1)
 
-    # deslize: sopro de ar filtrado com envelope em sino
-    d = 0.45
-    n = int(d * SR); tt = np.arange(n) / SR
-    x = bp(rng.standard_normal(n), 900, 6000) * np.sin(np.pi * tt / d) ** 2.2
-    salvar(normal(reverb(x, 0.8, 0.25), 0.8), os.path.join(a.saida, "deslize.wav"))
+    # impacto: transiente seco + corpo grave com queda de afinação + cauda sub + ar curto
+    d = 1.6; n = int(d * SR); tt = np.arange(n) / SR
+    clique = bp(rng.standard_normal(n), 2500, 9000) * np.exp(-tt * 380)
+    corpo = np.sin(2 * np.pi * np.cumsum(46 + 110 * np.exp(-tt * 22)) / SR) * np.exp(-tt * 5.5)
+    sub = np.sin(2 * np.pi * 38 * tt) * np.exp(-tt * 2.2) * 0.35 * (1 - np.exp(-tt * 60))
+    ar_ = lp(rng.standard_normal(n), 1800) * np.exp(-tt * 18) * 0.35
+    x = np.tanh((clique * 0.9 + corpo * 1.2 + sub + ar_) * 1.3)
+    salvar(normal(reverb(x, 1.2, 0.18)), os.path.join(a.saida, "impacto.wav"))
 
-    # whoosh: varredura de banda com ruído
-    d = 0.7
-    n = int(d * SR); tt = np.arange(n) / SR; x = np.zeros(n); r = rng.standard_normal(n)
+    # teclas: três variações de tecla mecânica (clique agudo + "toc" de corpo)
+    for k, (f, g) in enumerate([(820, 1.0), (700, 0.9), (930, 0.95)], 1):
+        d = 0.12; n = int(d * SR); tt = np.arange(n) / SR
+        clq = bp(rng.standard_normal(n), 3000, 9000) * np.exp(-tt * 900)
+        toc = (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 2.3 * tt)) * np.exp(-tt * 140)
+        ruido = bp(rng.standard_normal(n), 400, 2500) * np.exp(-tt * 90) * 0.5
+        x = (clq * 0.8 + toc * 0.5 + ruido) * g
+        salvar(normal(reverb(x, 0.25, 0.12), 0.8), os.path.join(a.saida, f"tecla_{k}.wav"))
+
+    # passagem: whoosh que cruza da esquerda para a direita com efeito doppler
+    d = 0.8; n = int(d * SR); tt = np.arange(n) / SR; r = rng.standard_normal(n); x = np.zeros(n)
+    for k in range(24):
+        i0, i1 = int(k * n / 24), int((k + 1) * n / 24)
+        fc = 500 + 3800 * np.exp(-((k / 23 - 0.5) ** 2) / 0.05)
+        x[i0:i1] = bp(r, fc * 0.55, min(fc * 1.7, 20000))[i0:i1]
+    tom = np.sin(2 * np.pi * np.cumsum(180 + 120 * np.tanh((0.5 - tt / d) * 6)) / SR) * 0.15
+    x = (x + tom) * np.exp(-((tt / d - 0.5) ** 2) / 0.03)
+    st = pan(x, -0.9, 0.9)
+    salvar(st / np.abs(st).max() * 0.89, os.path.join(a.saida, "passagem.wav"))
+
+    # virada: abano de ar curto + batida macia de placa assentando
+    d = 0.6; n = int(d * SR); tt = np.arange(n) / SR
+    abano = bp(rng.standard_normal(n), 900, 4000) * np.exp(-((tt - 0.10) ** 2) / 0.0015) * 0.6
+    i = int(0.20 * SR); tb = tt[:n - i]
+    batida = np.zeros(n)
+    batida[i:] = (np.sin(2 * np.pi * np.cumsum(140 + 120 * np.exp(-tb * 40)) / SR) * np.exp(-tb * 28)
+                  + lp(rng.standard_normal(n - i), 3000) * np.exp(-tb * 60) * 0.3)
+    salvar(normal(reverb(abano + batida, 0.6, 0.2), 0.85), os.path.join(a.saida, "virada.wav"))
+
+    # lâmina: varredura metálica rápida que termina num anel brilhante
+    d = 1.3; n = int(d * SR); tt = np.arange(n) / SR; r = rng.standard_normal(n); sw = np.zeros(n)
     for k in range(16):
-        i0, i1 = int(k * n / 16), int((k + 1) * n / 16)
-        fc = 400 + 3500 * np.sin(np.pi * k / 15)
-        x[i0:i1] = bp(r, fc * 0.6, fc * 1.5)[i0:i1]
-    x *= np.sin(np.pi * np.clip(tt / d, 0, 1)) ** 2.5
-    salvar(normal(x), os.path.join(a.saida, "whoosh.wav"))
+        i0, i1 = int(k * 0.30 * SR / 16), int((k + 1) * 0.30 * SR / 16)
+        fc = 1200 * (6 ** (k / 15))
+        sw[i0:i1] = bp(r, fc * 0.7, min(fc * 1.5, 20000))[i0:i1] * (k / 15) ** 1.5
+    i = int(0.28 * SR); tb = tt[:n - i]
+    anel = np.zeros(n)
+    anel[i:] = sum(np.sin(2 * np.pi * f * tb) * a_ * np.exp(-tb * dcy)
+                   for f, a_, dcy in [(2093, 1, 5), (3322, .6, 6.5), (5274, .4, 8), (7459, .25, 11)])
+    salvar(normal(reverb(sw * 0.5 + anel * 0.35, 1.0, 0.3)), os.path.join(a.saida, "lamina.wav"))
 
-    # impacto: boom grave com ruído e cauda
-    d = 2.5
-    tt = np.arange(int(d * SR)) / SR
-    boom = np.sin(2 * np.pi * np.cumsum(32 + 90 * np.exp(-tt * 9)) / SR) * np.exp(-tt * 1.8)
-    x = np.tanh(boom * 1.4 + lp(rng.standard_normal(len(tt)), 2500) * np.exp(-tt * 6) * 0.4)
-    salvar(normal(reverb(x, 2.0, 0.35)), os.path.join(a.saida, "impacto.wav"))
+    # cascata: dedilhado rápido ascendente (cordas sintetizadas por Karplus-Strong)
+    def corda(f, d=0.9):
+        n = int(d * SR); per = int(SR / f)
+        buf = rng.uniform(-1, 1, per); out = np.zeros(n)
+        for k in range(n):
+            out[k] = buf[k % per]
+            buf[k % per] = 0.5 * (buf[k % per] + buf[(k + 1) % per]) * 0.996
+        return out
+    notas = [293.7, 349.2, 392.0, 440.0, 523.3, 587.3, 698.5]
+    x = np.zeros(int(1.4 * SR))
+    for k, f in enumerate(notas):
+        c = corda(f) * (0.6 + 0.4 * k / 6)
+        i = int(k * 0.055 * SR); x[i:i + len(c)] += c[:len(x) - i]
+    salvar(normal(reverb(hp(x, 150), 1.2, 0.3)), os.path.join(a.saida, "cascata.wav"))
+
+    # subida tonal: tensão que sobe e resolve num acorde limpo
+    d = 1.8; n = int(d * SR); tt = np.arange(n) / SR
+    sobe = np.where(tt < 0.7, 1, 0) * (tt / 0.7) ** 2.5
+    f = 220 * 2 ** (np.minimum(tt, 0.7) / 0.7)
+    tom = np.sin(2 * np.pi * np.cumsum(f) / SR) * sobe * 0.5 + hp(rng.standard_normal(n), 3000) * sobe * 0.15
+    tr = np.maximum(0, tt - 0.7)
+    acorde = sum(np.sin(2 * np.pi * fr * tr) * (0.6 ** k) for k, fr in enumerate([440, 554.4, 659.3, 880])) \
+        * np.where(tt >= 0.7, 1, 0) * np.exp(-tr * 3) * (1 - np.exp(-tr * 200))
+    salvar(normal(reverb(tom + acorde * 0.5, 1.4, 0.35)), os.path.join(a.saida, "subida_tonal.wav"))
+
+    # corte metálico: duas raspadas de lados opostos que se encontram num golpe
+    d = 1.4; n = int(d * SR); tt = np.arange(n) / SR
+    rasp = lambda: bp(rng.standard_normal(n), 2500, 8000) * np.clip(tt / 0.42, 0, 1) ** 2 * (tt < 0.45)
+    esq, dir_ = pan(rasp(), -0.9, -0.2), pan(rasp(), 0.9, 0.2)
+    i = int(0.45 * SR); tb = tt[:n - i]; golpe = np.zeros(n)
+    golpe[i:] = (sum(np.sin(2 * np.pi * f * tb) * a_ * np.exp(-tb * dc)
+                     for f, a_, dc in [(1480, 1, 9), (2340, .7, 11), (3960, .5, 14)])
+                 + bp(rng.standard_normal(n - i), 1500, 9000) * np.exp(-tb * 70) * 1.2)
+    st = esq * 0.4 + dir_ * 0.4 + np.stack([golpe, golpe], 1) * 0.5
+    st = np.stack([reverb(st[:, 0], 0.9, 0.25)[:n], reverb(st[:, 1], 0.9, 0.25)[:n]], 1)
+    salvar(st / np.abs(st).max() * 0.89, os.path.join(a.saida, "corte_metalico.wav"))
+
+    # inspiração: sopro reverso que cresce e para seco (texto subindo)
+    d = 0.7; n = int(d * SR); tt = np.arange(n) / SR
+    x = hp(rng.standard_normal(n), 2500) * (tt / d) ** 3 * (tt < d * 0.95)
+    x = reverb(x, 0.5, 0.3)[:n]
+    salvar(normal(x, 0.8), os.path.join(a.saida, "inspiracao.wav"))
 
     print("OK →", a.saida, sorted(os.listdir(a.saida)))
 

@@ -370,22 +370,45 @@ const {{ chromium }} = require('playwright');
         print(f"Camada atrás da pessoa: {camadas[1][1]} (use com montar.py --legendas-atras e --matte)")
 
 
+# som de cada animação de ênfase: (arquivo, deslocamento em relação ao início da ênfase, ajuste de dB)
+# os deslocamentos alinham o ponto forte do som ao momento visual (batida, encontro, assentamento)
+SFX_ANIM = {
+    "impacto": ("impacto.wav", 0.22, -1),
+    "deslize": ("passagem.wav", -0.20, 0),
+    "flip": ("virada.wav", 0.20, 0),
+    "mascara": ("lamina.wav", 0.02, -3),
+    "letras": ("cascata.wav", 0.0, -2),
+    "abrir": ("subida_tonal.wav", 0.05, -3),
+    "partir": ("corte_metalico.wav", 0.05, -3),
+    "subir": ("inspiracao.wav", -0.32, -2),
+}
+
+
 def sfx(a):
-    """Gera sfx.json com efeitos só nas ênfases: brilho ao entrar e, nos lockups longos, ao sair."""
+    """Gera a lista de efeitos só das ênfases, cada uma com o som da sua animação."""
     dados = ler_json(a.legendas)
+    cfg = {**ESTILOS.get(dados.get("estilo", ""), {}).get("config", {}), **dados.get("config", {})}
+    antecip = cfg.get("antecipacao", 0.04)
     pasta_sfx = os.path.join(ASSETS, "sfx")
     lista = []
-    antecip = 0.04
     for g in dados["grupos"]:
         dest = [p for p in g["palavras"] if p["destaque"]]
         if not dest:
             continue
-        t_ent = dest[0]["inicio"] - antecip
-        lista.append({"arquivo": os.path.join(pasta_sfx, a.entrada), "em": round(max(0, t_ent - 0.03), 3),
-                      "db": a.db})
-        if a.saida_sfx and g["fim"] - t_ent > 1.2:
-            lista.append({"arquivo": os.path.join(pasta_sfx, a.saida_sfx),
-                          "em": round(g["fim"] - 0.28, 3), "db": a.db - 5})
+        anim = g.get("animacao") or cfg.get("animacao", "subir")
+        ini = dest[0]["inicio"] - antecip
+        if anim == "digitar":
+            # uma tecla por letra, no mesmo ritmo da animação (variações alternadas)
+            n = len(dest[0]["texto"])
+            livre = max(0.3, g["fim"] - ini)
+            passo = min(0.065, livre * 0.4 / n)
+            for i in range(n):
+                lista.append({"arquivo": os.path.join(pasta_sfx, f"tecla_{i % 3 + 1}.wav"),
+                              "em": round(max(0, ini + i * passo), 3), "db": a.db - 9})
+            continue
+        arq, desloc, ajuste = SFX_ANIM.get(anim, SFX_ANIM["subir"])
+        lista.append({"arquivo": os.path.join(pasta_sfx, arq), "em": round(max(0, ini + desloc), 3),
+                      "db": a.db + ajuste})
     salvar_json(lista, a.saida)
     print(f"{len(lista)} efeitos → {a.saida}")
 
@@ -428,8 +451,6 @@ def main():
     x = sub.add_parser("sfx")
     x.add_argument("legendas")
     x.add_argument("--saida", default="sfx_legendas.json")
-    x.add_argument("--entrada", default="brilho_entra.wav")
-    x.add_argument("--saida-sfx", default="brilho_sai.wav")
     x.add_argument("--db", type=float, default=-16)
     sub.add_parser("estilos")
     a = ap.parse_args()

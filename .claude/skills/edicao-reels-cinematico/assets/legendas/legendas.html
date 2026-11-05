@@ -102,6 +102,7 @@ window.DADOS = /*__DADOS__*/null;
   grupos = D.grupos.map((g, gi) => {
     const el = document.createElement('div');
     const idx = g.palavras.findIndex(p => p.destaque);
+    const anim = g.animacao || cfg.animacao, lock = g.lockup || cfg.lockup;
     const itens = [];
     if (idx < 0) {
       el.className = 'grupo normal';
@@ -135,7 +136,7 @@ window.DADOS = /*__DADOS__*/null;
       const sg = span(g.palavras[idx].texto, 'grande'); grande.appendChild(sg);
       const itG = { el: sg, p: g.palavras[idx], papel: 'grande' };
       itens.push(itG);
-      if (cfg.animacao === 'letras') {
+      if (anim === 'letras' || anim === 'digitar') {
         // cada letra vira um elemento; o degradê é contínuo porque cada letra recebe o
         // pedaço certo dele (posição calculada depois da medição)
         const txt = sg.textContent; sg.textContent = ''; sg.classList.add('letras');
@@ -143,7 +144,7 @@ window.DADOS = /*__DADOS__*/null;
           l.className = 'letra'; l.textContent = c === ' ' ? '\u00a0' : c; sg.appendChild(l); return l; });
       }
       const lD = depois.length ? mk(depois, 'abaixo') : null;
-      if (cfg.lockup === 'lateral') {
+      if (lock === 'lateral') {
         el.classList.add('lateral');
         const fila = document.createElement('div'); fila.className = 'fila';
         const col = document.createElement('div'); col.className = 'coluna';
@@ -160,7 +161,7 @@ window.DADOS = /*__DADOS__*/null;
       let wg = larg(grande);
       if (wg > larguraMax) { tam *= larguraMax / wg; grande.style.fontSize = tam + 'px'; wg = larguraMax; }
       grande.style.lineHeight = '0.9';
-      if (cfg.lockup === 'lateral') {
+      if (lock === 'lateral') {
         // apoio em coluna à esquerda da palavra grande, alinhado à direita e centrado na altura
         const fa = tam * (cfg.proporcao_apoio || 0.26);
         [lA, lD].forEach(l => { if (l) { l.style.fontSize = fa + 'px'; l.style.lineHeight = '1.05'; } });
@@ -176,7 +177,7 @@ window.DADOS = /*__DADOS__*/null;
         el.classList.add('encaixe');
         el.style.left = 'auto'; el.style.right = 'auto';
         el.style.width = Math.min(W * 0.94, (col ? col.getBoundingClientRect().width + tam * 0.10 : 0) + larg(grande) + 4) + 'px';
-      } else if (cfg.lockup === 'encaixe') {
+      } else if (lock === 'encaixe') {
         // Lockup compacto: apoio pequeno e leve, colado na palavra grande —
         // o que vem antes fica acima, alinhado à esquerda; o que vem depois, abaixo, à direita.
         el.classList.add('encaixe');
@@ -201,7 +202,7 @@ window.DADOS = /*__DADOS__*/null;
         l.style.fontSize = f + 'px';
         l.style.margin = (l === lA ? `0 0 ${tam * 0.06}px` : `${tam * 0.08}px 0 0`);
       });
-      if (cfg.lockup !== 'encaixe' && cfg.lockup !== 'lateral') {
+      if (lock !== 'encaixe' && lock !== 'lateral') {
         // empilhado e centralizado; vira posicionável pela largura do conteúdo
         const wmax = Math.max(wg, ...[lA, lD].filter(Boolean).map(larg));
         el.classList.add('encaixe'); el.style.textAlign = 'center';
@@ -217,7 +218,23 @@ window.DADOS = /*__DADOS__*/null;
         itG2.ww = ww;
         itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
       }
-      if (cfg.animacao === 'mascara') {
+      if (anim === 'partir') {
+        // segunda cópia da palavra: metade de cima e metade de baixo entram de lados opostos
+        itG2.el.parentNode.style.position = 'relative';
+        const c = itG2.el.cloneNode(true);
+        c.style.position = 'absolute'; c.style.left = itG2.el.offsetLeft + 'px'; c.style.top = itG2.el.offsetTop + 'px';
+        c.style.opacity = 0;
+        itG2.el.parentNode.appendChild(c); itG2.clone = c;
+      }
+      if (anim === 'digitar') {
+        const cur = document.createElement('span');
+        cur.style.cssText = 'position:absolute;width:0.07em;height:0.78em;border-radius:2px;background:#F6CF63;box-shadow:0 0 14px rgba(255,196,70,.8)';
+        itG2.el.style.position = 'relative';
+        itG2.el.appendChild(cur); itG2.cursor = cur;
+        itG2.letras.forEach(l => { l._w = l.offsetWidth; });
+        cur.style.top = '0.12em';
+      }
+      if (anim === 'mascara') {
         // traço dourado sob a palavra (criado depois da medição para não alterar a largura)
         const tam2 = parseFloat(itG2.el.parentNode.style.fontSize);
         const tr = document.createElement('div'); tr.className = 'traco traco-ouro';
@@ -241,20 +258,40 @@ window.DADOS = /*__DADOS__*/null;
       const px = g.x != null ? g.x : 0.5;
       el.style.left = Math.min(W - wEl - W * 0.06, Math.max(W * 0.06, px * W - wEl / 2)) + 'px';
     }
-    // camadas: num grupo "atrás", só a palavra grande vai para trás da pessoa;
-    // as palavras de apoio continuam na frente, legíveis
+    // regra do rosto: nada pode ficar sobre o rosto.
+    //  - legenda pequena: desce para baixo do rosto (ou sobe acima dele se não couber);
+    //  - palavra de lockup que cruza o rosto: vai para trás da pessoa.
+    const prof = g.profundidade || 'frente';
+    itens.forEach(it => { it.atras = prof === 'atras' && it.papel === 'grande'; });
+    if (g.rosto) {
+      const F = { l: g.rosto.x0 * W, r: g.rosto.x1 * W, t: g.rosto.y0 * H, b: g.rosto.y1 * H };
+      const cruza = rc => rc.right > F.l && rc.left < F.r && rc.bottom > F.t && rc.top < F.b;
+      if (idx < 0) {
+        const rc = el.getBoundingClientRect();
+        if (cruza(rc)) {
+          const hh = rc.height;
+          let novo = F.b + H * 0.025;
+          if (novo + hh > H * 0.80) novo = F.t - hh - H * 0.02;
+          if (novo < H * 0.12) itens.forEach(it => { it.atras = true; });
+          else el.style.top = novo + 'px';
+        }
+      } else {
+        itens.forEach(it => { if (cruza(it.el.getBoundingClientRect())) it.atras = true; });
+      }
+    }
+    // camadas: o que está "atrás" é desenhado na camada atrás da pessoa; o resto, na frente
     if (cfg.camada && cfg.camada !== 'todas') {
-      const prof = g.profundidade || 'frente';
+      const algumAtras = itens.some(it => it.atras);
       if (cfg.camada === 'atras') {
-        if (prof !== 'atras') g.oculto = true;
-        else itens.forEach(it => { if (it.papel !== 'grande') it.escondido = true; });
-      } else if (prof === 'atras') {
-        itens.forEach(it => { if (it.papel === 'grande') it.escondido = true; });
+        if (!algumAtras) g.oculto = true;
+        itens.forEach(it => { if (!it.atras) it.escondido = true; });
+      } else {
+        itens.forEach(it => { if (it.atras) it.escondido = true; });
       }
     }
     el.style.display = 'none';
     const inicio = Math.min(...g.palavras.map(p => p.inicio)) - cfg.antecipacao;
-    return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto };
+    return { el, itens, inicio, fim: g.fim, destaque: idx >= 0, oculto: !!g.oculto, anim };
   });
   // um grupo termina (com a saída já concluída) quando o próximo começa: nunca se sobrepõem
   grupos.forEach((g, k) => { const n = grupos[k + 1]; if (n && n.inicio < g.fim) g.fim = n.inicio; });
@@ -277,7 +314,7 @@ window.DADOS = /*__DADOS__*/null;
           linhaN.style.display = 'inline-block';
           linhaN.style.clipPath = `inset(-30% ${((1 - e0) * 100).toFixed(2)}% -30% ${(easeIn(sai) * 100).toFixed(2)}%)`;
           linhaN.style.transform = `translateX(${(-(1 - e0) * W * 0.03 + easeIn(sai) * W * 0.02).toFixed(2)}px)`;
-          g.itens.forEach(it => { it.el.style.opacity = 1; it.el.style.filter = 'none'; it.el.style.transform = 'none'; });
+          g.itens.forEach(it => { it.el.style.opacity = it.escondido ? 0 : 1; it.el.style.filter = 'none'; it.el.style.transform = 'none'; });
         } else {
           // karaokê: a frase aparece inteira; cada palavra acende quando é falada
           linhaN.style.opacity = (e0 * (1 - fora)).toFixed(4);
@@ -286,7 +323,7 @@ window.DADOS = /*__DADOS__*/null;
           linhaN.style.filter = fora > 0 ? `blur(${(fora * 5).toFixed(2)}px)` : 'none';
           g.itens.forEach(it => {
             const aceso = ease(clamp((t - (it.p.inicio - 0.03)) / 0.12, 0, 1));
-            it.el.style.opacity = (0.38 + 0.62 * aceso).toFixed(4);
+            it.el.style.opacity = it.escondido ? 0 : (0.38 + 0.62 * aceso).toFixed(4);
             it.el.style.transform = `translateY(${(-(aceso * (1 - clamp((t - it.p.inicio - 0.12) / 0.25, 0, 1))) * H * 0.004).toFixed(2)}px)`;
             it.el.style.filter = 'none';
           });
@@ -294,8 +331,8 @@ window.DADOS = /*__DADOS__*/null;
         continue;
       }
       g.itens.forEach((it, k) => {
-        if (it.escondido) { it.el.style.opacity = 0; return; }
-        if (g.destaque && (cfg.animacao === 'letras' || cfg.animacao === 'mascara')) {
+        if (it.escondido) { it.el.style.opacity = 0; if (it.clone) it.clone.style.opacity = 0; if (it.cursor) it.cursor.style.opacity = 0; return; }
+        if (g.destaque && g.anim && g.anim !== 'subir' && g.anim !== 'padrao') {
           animarEspecial(it, g, t, fora); return;
         }
         const ini = (cfg.modo === 'grupo' ? g.inicio + k * 0.035 : it.p.inicio - cfg.antecipacao);
@@ -305,7 +342,7 @@ window.DADOS = /*__DADOS__*/null;
         let blur = (1 - e) * cfg.desfoque + fora * cfg.desfoque * 0.6;
         let ty = 0, sc = 1, ls = null, sat = null, tx = 0;
         const desl = cfg.deslocamento * H;
-        if (cfg.animacao === 'subir' && g.destaque) {
+        if (g.anim === 'subir' && g.destaque) {
           // entra subindo e ganhando foco e cor; cresce devagar enquanto está na tela
           const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
           const deriva = 1 + (cfg.deriva || 0.035) * vida;
@@ -352,7 +389,8 @@ window.DADOS = /*__DADOS__*/null;
     if (it.papel !== 'grande') {
       // apoio: entra antes da ênfase com deslize curto; sai junto
       const e = ease(clamp((t - ini) / cfg.entrada, 0, 1));
-      const dx = cfg.animacao === 'mascara' ? -W * 0.025 : 0, dy = cfg.animacao === 'letras' ? desl * 0.8 : 0;
+      const dx = { mascara: -W * 0.025, deslize: -W * 0.04, partir: W * 0.02 }[g.anim] || 0;
+      const dy = { letras: desl * 0.8, flip: desl * 0.6, abrir: -desl * 0.5, impacto: 0 }[g.anim] || desl * 0.4;
       it.el.style.opacity = (e * (1 - fora)).toFixed(4);
       it.el.style.transform = `translate(${(dx * (1 - e)).toFixed(2)}px, ${(dy * (1 - e) - fora * desl * 0.5).toFixed(2)}px)`;
       it.el.style.filter = (1 - e) * 5 + fora * 5 > 0.05 ? `blur(${((1 - e) * 5 + fora * 5).toFixed(2)}px)` : 'none';
@@ -360,7 +398,87 @@ window.DADOS = /*__DADOS__*/null;
     }
     const vida = Math.max(0, t - g.inicio) / Math.max(0.5, g.fim - g.inicio);
     const deriva = 1 + (cfg.deriva || 0.03) * vida;
-    if (cfg.animacao === 'letras') {
+    const sweep = (atraso, dur) => {
+      const r = clamp((t - ini - atraso) / dur, 0, 1);
+      return `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
+    };
+    const saiG = easeIn(clamp((t - (g.fim - cfg.saida * 1.3)) / (cfg.saida * 1.3), 0, 1));
+    const fim = (op, tf, blur) => {
+      it.el.style.opacity = (op * (1 - saiG)).toFixed(4);
+      const b = blur + saiG * 10;
+      it.el.style.filter = ((b > 0.05 ? `blur(${b.toFixed(2)}px)` : '') + brilhoF(it)).trim() || 'none';
+      it.el.style.transform = tf;
+    };
+    if (g.anim === 'impacto') {
+      // bate na tela: vem grande e desfocada, encaixa com um tranco curto
+      const x = clamp((t - ini) / 0.26, 0, 1), e = ease(x);
+      const tremor = t > ini + 0.24 ? Math.exp(-(t - ini - 0.24) * 14) : 0;
+      const jx = Math.sin((t - ini) * 95) * W * 0.008 * tremor, jy = Math.cos((t - ini) * 80) * W * 0.006 * tremor;
+      it.el.style.backgroundPosition = sweep(0.32, 0.8);
+      fim(Math.min(1, x * 3), `translate(${jx.toFixed(2)}px, ${jy.toFixed(2)}px) scale(${((2.3 - 1.3 * e) * deriva).toFixed(4)})`, (1 - e) * 14);
+      return;
+    }
+    if (g.anim === 'deslize') {
+      // atravessa da esquerda com rastro de movimento e freia no lugar
+      const e = ease(clamp((t - ini) / 0.45, 0, 1));
+      it.el.style.transformOrigin = 'left center';
+      it.el.style.backgroundPosition = sweep(0.40, 0.8);
+      fim(Math.min(1, e * 2), `translateX(${(-(1 - e) * W * 0.45).toFixed(2)}px) scaleX(${(1 + 0.6 * (1 - e)).toFixed(4)}) scale(${deriva.toFixed(4)})`, (1 - e) * 18);
+      return;
+    }
+    if (g.anim === 'flip') {
+      // gira no eixo horizontal como uma placa virando
+      const e = ease(clamp((t - ini) / 0.5, 0, 1));
+      it.el.style.transformOrigin = 'center bottom';
+      it.el.style.backgroundPosition = sweep(0.42, 0.8);
+      fim(Math.min(1, e * 2.2), `perspective(${W}px) rotateX(${((1 - e) * 92).toFixed(2)}deg) scale(${deriva.toFixed(4)})`, (1 - e) * 4);
+      return;
+    }
+    if (g.anim === 'abrir') {
+      // espaçamento enorme que se fecha até a palavra ficar compacta
+      const e = 1 - Math.pow(1 - clamp((t - ini) / 0.75, 0, 1), 4);
+      const ls = 0.85 * (1 - e), fs = parseFloat(getComputedStyle(it.el).fontSize), n = it.p.texto.length;
+      it.el.style.letterSpacing = `calc(var(--tracking-destaque) + ${ls.toFixed(4)}em)`;
+      it.el.style.backgroundPosition = sweep(0.6, 0.8);
+      fim(Math.min(1, e * 1.6), `translateX(${(-(n - 1) * ls * fs / 2).toFixed(2)}px) scale(${deriva.toFixed(4)})`, (1 - e) * 8);
+      return;
+    }
+    if (g.anim === 'partir') {
+      // metade de cima vem da esquerda, metade de baixo da direita; encontram-se no centro
+      const e = ease(clamp((t - ini) / 0.5, 0, 1));
+      const d = (1 - e) * W * 0.3;
+      it.el.style.clipPath = 'inset(-40% -10% 50% -10%)';
+      it.clone.style.clipPath = 'inset(50% -10% -40% -10%)';
+      it.el.style.backgroundPosition = sweep(0.45, 0.8); it.clone.style.backgroundPosition = it.el.style.backgroundPosition;
+      fim(Math.min(1, e * 2), `translateX(${(-d).toFixed(2)}px) scale(${deriva.toFixed(4)})`, (1 - e) * 10);
+      it.clone.style.opacity = it.el.style.opacity; it.clone.style.filter = it.el.style.filter;
+      it.clone.style.transform = `translateX(${d.toFixed(2)}px) scale(${deriva.toFixed(4)})`;
+      return;
+    }
+    if (g.anim === 'digitar') {
+      // letra a letra, como digitada, com cursor dourado piscando
+      const n = it.letras.length, livre = Math.max(0.3, g.fim - ini);
+      const passo = Math.min(0.065, (livre * 0.4) / n);
+      let k = -1;
+      it.letras.forEach((l, i) => {
+        const ti = ini + i * passo, x = clamp((t - ti) / 0.07, 0, 1);
+        if (t >= ti) k = i;
+        l.style.opacity = t >= ti ? 1 : 0;
+        l.style.transform = `scale(${(1.25 - 0.25 * ease(x)).toFixed(4)})`;
+        l.style.filter = 'none';
+        l.style.backgroundPosition = `${((it.ww - it.ww * 2.6) * (1 - clamp((t - ini - n * passo) / 0.8, 0, 1)) - l._x).toFixed(2)}px 0`;
+      });
+      const fimDig = ini + n * passo;
+      const pisca = t < fimDig ? 1 : (Math.floor((t - fimDig) / 0.22) % 2 === 0 ? 1 : 0) * (t < fimDig + 0.9 ? 1 : 0);
+      if (it.cursor) {
+        const l = it.letras[Math.max(0, k)];
+        it.cursor.style.left = (k < 0 ? 0 : l._x + l._w + 2) + 'px';
+        it.cursor.style.opacity = t >= ini ? pisca : 0;
+      }
+      fim(1, `scale(${deriva.toFixed(4)})`, 0);
+      return;
+    }
+    if (g.anim === 'letras') {
       // onda de letras: cada uma sobe, gira levemente e ganha foco, em cascata
       // a cascata se ajusta ao tempo disponível: em grupos curtos ela acelera
       const n = it.letras.length, livre = Math.max(0.3, g.fim - ini);
@@ -380,7 +498,7 @@ window.DADOS = /*__DADOS__*/null;
       it.el.style.transform = `scale(${deriva.toFixed(4)})`;
       return;
     }
-    // máscara: revela da esquerda para a direita enquanto o espaçamento fecha; traço se desenha embaixo
+    // máscara (padrão para outros nomes): revela da esquerda para a direita enquanto o espaçamento fecha; traço se desenha embaixo
     const e = ease(clamp((t - ini) / 0.55, 0, 1));
     const sai = easeIn(clamp((t - (g.fim - cfg.saida * 1.4)) / (cfg.saida * 1.4), 0, 1));
     it.el.style.opacity = 1;

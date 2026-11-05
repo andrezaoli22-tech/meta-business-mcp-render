@@ -52,6 +52,10 @@
 .vermelho .destaque .grande.letras { background-image: none; }
 .destaque .apoio.conector .p { font-family: var(--fonte-conector, var(--fonte-base)); font-style: italic;
              font-weight: 300; text-transform: none; letter-spacing: -0.04em; }
+/* azul BV: degradê do branco (topo) para o azul, com brilho azul em volta */
+.azulbv .destaque .grande:not(.letras), .azulbv .destaque .grande .letra {
+             background-image: linear-gradient(180deg, #FFFFFF 0%, #EAF1FF 24%, #8DB0FF 50%, #3A64F6 74%, #1F3FDB 100%);
+             -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
 .encaixe { text-align: left; }
 .encaixe .linha { display: block; }
 .encaixe .apoio .p { opacity: var(--opacidade-apoio); }
@@ -94,6 +98,7 @@ window.DADOS = /*__DADOS__*/null;
   if (cfg.gradiente === 'ouro') document.body.classList.add('ouro');
   else if (cfg.gradiente === 'vermelho') document.body.classList.add('vermelho');
   else if (cfg.gradiente === 'vermelho-reluz') document.body.classList.add('vermelho', 'reluz');
+  else if (cfg.gradiente === 'azul-bv') document.body.classList.add('azulbv');
   else if (cfg.gradiente) document.body.classList.add('gradiente');
 
   const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out

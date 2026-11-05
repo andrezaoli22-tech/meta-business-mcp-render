@@ -42,3 +42,12 @@ Se o vídeo tiver mais ênfases que animações, repita só depois de usar todas
 - Bloco de ênfase na altura do peito/cintura da pessoa ou no centro dos planos sem pessoa.
 - Regra do rosto (obrigatória): nenhuma palavra sobre o rosto. Frase comum desce para baixo do rosto; palavra do bloco que cruzaria o rosto vai para trás da pessoa (camada `_atras` + matte).
 - Intercale ênfases atrás e na frente para dar profundidade.
+
+## 5. Campanhas com parceiro (ex.: Feirão BV) — motion e azul
+Para vídeos de campanha em parceria, use as legendas em branco com ênfase `"gradiente": "azul-bv"`
+(degradê do branco para o azul, brilho com `--cor-brilho "rgba(70,120,255,.85)"`) e os motions de
+`assets/motion/` via `scripts/motion.py` (renderize com `--escala 2` para 4K):
+- `tela-azul`: tela inteira azul curta (1,4–1,8 s) com linha fina + título + pílula, bolhas e reflexo. Use em UMA frase-chave (o nome da campanha). Som: `subida_tonal` com o acorde caindo no título.
+- `quadrado-azul`: quadrado de vidro azul atrás da cabeça (`"profundidade": "atras"` em camadas.json), com texto digitando na faixa de cima. Som: `virada` na entrada + `tecla_*` a cada 2 letras.
+- `bolhas`: bolhas de vidro com os benefícios, uma por fala, sem legenda duplicada no trecho. Som: `bolha_1..4` em cada entrada e estouro no fim.
+Movimento sutil da pessoa: gere uma base com aproximação/afastamento suave de 4,5% por plano (scale+crop no ffmpeg, sem mexer na cor) e rode `recortar.py`/`rostos.py` nessa base, para o recorte acompanhar o movimento.

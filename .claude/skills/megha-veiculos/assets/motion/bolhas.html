@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Bolhas de vidro (estilo peça BV) que aparecem uma a uma com texto: linha fina + linha forte.
+     Flutuam de leve e somem estourando no fim. Parâmetros: bolhas [{em, x, y, r, fina, forte, icone}], duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.b{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.75) 0 5%, rgba(255,255,255,0) 16%),
+    radial-gradient(circle at 70% 84%, rgba(255,255,255,.35) 0 4%, rgba(255,255,255,0) 14%),
+    radial-gradient(circle at 50% 45%, rgba(45,90,250,.72) 0%, rgba(30,62,225,.66) 50%, rgba(80,130,255,.7) 66%, rgba(200,225,255,.9) 75%, rgba(255,255,255,.95) 77.5%, rgba(255,255,255,0) 80%);
+  box-shadow:0 0 calc(var(--u)*4) rgba(80,130,255,.45)}
+.fina{font-family:"Montserrat Alternates",sans-serif;font-weight:500;color:#fff;letter-spacing:-.04em;line-height:1.05;
+  text-shadow:0 2px 10px rgba(0,10,90,.55)}
+.forte{font-family:"Poppins",sans-serif;font-weight:800;color:#fff;letter-spacing:-.035em;line-height:1;
+  text-shadow:0 2px 12px rgba(0,10,90,.6)}
+.ic{font-family:"Poppins",sans-serif;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 12px rgba(0,10,90,.6)}
+</style></head><body>
+<div id="raiz"></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={duracao:4,bolhas:[{em:0,x:.25,y:.3,r:.3,fina:"Taxas",forte:"reduzidas",icone:"%"}]};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,W=innerWidth,H=innerHeight;
+document.documentElement.style.setProperty('--u',(W/100)+'px');
+const raiz=document.getElementById('raiz');
+const B=P.bolhas.map((o,i)=>{
+  const d=document.createElement('div');d.className='b';const R=o.r*W;
+  d.style.width=d.style.height=R+'px';d.style.left=(o.x*W-R/2)+'px';d.style.top=(o.y*H-R/2)+'px';
+  if(o.icone){const c=document.createElement('div');c.className='ic';c.textContent=o.icone;c.style.fontSize=(R*.2)+'px';d.appendChild(c);}
+  const f=document.createElement('div');f.className='fina';f.textContent=o.fina||'';f.style.fontSize=(R*.15)+'px';
+  const g=document.createElement('div');g.className='forte';g.textContent=o.forte||'';g.style.fontSize=(R*.19)+'px';
+  (o.forteAntes?[g,f]:[f,g]).forEach(x=>d.appendChild(x));
+  raiz.appendChild(d);return {d,o,i,fs:[f,g]};});
+window.PRONTO=document.fonts.ready.then(()=>{B.forEach(({d,o,fs})=>{const R=o.r*W;
+  fs.forEach(x=>{const w=x.getBoundingClientRect().width;if(w>R*.78)x.style.fontSize=(parseFloat(x.style.fontSize)*R*.78/w)+'px';});});renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO;
+  B.forEach(({d,o,i})=>{
+    const ini=o.em, e=M.p(t,ini,.55);
+    // estouro no fim, escalonado
+    const s=M.clamp((t-(D-.45+i*.05))/.22);
+    const flut=Math.sin((t-ini)*2.2+i)*W*.006;
+    const sc=(t<ini?0:(.2+.8*e))*(1+.05*Math.sin(M.clamp((t-ini)/.5)*Math.PI))*(1+s*.35);
+    d.style.opacity=(t<ini?0:Math.min(1,e*1.8)*(1-s)).toFixed(3);
+    d.style.transform=`translateY(${flut.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+    d.style.filter=s>0?`blur(${(s*6).toFixed(2)}px)`:'none';
+  });
+};
+</script></body></html>

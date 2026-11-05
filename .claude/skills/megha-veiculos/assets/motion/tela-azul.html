@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Tela inteira azul (campanha BV/parceiros): fundo azul com névoa clara, bolhas de vidro
+     flutuando, linha fina + título grande branco brilhante + pílula. Entra por máscara circular,
+     sai varrendo para cima. Curta (1,4–1,8 s). Parâmetros: linha1, titulo, destaque, pilula, duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#tela{position:absolute;inset:0;overflow:hidden;
+  background:radial-gradient(120% 70% at 50% 108%, #8FB6FF 0%, #4C7DFF 22%, #2547E6 52%, #1A33D4 78%, #1528C2 100%)}
+#nevoa{position:absolute;left:-20%;right:-20%;bottom:-8%;height:45%;
+  background:radial-gradient(60% 60% at 50% 100%, rgba(255,255,255,.55), rgba(255,255,255,0) 70%)}
+#raio{position:absolute;top:-20%;bottom:-20%;width:28%;left:0;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0));transform:skewX(-18deg)}
+.bolha{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.55) 0 8%, rgba(255,255,255,0) 22%),
+             radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 58%, rgba(255,255,255,.35) 72%, rgba(255,255,255,.75) 79%, rgba(255,255,255,0) 81%);
+  box-shadow: inset 0 0 40px rgba(255,255,255,.18)}
+#txt{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#fff}
+#l1{font-family:"Montserrat Alternates",sans-serif;font-weight:300;font-size:calc(var(--u)*7.2);letter-spacing:-.04em;opacity:.95}
+#tit{font-family:"Poppins",sans-serif;font-weight:800;font-size:calc(var(--u)*21);line-height:.95;letter-spacing:-.045em;
+  text-shadow:0 0 calc(var(--u)*3) rgba(150,190,255,.85), 0 calc(var(--u)*.6) calc(var(--u)*2.2) rgba(0,20,120,.45);white-space:nowrap}
+#tit b{font-weight:900}
+#pil{display:inline-block;margin-top:calc(var(--u)*3);padding:calc(var(--u)*1.4) calc(var(--u)*4.2);border-radius:calc(var(--u)*2.4);
+  background:#fff;color:#1A33D4;font-family:"Poppins",sans-serif;font-weight:800;font-size:calc(var(--u)*5);letter-spacing:-.02em;
+  box-shadow:0 calc(var(--u)*1) calc(var(--u)*4) rgba(0,20,120,.35)}
+</style></head><body>
+<div id="tela"><div id="nevoa"></div><div id="raio"></div><div id="bolhas"></div>
+<div id="txt"><div id="l1"></div><div id="tit"></div><div><span id="pil"></span></div></div></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={linha1:"chegou o",titulo:"Feirão",destaque:"BV",pilula:"",duracao:1.6};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,W=innerWidth,H=innerHeight;
+document.documentElement.style.setProperty('--u',(W/100)+'px');
+const tela=document.getElementById('tela'),l1=document.getElementById('l1'),tit=document.getElementById('tit'),
+      pil=document.getElementById('pil'),raio=document.getElementById('raio'),bolhasEl=document.getElementById('bolhas');
+l1.textContent=P.linha1||''; tit.innerHTML=(P.titulo||'')+(P.destaque?' <b>'+P.destaque+'</b>':'');
+pil.textContent=P.pilula||''; if(!P.pilula) pil.style.display='none';
+// bolhas decorativas (posições fixas, deriva lenta)
+const B=[[.12,.18,.22],[.86,.14,.16],[.9,.72,.26],[.08,.8,.18],[.62,.88,.12],[.3,.06,.1]].map(([x,y,r],i)=>{
+  const b=document.createElement('div');b.className='bolha';
+  b.style.width=b.style.height=(r*W)+'px';b.style.left=(x*W-r*W/2)+'px';b.style.top=(y*H-r*W/2)+'px';
+  bolhasEl.appendChild(b);return {b,i,y};});
+window.PRONTO=document.fonts.ready.then(()=>{const w=tit.getBoundingClientRect().width;
+  if(w>W*.9) tit.style.fontSize=(parseFloat(getComputedStyle(tit).fontSize)*W*.9/w)+'px'; renderFrame(0);});
+window.renderFrame=t=>{
+  const D=DURACAO;
+  // entrada: círculo que abre a partir do centro-baixo; saída: varre para cima
+  const e=M.p(t,0,.38,M.inOut), s=M.cubicIn(M.clamp((t-(D-.28))/.28));
+  tela.style.clipPath=`circle(${(e*150).toFixed(2)}% at 50% 70%)`;
+  tela.style.transform=`translateY(${(-s*100).toFixed(2)}%)`;
+  raio.style.left=(-40+180*M.clamp((t-.25)/(D*.7)))+'%';
+  B.forEach(({b,i})=>{const a=M.p(t,.1+i*.04,.5);b.style.opacity=a*.9;
+    b.style.transform=`translateY(${(-t*H*.025*(1+i%3)).toFixed(1)}px) scale(${(.6+.4*a).toFixed(3)})`;});
+  const a1=M.p(t,.16,.4), a2=M.p(t,.22,.45), a3=M.p(t,.42,.4);
+  l1.style.opacity=a1; l1.style.transform=`translateY(${((1-a1)*22).toFixed(1)}px)`;
+  tit.style.opacity=a2; tit.style.filter=`blur(${((1-a2)*10).toFixed(2)}px)`;
+  tit.style.transform=`scale(${(1.12-.12*a2+.03*t/D).toFixed(4)})`;
+  pil.style.opacity=a3; pil.style.transform=`translateY(${((1-a3)*30).toFixed(1)}px)`;
+};
+</script></body></html>

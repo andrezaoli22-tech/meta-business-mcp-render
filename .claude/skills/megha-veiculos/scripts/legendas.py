@@ -312,6 +312,8 @@ def render(a):
         extra_vars["--cor-destaque"] = a.cor_destaque
     if a.cor_base:
         extra_vars["--cor-base"] = a.cor_base
+    if a.cor_brilho:
+        extra_vars["--cor-brilho"] = a.cor_brilho
     if a.fonte_base:
         extra_vars["--fonte-base"] = f'"{a.fonte_base}", sans-serif'
     if a.fonte_destaque:
@@ -456,6 +458,7 @@ def main():
     r.add_argument("--estilo")
     r.add_argument("--cor-destaque")
     r.add_argument("--cor-base")
+    r.add_argument("--cor-brilho", help="cor do brilho em volta da ênfase, ex.: 'rgba(70,120,255,.8)'")
     r.add_argument("--fonte-base")
     r.add_argument("--fonte-destaque")
     r.add_argument("--posicao-y", type=float)

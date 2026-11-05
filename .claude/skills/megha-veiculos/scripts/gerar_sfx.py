@@ -222,6 +222,14 @@ def main():
         x[i0:i0 + m] += seg[:n - i0]
     salvar(normal(reverb(x, 0.6, 0.2), 0.85), os.path.join(a.saida, "duplo.wav"))
 
+    # bolhas: estouro de bolha de vidro (pitch sobe rápido + estalo), quatro variações
+    for k, (f0, f1) in enumerate([(380, 1400), (440, 1600), (330, 1250), (500, 1800)], 1):
+        d = 0.35; n = int(d * SR); tt = np.arange(n) / SR
+        f = f0 + (f1 - f0) * (1 - np.exp(-tt * 38))
+        corpo = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 22) * (1 - np.exp(-tt * 900))
+        estalo = hp(rng.standard_normal(n), 3500) * np.exp(-tt * 260) * 0.5
+        salvar(normal(reverb(corpo * 0.8 + estalo, 0.5, 0.25), 0.8), os.path.join(a.saida, f"bolha_{k}.wav"))
+
     print("OK →", a.saida, sorted(os.listdir(a.saida)))
 
 

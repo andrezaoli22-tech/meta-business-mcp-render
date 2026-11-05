@@ -393,7 +393,7 @@ SFX_ANIM = {
     "espalhar": ("passagem.wav", -0.15, 0),
     "revelar": ("lamina.wav", 0.0, -3),
     "aleatorio": ("cascata.wav", 0.0, -2),
-    "palavras": ("virada.wav", 0.05, 0),
+    "palavras": ("duplo.wav", 0.0, 0),
     "mascara": ("subida_tonal.wav", -0.20, -3),   # na Megha a máscara não repete o som do "revelar"
     "impacto": ("impacto.wav", 0.22, -1),
     "deslize": ("passagem.wav", -0.20, 0),

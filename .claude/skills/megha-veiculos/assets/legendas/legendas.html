@@ -379,7 +379,7 @@ window.DADOS = /*__DADOS__*/null;
           const f = (blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '') + (sat !== null && sat < 0.999 ? ` saturate(${sat.toFixed(3)})` : '') + brilho;
           it.el.style.filter = f.trim() || 'none';
           it.el.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
-          if (it.papel === 'grande' && cfg.gradiente === 'ouro') {
+          if (it.papel === 'grande' && (cfg.gradiente === 'ouro' || cfg.gradiente === 'vermelho-reluz')) {
             // reflexo de luz atravessando a palavra logo depois da entrada
             const r = clamp((t - ini - 0.10) / 0.85, 0, 1);
             it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;

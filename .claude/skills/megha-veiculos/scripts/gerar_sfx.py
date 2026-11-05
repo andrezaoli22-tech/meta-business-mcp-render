@@ -212,6 +212,16 @@ def main():
     x = reverb(x, 0.5, 0.3)[:n]
     salvar(normal(x, 0.8), os.path.join(a.saida, "inspiracao.wav"))
 
+    # duplo: dois sopros curtos com "toc" grave, um para cada palavra da animação "palavras"
+    d = 0.75; n = int(d * SR); tt = np.arange(n) / SR; x = np.zeros(n)
+    for k, t0 in enumerate((0.0, 0.16)):
+        i0 = int(t0 * SR); m = int(0.30 * SR); tb = np.arange(m) / SR
+        sopro = bp(rng.standard_normal(m), 1200 + 600 * k, 6000) * np.sin(np.pi * np.clip(tb / 0.22, 0, 1)) ** 2
+        toc = np.sin(2 * np.pi * np.cumsum(180 + 140 * np.exp(-tb * 45)) / SR) * np.exp(-tb * 30) * 0.6
+        seg = (sopro * 0.5 + np.roll(toc, int(0.15 * SR)))
+        x[i0:i0 + m] += seg[:n - i0]
+    salvar(normal(reverb(x, 0.6, 0.2), 0.85), os.path.join(a.saida, "duplo.wav"))
+
     print("OK →", a.saida, sorted(os.listdir(a.saida)))
 
 

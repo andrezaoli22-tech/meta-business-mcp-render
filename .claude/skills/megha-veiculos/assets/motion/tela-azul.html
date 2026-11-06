@@ -2,7 +2,7 @@
 <html><head><meta charset="utf-8">
 <!-- Tela inteira azul (campanha BV/parceiros): fundo azul com névoa clara, bolhas de vidro
      flutuando, linha fina + título grande branco brilhante + pílula. Entra por máscara circular,
-     sai varrendo para cima. Curta (1,4–1,8 s). Parâmetros: linha1, titulo, destaque, pilula, duracao -->
+     sai varrendo para cima. Curta (1,4–1,8 s). Parâmetros: linha1, titulo, destaque, pilula, pilula_em (s), duracao -->
 <style>
 /*__FONTES__*/
 html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
@@ -52,7 +52,7 @@ window.renderFrame=t=>{
   raio.style.left=(-40+180*M.clamp((t-.25)/(D*.7)))+'%';
   B.forEach(({b,i})=>{const a=M.p(t,.1+i*.04,.5);b.style.opacity=a*.9;
     b.style.transform=`translateY(${(-t*H*.025*(1+i%3)).toFixed(1)}px) scale(${(.6+.4*a).toFixed(3)})`;});
-  const a1=M.p(t,.16,.4), a2=M.p(t,.22,.45), a3=M.p(t,.42,.4);
+  const a1=M.p(t,.16,.4), a2=M.p(t,.22,.45), a3=M.p(t,(P.pilula_em!=null?P.pilula_em:.42),.4);
   l1.style.opacity=a1; l1.style.transform=`translateY(${((1-a1)*22).toFixed(1)}px)`;
   tit.style.opacity=a2; tit.style.filter=`blur(${((1-a2)*10).toFixed(2)}px)`;
   tit.style.transform=`scale(${(1.12-.12*a2+.03*t/D).toFixed(4)})`;

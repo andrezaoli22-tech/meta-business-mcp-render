@@ -51,3 +51,10 @@ Para vídeos de campanha em parceria, use as legendas em branco com ênfase `"gr
 - `quadrado-azul`: quadrado de vidro azul atrás da cabeça (`"profundidade": "atras"` em camadas.json), com texto digitando na faixa de cima. Som: `virada` na entrada + `tecla_*` a cada 2 letras.
 - `bolhas`: bolhas de vidro com os benefícios, uma por fala, sem legenda duplicada no trecho. Som: `bolha_1..4` em cada entrada e estouro no fim.
 Movimento sutil da pessoa: gere uma base com aproximação/afastamento suave de 4,5% por plano (scale+crop no ffmpeg, sem mexer na cor) e rode `recortar.py`/`rostos.py` nessa base, para o recorte acompanhar o movimento.
+
+### Ajustes aprovados no Feirão BV (preferências da marca)
+- Ênfase azul: `"gradiente": "azul-reluz"` — azul sólido (`--cor-destaque "#2547E8"`) com um reflexo BRANCO passando; nada de degradê azul→branco e nada de brilho colorido em volta. Sombra só preta e quase invisível: `--cor-brilho "rgba(0,0,0,.22)"` com `"brilho": 6`.
+- Letras menores: `"tamanho_destaque_max": 0.11, "tamanho_base": 0.045`.
+- Bolhas aparecem SEM som de bolha.
+- Não repetir a mesma informação em dois motions (ex.: tela azul e quadrado dizendo "Megha"): escolha um. A tela azul pode durar a frase inteira (`pilula_em` faz a pílula entrar quando a segunda parte é falada).
+- Recorte da pessoa pode pegar objetos atrás da cabeça (laço vermelho do carro): confira a camada "atrás" nos planos abertos; se pegar, coloque a ênfase na frente, acima da cabeça.

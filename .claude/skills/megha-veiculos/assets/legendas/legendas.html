@@ -52,6 +52,12 @@
 .vermelho .destaque .grande.letras { background-image: none; }
 .destaque .apoio.conector .p { font-family: var(--fonte-conector, var(--fonte-base)); font-style: italic;
              font-weight: 300; text-transform: none; letter-spacing: -0.04em; }
+/* azul sólido com reflexo branco passando (sem degradê permanente, sem brilho em volta) */
+.reluz-branco .destaque .grande:not(.letras), .reluz-branco .destaque .grande .letra {
+             background-image: linear-gradient(100deg, var(--cor-destaque) 0%, var(--cor-destaque) 36%,
+               #CFE0FF 43%, #FFFFFF 47%, #CFE0FF 51%, var(--cor-destaque) 58%, var(--cor-destaque) 100%);
+             /* espaço para acentos (Ã, Ê) não serem cortados pelo recorte do texto */
+             padding-top: .16em; margin-top: -.16em; }
 /* azul BV: degradê do branco (topo) para o azul, com brilho azul em volta */
 .azulbv .destaque .grande:not(.letras), .azulbv .destaque .grande .letra {
              background-image: linear-gradient(180deg, #FFFFFF 0%, #EAF1FF 24%, #8DB0FF 50%, #3A64F6 74%, #1F3FDB 100%);
@@ -99,6 +105,7 @@ window.DADOS = /*__DADOS__*/null;
   else if (cfg.gradiente === 'vermelho') document.body.classList.add('vermelho');
   else if (cfg.gradiente === 'vermelho-reluz') document.body.classList.add('vermelho', 'reluz');
   else if (cfg.gradiente === 'azul-bv') document.body.classList.add('azulbv');
+  else if (cfg.gradiente === 'azul-reluz') document.body.classList.add('reluz', 'reluz-branco');
   else if (cfg.gradiente) document.body.classList.add('gradiente');
 
   const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);            // expo out
@@ -238,7 +245,7 @@ window.DADOS = /*__DADOS__*/null;
         const x0 = itG2.letras[0].offsetLeft;
         itG2.letras.forEach(l => { l._x = l.offsetLeft - x0; });
         itG2.ww = ww;
-        if (cfg.gradiente === 'ouro' || cfg.gradiente === 'vermelho-reluz') itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
+        if (['ouro', 'vermelho-reluz', 'azul-reluz'].includes(cfg.gradiente)) itG2.letras.forEach(l => { l.style.backgroundSize = `${ww * 2.6}px 100%`; });
         // índice da palavra de cada letra (para a animação palavra a palavra)
         let w = 0; itG2.letras.forEach(l => { if (l.textContent === '\u00a0') w++; l._w_idx = w; });
         itG2.nPal = w + 1;
@@ -384,7 +391,7 @@ window.DADOS = /*__DADOS__*/null;
           const f = (blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : '') + (sat !== null && sat < 0.999 ? ` saturate(${sat.toFixed(3)})` : '') + brilho;
           it.el.style.filter = f.trim() || 'none';
           it.el.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${sc.toFixed(4)})`;
-          if (it.papel === 'grande' && (cfg.gradiente === 'ouro' || cfg.gradiente === 'vermelho-reluz')) {
+          if (it.papel === 'grande' && ['ouro', 'vermelho-reluz', 'azul-reluz'].includes(cfg.gradiente)) {
             // reflexo de luz atravessando a palavra logo depois da entrada
             const r = clamp((t - ini - 0.10) / 0.85, 0, 1);
             it.el.style.backgroundPosition = `${(100 - 100 * (1 - Math.pow(1 - r, 3))).toFixed(2)}% 0`;
@@ -540,7 +547,7 @@ window.DADOS = /*__DADOS__*/null;
           op = e; bl = (1 - e) * 6;
           tf = `translateY(${((1 - e) * 0.5).toFixed(3)}em)`;
         }
-        if (cfg.gradiente === 'vermelho-reluz' || cfg.gradiente === 'ouro') {
+        if (['ouro', 'vermelho-reluz', 'azul-reluz'].includes(cfg.gradiente)) {
           const S = it.ww * 2.6, r = clamp((t - ini - 0.35) / 0.9, 0, 1), rr = 1 - Math.pow(1 - r, 3);
           l.style.backgroundPosition = `${((it.ww - S) * (1 - rr) - l._x).toFixed(2)}px 0`;
         }

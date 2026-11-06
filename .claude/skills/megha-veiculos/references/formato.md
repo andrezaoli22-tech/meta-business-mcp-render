@@ -68,3 +68,8 @@ com contador `contar`/`casas`, `sufixo`, `rodape`). Sincronize cada cena com a f
 Sons do motion: `inspiracao` terminando na entrada, `cascata` no contador, `virada` na troca de
 cena, `lamina` na última. Paleta Banco Pan: legenda branca e ênfase azul escuro `#2246E2` com
 `azul-reluz` (reflexo branco) e sombra preta suave.
+
+### Preferências aprovadas (Black Feirão Pan)
+- Efeitos SECOS/comerciais: gere com `scripts/secar_sfx.py` e use `legendas.py sfx ... --seco` (sem cauda de reverb, cortes curtos). Também nos sons do motion (`assets/sfx/seco/`).
+- Nenhuma palavra sobre o rosto e, nesta marca, ênfases sempre NA FRENTE e fora do rosto (abaixo do queixo ou acima da cabeça). Se `rostos.py` subestimar o rosto (pessoa sentada no carro), ajuste `y` e `rosto` do grupo à mão e confira na prévia.
+- Evite a animação `partir` em grupos com linha de apoio acima e abaixo: as metades podem desalinhar. Prefira `flip`.

@@ -412,7 +412,7 @@ def sfx(a):
     dados = ler_json(a.legendas)
     cfg = {**ESTILOS.get(dados.get("estilo", ""), {}).get("config", {}), **dados.get("config", {})}
     antecip = cfg.get("antecipacao", 0.04)
-    pasta_sfx = os.path.join(ASSETS, "sfx")
+    pasta_sfx = os.path.join(ASSETS, "sfx", "seco") if a.seco else os.path.join(ASSETS, "sfx")
     lista = []
     for g in dados["grupos"]:
         dest = [p for p in g["palavras"] if p["destaque"]]
@@ -476,6 +476,7 @@ def main():
     x.add_argument("legendas")
     x.add_argument("--saida", default="sfx_legendas.json")
     x.add_argument("--db", type=float, default=-16)
+    x.add_argument("--seco", action="store_true", help="usa as versões secas/comerciais (assets/sfx/seco)")
     sub.add_parser("estilos")
     a = ap.parse_args()
     if a.cmd == "agrupar":

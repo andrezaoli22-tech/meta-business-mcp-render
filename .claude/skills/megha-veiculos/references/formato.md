@@ -58,3 +58,13 @@ Movimento sutil da pessoa: gere uma base com aproximação/afastamento suave de 
 - Bolhas aparecem SEM som de bolha.
 - Não repetir a mesma informação em dois motions (ex.: tela azul e quadrado dizendo "Megha"): escolha um. A tela azul pode durar a frase inteira (`pilula_em` faz a pílula entrar quando a segunda parte é falada).
 - Recorte da pessoa pode pegar objetos atrás da cabeça (laço vermelho do carro): confira a camada "atrás" nos planos abertos; se pegar, coloque a ênfase na frente, acima da cabeça.
+
+## 6. Tela preta longa → motion 3D (`tela-3d`)
+Quando o vídeo traz um trecho de tela preta (3–5 s), substitua por `motion.py tela-3d`: fundo
+"preto brilhante" (preto → azul profundo com halo e chão iluminado), feixe de luz, elementos 3D
+reais flutuando (three.js local em `assets/motion/lib`: moedas com aro azul, esferas de vidro/cromo
+e um símbolo 3D extrudado, ex. "%") e cenas de texto que entram e saem (`cenas`: linha, número
+com contador `contar`/`casas`, `sufixo`, `rodape`). Sincronize cada cena com a fala.
+Sons do motion: `inspiracao` terminando na entrada, `cascata` no contador, `virada` na troca de
+cena, `lamina` na última. Paleta Banco Pan: legenda branca e ênfase azul escuro `#2246E2` com
+`azul-reluz` (reflexo branco) e sombra preta suave.

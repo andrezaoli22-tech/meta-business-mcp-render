@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Tela inteira "preto brilhante → azul" com elementos 3D flutuando (three.js) e texto em
+     sequência (entra e sai). Para trechos longos de tela preta (3–5 s).
+     Parâmetros: cenas [{de, ate, linha, grande, sufixo, contar, casas, rodape}], simbolo3d ("%"),
+     cor (azul), duracao -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+#fundo{position:absolute;inset:0;
+  background:
+    radial-gradient(70% 45% at 50% 40%, rgba(40,80,220,.55) 0%, rgba(14,30,110,.35) 40%, rgba(0,0,0,0) 75%),
+    radial-gradient(120% 60% at 50% 110%, #0E2A8C 0%, #071451 35%, rgba(3,6,20,0) 70%),
+    linear-gradient(180deg, #05070F 0%, #070B1C 45%, #0A1335 100%)}
+#chao{position:absolute;left:-10%;right:-10%;bottom:0;height:34%;
+  background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(90,140,255,.10) 60%, rgba(140,180,255,.18) 100%)}
+#feixe{position:absolute;left:0;right:0;height:.5%;top:38%;
+  background:linear-gradient(90deg, rgba(60,130,255,0) 0%, rgba(120,180,255,.85) 45%, #fff 50%, rgba(120,180,255,.85) 55%, rgba(60,130,255,0) 100%);
+  filter:blur(1.5px);box-shadow:0 0 30px 6px rgba(70,140,255,.6)}
+#c3d{position:absolute;inset:0}
+.cena{position:absolute;left:0;right:0;text-align:center;color:#fff}
+.linha{font-family:"Poppins",sans-serif;font-weight:500;font-style:italic;letter-spacing:.18em;text-transform:uppercase;
+  font-size:calc(var(--u)*5.2);opacity:.95}
+.grande{font-family:"Poppins",sans-serif;font-weight:900;letter-spacing:-.04em;line-height:.95;white-space:nowrap;
+  font-size:calc(var(--u)*24);
+  background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 46%,#C9D8FF 62%,#7EA2FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*1.6) rgba(0,0,0,.45))}
+.grande .suf{color:transparent;background:linear-gradient(180deg,#5D8BFF,#1F44D0);-webkit-background-clip:text;background-clip:text;font-size:.62em}
+.rodape{font-family:"Poppins",sans-serif;font-weight:800;font-style:italic;font-size:calc(var(--u)*5.2);color:#4F86FF;white-space:nowrap;
+  letter-spacing:-.01em;margin-top:calc(var(--u)*1.4)}
+</style>
+<script type="importmap">{"imports":{"three":"__LIB__/three.module.min.js"}}</script>
+</head><body>
+<div id="fundo"></div><div id="chao"></div><div id="feixe"></div><canvas id="c3d"></canvas><div id="cenas"></div>
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={duracao:4,simbolo3d:"%",cenas:[]};</script>
+<script>/*__BASE__*/</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from '__LIB__/RoomEnvironment.js';
+import { FontLoader } from '__LIB__/FontLoader.js';
+import { TextGeometry } from '__LIB__/TextGeometry.js';
+const P=M.P, W=innerWidth, H=innerHeight;
+document.documentElement.style.setProperty('--u',(W/100)+'px');
+
+// ---------- 3D ----------
+const canvas=document.getElementById('c3d');
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(window.devicePixelRatio||1); renderer.setSize(W,H,false);
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();
+const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;
+const cam=new THREE.PerspectiveCamera(32,W/H,0.1,100); cam.position.set(0,0,14);
+const luz=new THREE.DirectionalLight(0x9fc0ff,2.2); luz.position.set(-4,6,6); scene.add(luz);
+const contra=new THREE.PointLight(0x3a6bff,40,30); contra.position.set(3,-2,4); scene.add(contra);
+
+const azul=new THREE.MeshPhysicalMaterial({color:0x1E46E0,metalness:.55,roughness:.18,clearcoat:1,clearcoatRoughness:.05});
+const cromo=new THREE.MeshPhysicalMaterial({color:0xdfe6ff,metalness:1,roughness:.12,clearcoat:1});
+const face=new THREE.MeshPhysicalMaterial({color:0x8FAEFF,metalness:.85,roughness:.22,clearcoat:1,emissive:0x0A1F6E,emissiveIntensity:.6});
+const vidro=new THREE.MeshPhysicalMaterial({color:0x5d8bff,metalness:0,roughness:.05,transmission:.9,thickness:.6,ior:1.4,clearcoat:1});
+
+const objs=[];
+function add(mesh,cfg){scene.add(mesh);objs.push({mesh,...cfg});return mesh;}
+// moedas cromadas com aro azul
+for(const [x,y,s,f] of [[-1.45,2.75,.55,0],[1.55,-2.55,.5,1.7],[-1.6,-3.05,.36,3.1]]){
+  const g=new THREE.Group();
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(1,1,.18,64),face); m.rotation.x=Math.PI/2; g.add(m);
+  const aro=new THREE.Mesh(new THREE.TorusGeometry(1,.09,24,80),azul); g.add(aro);
+  g.scale.setScalar(s); add(g,{x,y,z:0,fase:f,giro:1.1,flut:.25});
+}
+// esferas de vidro e cromo pequenas
+for(const [x,y,s,mat,f] of [[1.75,3.45,.22,vidro,.5],[-1.9,-1.75,.16,cromo,2.2],[1.95,1.2,.13,cromo,4],[-1.95,1.35,.18,vidro,1.1]]){
+  add(new THREE.Mesh(new THREE.SphereGeometry(1,48,48),mat),{x,y,z:-1,fase:f,giro:0,flut:.35,esc:s});
+}
+objs.filter(o=>o.esc).forEach(o=>o.mesh.scale.setScalar(o.esc));
+
+let simbolo=null;
+const fonte=new FontLoader().parse(window.FONTE3D);
+{
+  const geo=new TextGeometry(P.simbolo3d||'%',{font:fonte,size:1.05,height:.36,curveSegments:10,bevelEnabled:true,bevelThickness:.07,bevelSize:.035,bevelSegments:6});
+  geo.center(); simbolo=add(new THREE.Mesh(geo,azul),{x:1.35,y:2.65,z:.5,fase:.3,giro:.6,flut:.18,simb:true});
+}
+
+function cena3d(t){
+  const D=DURACAO;
+  const ent=M.p(t,0,.7), sai=M.cubicIn(M.clamp((t-(D-.35))/.35));
+  objs.forEach((o,i)=>{
+    const m=o.mesh, d=(1-ent)*3*(i%2?1:-1);
+    m.position.set(o.x+d*.3, o.y+Math.sin(t*1.4+o.fase)*o.flut - sai*6, o.z - (1-ent)*6);
+    if(o.simb){ m.rotation.set(.35*Math.sin(t*.9), -.6+t*o.giro, .12*Math.sin(t*1.3)); }
+    else { m.rotation.set(.5+Math.sin(t+o.fase)*.3, t*o.giro+o.fase, 0); }
+  });
+  renderer.render(scene,cam);
+}
+
+// ---------- texto em cenas (entra e sai) ----------
+const raiz=document.getElementById('cenas');
+const C=(P.cenas||[]).map(c=>{
+  const d=document.createElement('div');d.className='cena';d.style.top=((c.y||.5)*100)+'%';
+  if(c.linha){const l=document.createElement('div');l.className='linha';l.textContent=c.linha;d.appendChild(l);c.l=l;}
+  const g=document.createElement('div');g.className='grande';d.appendChild(g);c.g=g;
+  if(c.rodape){const r=document.createElement('div');r.className='rodape';r.textContent=c.rodape;d.appendChild(r);c.r=r;}
+  raiz.appendChild(d);c.el=d;return c;});
+const fmt=(c,v)=>v.toLocaleString('pt-BR',{minimumFractionDigits:c.casas||0,maximumFractionDigits:c.casas||0});
+function cenasTexto(t){
+  C.forEach(c=>{
+    const vis=t>=c.de && t<c.ate; c.el.style.display=vis?'block':'none'; if(!vis) return;
+    const e=M.p(t,c.de,.42), s=M.cubicIn(M.clamp((t-(c.ate-.22))/.22));
+    c.el.style.transform=`translateY(calc(-50% + ${((1-e)*40 - s*60).toFixed(1)}px))`;
+    c.el.style.opacity=(Math.min(1,e*1.6)*(1-s)).toFixed(3);
+    c.el.style.filter=`blur(${((1-e)*8+s*10).toFixed(2)}px)`;
+    if(c.l){const a=M.p(t,c.de,.35);c.l.style.letterSpacing=(.18+.25*(1-a)).toFixed(3)+'em';}
+    const v=c.contar? fmt(c, c.contar*M.p(t,c.de+.1,Math.min(1.1,(c.ate-c.de)*.55),M.quart)) : (c.grande||'');
+    c.g.innerHTML=v+(c.sufixo?`<span class="suf">${c.sufixo}</span>`:'');
+    c.g.style.transform=`scale(${(1.08-.08*e).toFixed(4)})`;
+    if(c.r){const r=M.p(t,c.de+.25,.4);c.r.style.opacity=r;c.r.style.transform=`translateY(${((1-r)*20).toFixed(1)}px)`;}
+  });
+}
+const fundo=document.getElementById('fundo'),feixe=document.getElementById('feixe'),chao=document.getElementById('chao');
+window.renderFrame=t=>{
+  const D=DURACAO, e=M.p(t,0,.35), s=M.cubicIn(M.clamp((t-(D-.3))/.3));
+  fundo.style.opacity=chao.style.opacity=Math.min(1,e*1.4);
+  // feixe de luz atravessa no começo e na troca de cenas
+  const f=M.clamp((t-.05)/.6); feixe.style.opacity=(Math.sin(f*Math.PI)).toFixed(3);
+  feixe.style.transform=`scaleX(${(.2+1.2*f).toFixed(3)})`;
+  cena3d(t); cenasTexto(t);
+};
+window.PRONTO=document.fonts.ready.then(()=>{renderFrame(0);});
+</script>
+<script>window.FONTE3D=/*__FONTE3D__*/null;</script>
+</body></html>

@@ -108,6 +108,22 @@ sem olhar os PNGs.
   3–8 hashtags específicas
 - Envie o `preview.png` ao usuário (SendUserFile) e resuma em 3 linhas.
 
+### Versão editável (Canva, Google Slides, PowerPoint, Keynote, Figma)
+
+Quando o usuário quiser editar em outra ferramenta, gere um PPTX em camadas
+(fundo, blocos de cor, fotos trocáveis, linhas e caixas de texto editáveis) e um PDF:
+
+```bash
+node .claude/skills/editor-carrossel/scripts/extract_layout.mjs carrosseis/<pasta>/carrossel.html
+python3 .claude/skills/editor-carrossel/scripts/build_pptx.py carrosseis/<pasta>/export/layout.json carrosseis/<pasta>/<nome>.pptx
+```
+
+Confira o PPTX renderizando com `soffice --headless --convert-to pdf` e olhando as páginas.
+Não presuma onde o usuário vai editar: entregue o arquivo e o link e deixe-o escolher.
+- Canva: Criar design → Importar arquivo → .pptx (ou .pdf)
+- Google Slides: Arquivo → Importar slides; PowerPoint/Keynote: abrir direto
+- Figma: arrastar o .pdf para o canvas
+
 ## 8. Publicar / agendar (só se o usuário pedir)
 
 O conector Meta Business deste repositório (`agendar_post_instagram`, `tipo: "carrossel"`)

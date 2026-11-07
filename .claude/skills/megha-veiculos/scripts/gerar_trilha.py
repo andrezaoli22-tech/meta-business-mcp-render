@@ -33,7 +33,7 @@ def main():
     ap.add_argument("--duracao", type=float, default=14.5)
     ap.add_argument("--bpm", type=float, default=124)
     ap.add_argument("--tom", type=int, default=0)
-    ap.add_argument("--estilo", choices=["house", "trap", "pulse"], default="house")
+    ap.add_argument("--estilo", choices=["house", "trap", "pulse", "funk", "electro", "pop"], default="house")
     ap.add_argument("--drop", type=float, default=1.8)
     ap.add_argument("--final", type=float, default=12.4)
     ap.add_argument("--semente", type=int, default=3)
@@ -125,6 +125,39 @@ def main():
             if pos in (2, 6): c = clap(); place(L, c, tk, .4); place(R, c, tk + .003, .4)
             rolo = 6 if pos == 7 else 2
             for q in range(rolo): hh = hat(); place(L, hh, tk + q * B / rolo, .07); place(R, hh, tk + q * B / rolo + .003, .08)
+        elif a.estilo == "funk":
+            # funk brasileiro (tamborzão): bumbo na 1, no "e" do 2 e no 4; caixa no 2 e 4; agogô/cuíca leve
+            pos = k % 4
+            for q, g in {0: [(0, .85), (.75, .55)], 1: [(.5, .7)], 2: [(0, .8), (.5, .45)], 3: [(.25, .6), (.75, .5)]}[pos]:
+                s = kick(.35, 150, 50); place(L, s, tk + q * B, g); place(R, s, tk + q * B, g)
+            if pos in (1, 3): c = clap(); place(L, c, tk, .5); place(R, c, tk + .003, .5)
+            for q in (0, .5): hh = hat(); place(L, hh, tk + q * B, .09); place(R, hh, tk + q * B + .003, .1)
+            sb = sub(B * .4, f_baixo * 2); place(L, sb, tk, .3); place(R, sb, tk, .3)
+            seg = np.arange(int(.12 * SR)) / SR
+            ag = (np.sin(2 * np.pi * 1760 * seg) + .5 * np.sin(2 * np.pi * 2640 * seg)) * np.exp(-seg * 40)
+            if pos in (0, 2): place(L, ag, tk + .75 * B, .06); place(R, ag, tk + .75 * B, .08)
+            seg = np.arange(int(B * .45 * SR)) / SR
+            stab = lp(sum(saw(raiz * 8 * 2 ** (n / 12), seg) for n in ac) / 3, 3200) * np.exp(-seg * 7)
+            if pos == 3: place(L, stab, tk + .5 * B, .22); place(R, stab, tk + .5 * B + .005, .22)
+        elif a.estilo in ("electro", "pop"):
+            # four-on-the-floor energético: bumbo em todos os tempos, clap 2 e 4, chimbal 16 avos,
+            # baixo no contratempo, stabs (electro) ou arpejo (pop), sobe o filtro até o final
+            s = kick(.38, 170, 48); place(L, s, tk, .85); place(R, s, tk, .85)
+            if k % 2 == 1: c = clap(); place(L, c, tk, .45); place(R, c, tk + .003, .45)
+            for q in (0, .25, .5, .75):
+                hh = hat(q == .5); place(L, hh, tk + q * B, .1 if q == .5 else .05); place(R, hh, tk + q * B + .003, .11 if q == .5 else .06)
+            sb = sub(B * .42, f_baixo); place(L, sb, tk + B / 2, .38); place(R, sb, tk + B / 2, .38)
+            prog = (tk - a.drop) / max(.1, fim_batida - a.drop)
+            if a.estilo == "electro":
+                seg = np.arange(int(B * .3 * SR)) / SR
+                stab = lp(sum(saw(raiz * 8 * 2 ** (n / 12), seg) + saw(raiz * 8 * 2 ** (n / 12) * 1.006, seg) for n in ac) / 6, 1800 + 4000 * prog) * np.exp(-seg * 9)
+                for q in ((.5,) if k % 2 == 0 else (.25, .75)): place(L, stab, tk + q * B, .26); place(R, stab, tk + q * B + .006, .26)
+            else:
+                seg = np.arange(int(B / 4 * SR)) / SR
+                for q in range(4):
+                    nota = raiz * 8 * 2 ** ((ac + [ac[0] + 12])[q % 4] / 12)
+                    pl = lp(saw(nota, seg), 1500 + 4000 * prog) * np.exp(-seg * 18)
+                    place(L, pl, tk + q * B / 4, .16); place(R, pl, tk + q * B / 4 + .008, .16)
         else:
             if k % 2 == 0: s = kick(); place(L, s, tk, .75); place(R, s, tk, .75)
             if k % 4 == 2: c = clap(); place(L, c, tk, .3); place(R, c, tk, .3)

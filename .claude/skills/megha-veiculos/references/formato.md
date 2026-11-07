@@ -80,3 +80,12 @@ cena, `lamina` na última. Paleta Banco Pan: legenda branca e ênfase azul escur
 - `assets/motion/stories-megha.html` (via motion.py): abertura (`modo: abertura`) e cartela (`modo: final`) com a logo (`assets/marca/megha_logo.png`), fundo preto brilhante com brilho vermelho, palavra grande vermelha com reflexo; variantes a/b/c mudam a entrada (letras girando, subindo, aleatórias).
 - Legendas: só ênfase + linha de apoio por plano, `vermelho-reluz` com `--cor-destaque "#E3171B"`, uma animação diferente por plano. Paleta: branco, preto e vermelho.
 - Áudio: trilha + efeitos secos (`--seco`, -12 dB) normalizados a -14 LUFS.
+
+### Séries de stories: formatos DIFERENTES de verdade
+Quando forem vários vídeos para a mesma ação, cada um precisa de um formato próprio (não só trocar
+texto/animação). Templates prontos em `assets/motion/` (via motion.py, com `--params @arquivo.json`):
+- `fmt-impacto`: cenas em sequência no ritmo — cards de tela cheia preto/vermelho/branco alternando com o vídeo, palavras batendo (slam, corta, desliza, zoom, sobe).
+- `fmt-checklist`: moldura preta com listras vermelhas, janela arredondada com o vídeo, cabeçalho e itens marcados um a um, carimbo "só hoje!" e cartela com logo.
+- `fmt-motivos`: "3 motivos" — número gigante na abertura, número vazado que se preenche de vermelho, faixa vermelha varrendo nas trocas, cartela final BRANCA com logo.
+Textos sem repetir frases entre os vídeos; falar do momento/ofertas, não do carro, quando o pedido for assim.
+Trilhas animadas: `gerar_trilha.py --estilo electro|funk|pop` (132/130/126 BPM).

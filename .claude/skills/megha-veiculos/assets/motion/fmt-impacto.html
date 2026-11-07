@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- Formato "Tipografia de impacto": cenas em sequência no ritmo da música. Cada cena é
+     "card" (tela cheia preta/vermelha/branca) ou "sobre" (texto sobre o vídeo, com degradê escuro).
+     Parâmetros: cenas [{de, ate, tipo, fundo, linha, grande, linha2, anim, logo}], duracao.
+     anim: slam | zoom | corta | desliza | sobe -->
+<style>
+/*__FONTES__*/
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.cena{position:absolute;inset:0;display:none}
+.fundo{position:absolute;inset:0}
+.f-preto{background:radial-gradient(80% 45% at 50% 50%,#2a0606 0%,#0b0b0b 60%,#050505 100%)}
+.f-vermelho{background:radial-gradient(90% 55% at 50% 45%,#FF2A22 0%,#E3171B 45%,#A80C10 100%)}
+.f-branco{background:radial-gradient(90% 55% at 50% 45%,#FFFFFF 0%,#F2F2F2 60%,#DADADA 100%)}
+.f-sobre{background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.55) 62%,rgba(0,0,0,.75) 100%)}
+.bloco{position:absolute;left:0;right:0;top:50%;text-align:center}
+.linha{font-family:"Montserrat Alternates",sans-serif;font-weight:300;font-size:calc(var(--u)*6.6);letter-spacing:-.05em}
+.grande{display:inline-block;font-family:"Poppins",sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.035em;
+  line-height:.92;white-space:nowrap;font-size:calc(var(--u)*20);padding:.12em .04em 0;margin-top:-.12em}
+.linha2{font-family:"Poppins",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:-.03em;font-size:calc(var(--u)*5.6);margin-top:calc(var(--u)*1.2)}
+.brilho{background-image:linear-gradient(100deg,var(--c) 0%,var(--c) 36%,var(--b1) 44%,#fff 48%,var(--b1) 52%,var(--c) 60%,var(--c) 100%);
+  background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+#logo{position:absolute;left:50%;width:calc(var(--u)*70);display:none}
+</style></head><body>
+<div id="raiz"></div><img id="logo" src="__MARCA__/megha_logo.png">
+<script>window.PARAMS=/*__PARAMS__*/{};window.PADRAO={duracao:14.5,cenas:[]};</script>
+<script>/*__BASE__*/</script>
+<script>
+const P=M.P,W=innerWidth,H=innerHeight;
+document.documentElement.style.setProperty('--u',(W/100)+'px');
+const raiz=document.getElementById('raiz'),logo=document.getElementById('logo');
+const larg=el=>{const r=document.createRange();r.selectNodeContents(el);return r.getBoundingClientRect().width;};
+const C=P.cenas.map(c=>{
+  const el=document.createElement('div');el.className='cena';
+  const f=document.createElement('div');f.className='fundo f-'+(c.tipo==='sobre'?'sobre':c.fundo);el.appendChild(f);
+  const b=document.createElement('div');b.className='bloco';el.appendChild(b);
+  const corTxt=c.fundo==='branco'?'#0B0B0B':'#FFFFFF';
+  const corG=c.cor||(c.fundo==='vermelho'?'#FFFFFF':c.fundo==='branco'?'#0B0B0B':'#E3171B');
+  if(c.linha){const l=document.createElement('div');l.className='linha';l.textContent=c.linha;l.style.color=corTxt;b.appendChild(l);c.l=l;}
+  if(c.grande){const w=document.createElement('div');const g=document.createElement('span');g.className='grande brilho';g.textContent=c.grande;
+    g.style.setProperty('--c',corG);g.style.setProperty('--b1',corG==='#E3171B'?'#FFB0A8':corG==='#FFFFFF'?'#FFD0CC':'#7a7a7a');
+    if(corG==='#E3171B') g.style.filter='drop-shadow(0 0 calc(var(--u)*2) rgba(255,30,20,.55))';
+    if(c.tipo==='sobre'&&corG==='#FFFFFF') g.style.filter='drop-shadow(0 4px 14px rgba(0,0,0,.5))';
+    w.appendChild(g);b.appendChild(w);c.g=g;}
+  if(c.linha2){const l=document.createElement('div');l.className='linha2';l.textContent=c.linha2;l.style.color=c.fundo==='vermelho'?'#0B0B0B':corTxt;b.appendChild(l);c.l2=l;}
+  raiz.appendChild(el);c.el=el;c.b=b;c.f=f;return c;});
+window.PRONTO=Promise.all([document.fonts.ready,new Promise(r=>logo.complete?r():logo.onload=r)]).then(()=>{
+  C.forEach(c=>{c.el.style.display='block';
+    if(c.g){const w=larg(c.g),fs=parseFloat(getComputedStyle(c.g).fontSize);const alvo=c.tamanho?c.tamanho*W:fs;
+      c.g.style.fontSize=alvo+'px'; const w2=larg(c.g); if(w2>W*.9) c.g.style.fontSize=(alvo*W*.9/w2)+'px'; c.ww=larg(c.g);}
+    const h=c.b.getBoundingClientRect().height; c.b.style.top=((c.y||.5)*H-h/2)+'px';
+    c.el.style.display='none';});
+  renderFrame(0);});
+const shake=(t,t0,k)=>{const d=t-t0;return d>0&&d<.25?Math.sin(d*110)*k*Math.exp(-d*14):0;};
+window.renderFrame=t=>{
+  logo.style.display='none';
+  C.forEach(c=>{
+    const vis=t>=c.de&&t<c.ate; c.el.style.display=vis?'block':'none'; if(!vis) return;
+    const d=t-c.de, dur=c.ate-c.de, sai=c.tipo==='sobre'?M.cubicIn(M.clamp((t-(c.ate-.12))/.12)):0;
+    c.f.style.opacity=(c.tipo==='sobre'?Math.min(1,d/.15):1)*(1-sai);
+    const an=c.anim||'slam';
+    if(c.l){const e=M.p(t,c.de,.25);c.l.style.opacity=e*(1-sai);c.l.style.transform=`translateY(${((1-e)*20).toFixed(1)}px)`;}
+    if(c.g){const t0=c.de+(c.l?.1:0), e=M.p(t,t0,an==='corta'?.3:.22);
+      let tf='',op=Math.min(1,e*2.2),bl=0;
+      if(an==='slam'){tf=`scale(${(2.2-1.2*e).toFixed(3)}) translateX(${shake(t,t0+.2,W*.01).toFixed(1)}px)`;bl=(1-e)*10;}
+      else if(an==='zoom'){tf=`scale(${(.55+.45*e+.04*d/dur).toFixed(3)})`;bl=(1-e)*12;}
+      else if(an==='corta'){c.g.style.clipPath=`inset(0 ${((1-e)*50).toFixed(2)}% 0 ${((1-e)*50).toFixed(2)}%)`;op=1;tf=`scale(${(1+.03*d/dur).toFixed(4)})`;}
+      else if(an==='desliza'){tf=`translateX(${((1-e)*W*.6).toFixed(1)}px) skewX(${((1-e)*-14).toFixed(2)}deg)`;bl=(1-e)*14;}
+      else {tf=`translateY(${((1-e)*.5).toFixed(3)}em)`;bl=(1-e)*8;}
+      c.g.style.opacity=op*(1-sai); c.g.style.transform=tf;
+      c.g.style.filter=(bl>.05?`blur(${bl.toFixed(2)}px) `:'')+(c.g.style.filter.includes('drop')?c.g.style.filter.replace(/blur\([^)]*\)\s*/,''):'');
+      const r=M.clamp((t-t0-.18)/.6),rr=1-Math.pow(1-r,3);c.g.style.backgroundPosition=`${(100-100*rr).toFixed(2)}% 0`;}
+    if(c.l2){const e=M.p(t,c.de+.18,.25);c.l2.style.opacity=e*(1-sai);c.l2.style.transform=`translateY(${((1-e)*16).toFixed(1)}px)`;}
+    if(c.logo){logo.style.display='block';const e=M.p(t,c.de+.25,.4);const lw=logo.getBoundingClientRect().width||W*.7;
+      logo.style.top=(H*.64)+'px';logo.style.marginLeft=(-W*.35)+'px';logo.style.opacity=e;
+      logo.style.transform=`scale(${(.8+.2*e+.03*d/dur).toFixed(4)})`;logo.style.filter=`drop-shadow(0 0 ${(20*e).toFixed(1)}px rgba(255,40,30,.55))`;}
+  });
+};
+</script></body></html>

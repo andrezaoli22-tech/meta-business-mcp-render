@@ -25,7 +25,7 @@ await page.addStyleTag({ content: ".slide{margin:0 0 40px 0!important}" });
 const [W, H] = (await page.getAttribute("body", "data-size") || "1080x1350").split("x").map(Number);
 
 const layout = await page.$$eval("section.slide", (slides) => {
-  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big10,.quote,.btn,.foot>span,.top>span";
+  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span";
   const transparent = (c) => !c || c === "transparent" || /rgba\(.*,\s*0\)$/.test(c);
   const isInMedia = (el) => !!el.closest(".media,.full");
   return slides.map((s) => {

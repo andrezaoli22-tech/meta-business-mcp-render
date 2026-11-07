@@ -36,8 +36,13 @@ DNA
 - Tom do texto: frases curtas? perguntas? números? emojis?
 ```
 
-Copie o **estilo**, nunca o conteúdo, a marca ou as fotos de terceiros. Se não houver
-referência, use `references/design-system.md` e proponha um estilo.
+Copie o **estilo**, nunca o conteúdo, a marca ou as fotos de terceiros.
+
+**Padrão da casa:** se o usuário não mandar outra referência, siga **sempre**
+`references/estilo-rp-news.md` com o template `templates/rp-news.html`: preto e branco
+neutros, azul `#0025CC` só no slide de ênfase e nas listas, capa com degradê preto,
+linhas brancas finas no topo e no rodapé, sem logo no topo e com foto real das ativações.
+Uma referência nova muda só o que ela mostrar; o resto continua no padrão da casa.
 
 Detalhes de tipografia, grid, cor e hierarquia: `references/design-system.md`.
 
@@ -106,11 +111,11 @@ sem olhar os PNGs.
 - Pasta `carrosseis/<cliente>-<tema>/` com os PNGs, `carrossel.html`, `creditos.md`
 - `legenda.md`: legenda com gancho na 1ª linha, desenvolvimento curto, CTA,
   3–8 hashtags específicas
-- Envie o `preview.png` ao usuário (SendUserFile) e resuma em 3 linhas.
+- Envie o `preview.png` ao usuário (SendUserFile), os **links de edição** (abaixo) e resuma em 3 linhas.
 
-### Versão editável (Canva, Google Slides, PowerPoint, Keynote, Figma)
+### Link de edição — OBRIGATÓRIO em todo carrossel
 
-Quando o usuário quiser editar em outra ferramenta, gere um PPTX em camadas
+Toda entrega inclui o **link de edição**, sem o usuário precisar pedir. Gere um PPTX em camadas
 (fundo, blocos de cor, fotos trocáveis, linhas e caixas de texto editáveis) e um PDF:
 
 ```bash
@@ -119,7 +124,10 @@ python3 .claude/skills/editor-carrossel/scripts/build_pptx.py carrosseis/<pasta>
 ```
 
 Confira o PPTX renderizando com `soffice --headless --convert-to pdf` e olhando as páginas.
-Não presuma onde o usuário vai editar: entregue o arquivo e o link e deixe-o escolher.
+Faça commit e push do `.pptx` e do `.pdf` e entregue os links diretos de download
+(`https://github.com/<dono>/<repo>/raw/<branch>/carrosseis/<pasta>/<nome>.pptx` e `.pdf`),
+além de anexar os arquivos com SendUserFile. Não presuma onde o usuário vai editar: entregue
+o link e deixe-o escolher (não envie para o Figma, o Canva etc. sem ele pedir).
 - Canva: Criar design → Importar arquivo → .pptx (ou .pdf)
 - Google Slides: Arquivo → Importar slides; PowerPoint/Keynote: abrir direto
 - Figma: arrastar o .pdf para o canvas

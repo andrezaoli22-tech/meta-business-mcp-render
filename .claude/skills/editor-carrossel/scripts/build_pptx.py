@@ -82,10 +82,11 @@ def main(src, dst):
             tf.vertical_anchor = MSO_ANCHOR.TOP
             p = tf.paragraphs[0]
             p.alignment = {"right": PP_ALIGN.RIGHT, "center": PP_ALIGN.CENTER}.get(t["align"], PP_ALIGN.LEFT)
-            p.line_spacing = round(t["lineHeight"], 2)
+            ls = Pt(size0 * t["lineHeight"] * 0.75)  # entrelinha exata, igual ao navegador
+            p.line_spacing = ls
             for run in t["runs"]:
                 if run.get("br"):
-                    p = tf.add_paragraph(); p.alignment = tf.paragraphs[0].alignment; p.line_spacing = round(t["lineHeight"], 2)
+                    p = tf.add_paragraph(); p.alignment = tf.paragraphs[0].alignment; p.line_spacing = ls
                     continue
                 text = run["text"]
                 if not p.runs:

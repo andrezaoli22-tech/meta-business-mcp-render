@@ -1,0 +1,127 @@
+<!doctype html>
+<!--
+  Template padrão RP News (ver references/estilo-rp-news.md).
+  Preto + branco; azul #0025CC só no slide de ênfase e nas listas. Capa sempre com degradê preto.
+  Troque os textos e as fotos (img/...). Um <section class="slide"> por slide.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --w:1080px; --h:1350px; --black:#0B0B0B; --white:#FFFFFF; --blue:#0025CC; --px:72px; --top:110px; --bottom:97px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#222;font-family:"Inter Tight",sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+  .slide{width:var(--w);height:var(--h);position:relative;overflow:hidden;margin:0 auto 40px;background:var(--black)}
+  .slide.blue{background:var(--blue)}
+
+  /* linhas fixas: topo (y=110) e rodapé (y≈1253) */
+  .rule-top{position:absolute;left:0;right:0;top:var(--top);height:2px;background:var(--white);z-index:5}
+  .foot{position:absolute;left:0;right:0;bottom:0;height:var(--bottom);display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);font-size:26px;font-weight:400;z-index:5}
+  .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--white)}
+  .foot .arrow{font-size:30px;font-weight:500}
+  .last .foot .arrow{display:none}
+
+  /* tipografia */
+  .kicker{font-weight:700;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+  .h-capa{font-weight:700;font-size:104px;line-height:1.08;letter-spacing:-.03em}
+  .h{font-weight:800;font-size:58px;line-height:1.05;letter-spacing:-.035em;text-transform:uppercase}
+  .body{font-weight:400;font-size:38px;line-height:1.5;letter-spacing:-.01em;text-wrap:pretty}
+  .body strong{font-weight:700}
+  .h + .body{margin-top:14px}
+  .body + .body{margin-top:0}
+  .list{list-style:none;margin-top:40px}
+  .list li{color:var(--blue);font-weight:700;font-size:30px;line-height:1.85;letter-spacing:-.01em}
+
+  .media{position:absolute;overflow:hidden}
+  .media img{display:block;width:100%;height:100%;object-fit:cover}
+  .grid{display:flex}
+  .grid img{flex:1;min-width:0}
+
+  /* 1. CAPA — foto cheia + degradê preto */
+  .capa .media{inset:0}
+  .capa .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.35) 0%,rgba(11,11,11,0) 18%,rgba(11,11,11,0) 38%,rgba(11,11,11,.72) 62%,rgba(11,11,11,.96) 86%,var(--black) 100%)}
+  .capa .content{position:absolute;left:var(--px);right:var(--px);bottom:150px;z-index:3}
+  .capa .h-capa{margin-top:28px}
+  .capa .foot{background:var(--black)}
+
+  /* 2. FOTO EM CIMA (1 a 3 fotos) + TEXTO */
+  .foto-topo .media{left:0;right:0;top:calc(var(--top) + 2px);height:563px}
+  .foto-topo .content{position:absolute;left:var(--px);right:var(--px);top:785px}
+
+  /* 3. ÊNFASE AZUL — texto à direita + foto embaixo */
+  .enfase .content{position:absolute;left:var(--px);right:var(--px);top:200px;text-align:right}
+  .enfase .big{font-weight:800;font-size:200px;line-height:.82;letter-spacing:-.06em}
+  .enfase .big + .h{margin-top:8px}
+  .enfase .media{left:0;right:0;top:778px;bottom:0}
+  .enfase .foot{background:transparent}
+
+  /* 4. TEXTO + COLUNA DE FOTO */
+  .coluna .media{right:0;width:430px;top:calc(var(--top) + 2px);bottom:var(--bottom)}
+  .coluna .content{position:absolute;left:var(--px);width:560px;top:50%;transform:translateY(-50%)}
+
+  /* 5. FECHAMENTO — foto cheia */
+  .fecha .media{inset:0}
+  .fecha .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.25) 0%,rgba(11,11,11,0) 30%,rgba(11,11,11,.25) 60%,rgba(11,11,11,.7) 100%)}
+  .fecha .content{position:absolute;left:var(--px);right:var(--px);bottom:150px;text-align:right;z-index:3}
+  .fecha .quote{font-weight:700;font-size:84px;line-height:1.08;letter-spacing:-.03em;margin-top:24px}
+  .fecha .foot{background:transparent}
+</style>
+</head>
+<body data-size="1080x1350">
+
+<section class="slide capa">
+  <div class="media"><img src="img/capa.jpg" alt=""></div>
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">Tema · edição 2026</div>
+    <h1 class="h-capa">Manchete em duas<br>ou três linhas.</h1>
+  </div>
+  <div class="foot"><span>Linha de apoio da manchete</span><span class="arrow">→</span></div>
+</section>
+
+<section class="slide foto-topo">
+  <div class="rule-top"></div>
+  <div class="media grid"><img src="img/foto-a.jpg" alt=""><img src="img/foto-b.jpg" alt=""><img src="img/foto-c.jpg" alt=""></div>
+  <div class="content">
+    <h2 class="h">Título do slide</h2>
+    <p class="body">Texto de apoio com <strong>destaque em negrito</strong>.</p>
+    <p class="body">Segunda frase curta, também com <strong>um destaque</strong>.</p>
+  </div>
+  <div class="foot"><span>Tema</span><span class="arrow">→</span></div>
+</section>
+
+<section class="slide blue enfase">
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="big">10</div>
+    <h2 class="h">Dado de ênfase</h2>
+    <p class="body">Explicação do número com <strong>o nome da ação</strong>.</p>
+  </div>
+  <div class="media"><img src="img/enfase.jpg" alt=""></div>
+  <div class="foot"><span>Tema</span><span class="arrow">→</span></div>
+</section>
+
+<section class="slide coluna">
+  <div class="rule-top"></div>
+  <div class="content">
+    <h2 class="h">Título do slide</h2>
+    <p class="body">Texto de apoio com <strong>destaque em negrito</strong>.</p>
+    <ul class="list"><li>Item um</li><li>Item dois</li><li>Item três</li></ul>
+  </div>
+  <div class="media"><img src="img/coluna.jpg" alt=""></div>
+  <div class="foot"><span>Tema</span><span class="arrow">→</span></div>
+</section>
+
+<section class="slide fecha last">
+  <div class="media"><img src="img/fecha.jpg" alt=""></div>
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">O que fica</div>
+    <p class="quote">Frase final de fechamento em três linhas.</p>
+  </div>
+  <div class="foot"><span>Tema</span><span class="arrow">→</span></div>
+</section>
+
+</body>
+</html>

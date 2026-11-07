@@ -25,7 +25,7 @@ await page.addStyleTag({ content: ".slide{margin:0 0 40px 0!important}" });
 const [W, H] = (await page.getAttribute("body", "data-size") || "1080x1350").split("x").map(Number);
 
 const layout = await page.$$eval("section.slide", (slides) => {
-  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span";
+  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span,.head>span";
   const transparent = (c) => !c || c === "transparent" || /rgba\(.*,\s*0\)$/.test(c);
   const isInMedia = (el) => !!el.closest(".media,.full");
   return slides.map((s) => {
@@ -89,8 +89,10 @@ const els = await page.$$("section.slide");
 for (let i = 0; i < els.length; i++) {
   const handles = await els[i].$$(".media,.full");
   for (let j = 0; j < handles.length; j++) {
-    const file = `media-${String(i + 1).padStart(2, "0")}-${j + 1}.jpg`;
-    await handles[j].screenshot({ path: path.join(out, file), type: "jpeg", quality: 88 });
+    // cantos arredondados precisam de transparência (PNG); o resto vai em JPEG, mais leve
+    const round = await handles[j].evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius) > 0);
+    const file = `media-${String(i + 1).padStart(2, "0")}-${j + 1}.${round ? "png" : "jpg"}`;
+    await handles[j].screenshot(round ? { path: path.join(out, file), omitBackground: true } : { path: path.join(out, file), type: "jpeg", quality: 88 });
     layout[i].medias[j].file = file;
   }
 }

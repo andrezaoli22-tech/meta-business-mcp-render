@@ -1,6 +1,6 @@
 ---
 name: editor-carrossel
-description: Editor e designer de carrosséis para Instagram/LinkedIn. Use sempre que o usuário pedir para criar, montar, editar, refazer ou adaptar um carrossel (posts com vários slides), principalmente quando enviar uma referência (print, link de post, perfil, paleta, outro carrossel) para copiar o estilo. A skill analisa a referência, escreve o roteiro slide a slide, busca imagens reais e licenciadas na internet, monta os slides em HTML com design profissional, renderiza em PNG 1080x1350 e, se pedido, agenda pelo conector Meta Business (agendar_post_instagram).
+description: Editor e designer de carrosséis para Instagram/LinkedIn (padrão RP News: assunto único ou resumo semanal de cases). Use sempre que o usuário pedir para criar, montar, editar, refazer ou adaptar um carrossel (posts com vários slides), mandar o assunto ou os cases da semana, principalmente quando enviar uma referência (print, link de post, perfil, paleta, outro carrossel) para copiar o estilo. A skill analisa a referência, escreve o roteiro slide a slide, busca imagens reais e licenciadas na internet, monta os slides em HTML com design profissional, renderiza em PNG 1080x1350 e, se pedido, agenda pelo conector Meta Business (agendar_post_instagram).
 ---
 
 # Editor de Carrossel
@@ -43,6 +43,11 @@ Copie o **estilo**, nunca o conteúdo, a marca ou as fotos de terceiros.
 neutros, azul `#0025CC` só no slide de ênfase e nas listas, capa com degradê preto,
 linhas brancas finas no topo e no rodapé, sem logo no topo e com foto real das ativações.
 Uma referência nova muda só o que ela mostrar; o resto continua no padrão da casa.
+
+**Qual formato usar:**
+- **Assunto único** (um evento ou tema, como o GP de São Paulo): `estilo-rp-news.md` + `templates/rp-news.html`
+- **Resumo semanal** ("assunto da semana", "melhores da semana", vários cases):
+  `estilo-rp-news-semanal.md` + `templates/rp-news-semanal.html`
 
 Detalhes de tipografia, grid, cor e hierarquia: `references/design-system.md`.
 

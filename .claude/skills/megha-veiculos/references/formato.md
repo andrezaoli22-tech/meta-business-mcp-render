@@ -73,3 +73,10 @@ cena, `lamina` na última. Paleta Banco Pan: legenda branca e ênfase azul escur
 - Efeitos SECOS/comerciais: gere com `scripts/secar_sfx.py` e use `legendas.py sfx ... --seco` (sem cauda de reverb, cortes curtos). Também nos sons do motion (`assets/sfx/seco/`).
 - Nenhuma palavra sobre o rosto e, nesta marca, ênfases sempre NA FRENTE e fora do rosto (abaixo do queixo ou acima da cabeça). Se `rostos.py` subestimar o rosto (pessoa sentada no carro), ajuste `y` e `rosto` do grupo à mão e confira na prévia.
 - Evite a animação `partir` em grupos com linha de apoio acima e abaixo: as metades podem desalinhar. Prefira `flip`.
+
+## 7. Stories de oferta a partir de clipes soltos (sem fala)
+- `scripts/montar_base.py plano.json`: corta os clipes no tempo da batida (duração em batidas × 60/BPM), sem som, com aproximação/afastamento suave por plano, direto em 4K a partir de fontes 4K. Antes do primeiro clipe fica preto (a abertura cobre).
+- `scripts/gerar_trilha.py`: trilha original (house, trap ou pulse), com riser + impacto no início dos clipes (`--drop`) e na cartela (`--final`). Varie estilo/BPM/tom entre vídeos da mesma série.
+- `assets/motion/stories-megha.html` (via motion.py): abertura (`modo: abertura`) e cartela (`modo: final`) com a logo (`assets/marca/megha_logo.png`), fundo preto brilhante com brilho vermelho, palavra grande vermelha com reflexo; variantes a/b/c mudam a entrada (letras girando, subindo, aleatórias).
+- Legendas: só ênfase + linha de apoio por plano, `vermelho-reluz` com `--cor-destaque "#E3171B"`, uma animação diferente por plano. Paleta: branco, preto e vermelho.
+- Áudio: trilha + efeitos secos (`--seco`, -12 dB) normalizados a -14 LUFS.

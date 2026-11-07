@@ -69,6 +69,7 @@ def main():
     html = html.replace("/*__BASE__*/", open(os.path.join(ASSETS, "motion", "_base.js")).read())
     # bibliotecas locais (three.js etc.) referenciadas como __LIB__/arquivo
     html = html.replace("__LIB__", "file://" + os.path.join(ASSETS, "motion", "lib"))
+    html = html.replace("__MARCA__", "file://" + os.path.join(ASSETS, "marca"))
     if "/*__FONTE3D__*/null" in html:   # fonte 3D embutida (evita fetch de arquivo local)
         html = html.replace("/*__FONTE3D__*/null",
                             open(os.path.join(ASSETS, "motion", "lib", "helvetiker_bold.typeface.json")).read())

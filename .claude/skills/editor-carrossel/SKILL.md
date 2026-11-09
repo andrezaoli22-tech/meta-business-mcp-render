@@ -46,8 +46,11 @@ Uma referência nova muda só o que ela mostrar; o resto continua no padrão da 
 
 **Qual formato usar:**
 - **Assunto único** (um evento ou tema, como o GP de São Paulo): `estilo-rp-news.md` + `templates/rp-news.html`
-- **Resumo semanal** ("assunto da semana", "melhores da semana", vários cases):
-  `estilo-rp-news-semanal.md` + `templates/rp-news-semanal.html`
+- **Resumo semanal** ("assunto da semana", "melhores da semana", vários cases): **também no
+  layout de assunto único** (`templates/rp-news.html`), 1 case por slide; veja "Variações
+  aprovadas" em `estilo-rp-news.md` e o exemplo `carrosseis/rp-news-semanal-01-v2/`. O formato
+  branco (`rp-news-semanal.html`) só se o cliente pedir.
+- **Degradê preto alto** sempre que houver letra branca sobre foto (regra em `estilo-rp-news.md`).
 
 Detalhes de tipografia, grid, cor e hierarquia: `references/design-system.md`.
 

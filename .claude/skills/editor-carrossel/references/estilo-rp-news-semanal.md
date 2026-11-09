@@ -1,5 +1,9 @@
 # RP News Semanal — resumo das campanhas e notícias da semana
 
+> **Atenção:** o cliente preferiu o semanal no **layout de assunto único** (`rp-news.html`, ver
+> "Variações aprovadas" em `estilo-rp-news.md`). Exemplo aprovado: `carrosseis/rp-news-semanal-01-v2/`.
+> Este formato branco fica como alternativa, só se o cliente pedir.
+
 Formato fixo do carrossel semanal. Template: `templates/rp-news-semanal.html`.
 Segue o padrão da casa (`estilo-rp-news.md`) em cores, fontes e capa com degradê preto;
 a estrutura do miolo vem do formato "melhores da semana" (uma notícia por slide).

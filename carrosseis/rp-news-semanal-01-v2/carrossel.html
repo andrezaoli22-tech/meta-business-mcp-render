@@ -1,0 +1,149 @@
+<!doctype html>
+<!-- RP News Semanal #01 no layout RP News (assunto único). Degradê preto alto sob todo texto branco sobre foto. -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --w:1080px; --h:1350px; --black:#0B0B0B; --white:#FFFFFF; --blue:#0025CC; --px:72px; --top:110px; --bottom:97px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#222;font-family:"Inter Tight",sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+  .slide{width:var(--w);height:var(--h);position:relative;overflow:hidden;margin:0 auto 40px;background:var(--black)}
+  .slide.blue{background:var(--blue)}
+  .rule-top{position:absolute;left:0;right:0;top:var(--top);height:2px;background:var(--white);z-index:5}
+  .foot{position:absolute;left:0;right:0;bottom:0;height:var(--bottom);display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);font-size:26px;font-weight:400;z-index:5}
+  .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--white)}
+  .foot .arrow{font-size:30px;font-weight:500}
+  .last .foot .arrow{display:none}
+
+  .kicker{font-weight:700;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+  .kicker + .h, .kicker + .h-capa{margin-top:22px}
+  .h-capa{font-weight:700;font-size:100px;line-height:1.06;letter-spacing:-.03em}
+  .h{font-weight:800;font-size:56px;line-height:1.05;letter-spacing:-.035em;text-transform:uppercase;text-wrap:balance}
+  .body{font-weight:400;font-size:36px;line-height:1.5;letter-spacing:-.01em;text-wrap:pretty}
+  .body strong{font-weight:700}
+  .h + .body{margin-top:16px}
+  .list{list-style:none;margin-top:36px}
+  .list li{color:var(--blue);font-weight:700;font-size:30px;line-height:1.7;letter-spacing:-.01em}
+
+  .media{position:absolute;overflow:hidden}
+  .media img{display:block;width:100%;height:100%;object-fit:cover}
+  .grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+  .grid img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* degradê preto ALTO para texto branco sobre foto */
+  .shade-high::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.45) 0%,rgba(11,11,11,0) 12%,rgba(11,11,11,.25) 26%,rgba(11,11,11,.72) 40%,rgba(11,11,11,.93) 52%,var(--black) 62%,var(--black) 100%)}
+  /* rodapé branco sobre foto */
+  .shade-foot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,0) 55%,rgba(11,11,11,.55) 78%,rgba(11,11,11,.9) 100%)}
+
+  /* capa / fechamento */
+  .capa .media,.fecha .media{inset:0}
+  .capa .content,.fecha .content{position:absolute;left:var(--px);right:var(--px);bottom:150px;z-index:3}
+  .capa .foot{background:var(--black)}
+  .fecha .content{text-align:right}
+  .fecha .quote{font-weight:700;font-size:88px;line-height:1.06;letter-spacing:-.03em}
+  .fecha .foot{background:var(--black)}
+
+  /* foto em cima + texto */
+  .foto-topo .media{left:0;right:0;top:112px;height:430px}
+  .foto-topo .content{position:absolute;left:var(--px);right:var(--px);top:600px}
+
+  /* número gigante (azul ou preto) com foto embaixo */
+  .numero .content{position:absolute;left:var(--px);right:var(--px);top:170px;text-align:right}
+  .numero .big{font-weight:800;font-size:190px;line-height:.82;letter-spacing:-.06em}
+  .numero .big small{font-size:96px;letter-spacing:-.04em}
+  .numero .big + .h{margin-top:18px}
+  .numero .media{left:0;right:0;top:840px;bottom:0}
+  .numero .foot{background:transparent}
+
+  /* texto + coluna de foto */
+  .coluna .media{right:0;width:430px;top:112px;bottom:var(--bottom)}
+  .coluna .content{position:absolute;left:var(--px);width:540px;top:50%;transform:translateY(-50%)}
+</style>
+</head>
+<body data-size="1080x1350">
+
+<!-- 1. CAPA -->
+<section class="slide capa">
+  <div class="media shade-high"><img src="img/arvore.jpg" style="object-position:50% 0%" alt=""></div>
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">Melhores da semana · 9 a 15 de novembro</div>
+    <h1 class="h-capa">Campanhas e notícias mais criativas da semana.</h1>
+  </div>
+  <div class="foot"><span>Edição #01 · Natal e Black Friday</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 2. CARAVANA -->
+<section class="slide foto-topo">
+  <div class="rule-top"></div>
+  <div class="media"><img src="img/caravana.jpg" style="object-position:50% 60%" alt=""></div>
+  <div class="content">
+    <div class="kicker">O Natal voltou para a estrada</div>
+    <h2 class="h">Caravana de Natal da Coca-Cola leva cinco caminhões a 94 cidades</h2>
+    <p class="body">Desde 9 de novembro, duas comitivas da Coca-Cola FEMSA Brasil percorrem 94 cidades de sete estados até 22 de dezembro, com cenários como a Fábrica da Magia e os Ursos Patinadores. A capital paulista recebe a caravana a partir de 12/11, e a meta é impactar <strong>mais de 64 milhões de pessoas</strong>.</p>
+  </div>
+  <div class="foot"><span>Melhores da semana</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 3. ÁRVORE (ênfase azul) -->
+<section class="slide blue numero">
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="big">55<small> m</small></div>
+    <h2 class="h">Coca-Cola acende árvore com show do Fat Family</h2>
+    <p class="body">No dia 14 de novembro, a Coca-Cola FEMSA Brasil inaugura a <strong>10ª edição</strong> da sua árvore no Parque Villa-Lobos, com show gratuito e pista com 100 pares de patins. Visitação até 3 de janeiro, de sexta a domingo, com expectativa de <strong>1,5 milhão de visitantes</strong>.</p>
+  </div>
+  <div class="media shade-foot"><img src="img/arvore.jpg" style="object-position:50% 30%" alt=""></div>
+  <div class="foot"><span>Melhores da semana</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 4. ELSEVE (coluna) -->
+<section class="slide coluna">
+  <div class="rule-top"></div>
+  <div class="content">
+    <h2 class="h">Elseve troca óleo grátis por agendamento, experiência e post</h2>
+    <p class="body">A L’Oréal Paris distribui <strong>40 mil frascos</strong> de 100 ml da nova fragrância. Para ganhar, o participante agenda pelo site, vive a experiência no espaço e publica a visita marcando <strong>@lorealparis</strong>.</p>
+    <ul class="list"><li>Rio · Shopping Barra · até 13/11</li><li>São Paulo · Eldorado · 18 a 27/11</li><li>Salvador · Shopping Barra · 4 a 13/12</li></ul>
+  </div>
+  <div class="media"><img src="img/elseve.jpg" style="object-position:84% 50%;transform:scale(1.12);transform-origin:84% 35%" alt=""></div>
+  <div class="foot"><span>Melhores da semana</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 5. MAGALU (foto em cima) -->
+<section class="slide foto-topo">
+  <div class="rule-top"></div>
+  <div class="media"><img src="img/magalu.jpg" style="object-position:50% 30%" alt=""></div>
+  <div class="content">
+    <div class="kicker">Desconto virou jogo de adivinhação</div>
+    <h2 class="h">Magalu resgata a Black Box e transforma desconto em surpresa</h2>
+    <p class="body">Nas lojas físicas, o cliente compra uma caixa-surpresa com produtos em condições especiais. A ação faz parte de um novembro com descontos de até 80%, o 11.11 e a Black Friday no dia 27, com <strong>14 horas de lives</strong> e mais de 40 personalidades, incluindo a Lu.</p>
+  </div>
+  <div class="foot"><span>Melhores da semana</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 6. BOTICÁRIO (número em fundo preto) -->
+<section class="slide numero">
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="big">400<small> mil</small></div>
+    <h2 class="h">O Boticário distribui miniaturas do novo Clash Extreme</h2>
+    <p class="body">Membros do Beautybox com compras elegíveis geram o vale no site ou no app e retiram a miniatura de 10 ml nas lojas até 19/11 ou enquanto durar o estoque. A colônia tem o <strong>dobro da concentração</strong> da linha Clash e é assinada por Dominique Ropion.</p>
+  </div>
+  <div class="media shade-foot"><img src="img/boticario.jpg" style="object-position:50% 50%" alt=""></div>
+  <div class="foot"><span>Melhores da semana</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 7. FECHAMENTO (mosaico) -->
+<section class="slide fecha last">
+  <div class="media grid shade-high"><img src="img/caravana.jpg" alt=""><img src="img/arvore.jpg" style="object-position:50% 30%" alt=""><img src="img/elseve.jpg" style="object-position:100% 50%" alt=""><img src="img/magalu.jpg" alt=""></div>
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">Edição #01</div>
+    <p class="quote" style="margin-top:22px">Qual desses cases mais chamou sua atenção?</p>
+  </div>
+  <div class="foot"><span>Melhores da semana</span><span>Conta nos comentários</span></div>
+</section>
+
+</body>
+</html>

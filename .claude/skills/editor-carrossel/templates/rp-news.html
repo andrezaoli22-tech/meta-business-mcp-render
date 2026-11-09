@@ -40,7 +40,8 @@
 
   /* 1. CAPA — foto cheia + degradê preto */
   .capa .media{inset:0}
-  .capa .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.35) 0%,rgba(11,11,11,0) 18%,rgba(11,11,11,0) 38%,rgba(11,11,11,.72) 62%,rgba(11,11,11,.96) 86%,var(--black) 100%)}
+  /* degradê ALTO: todo texto branco sobre foto fica sobre preto quase sólido */
+  .capa .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.45) 0%,rgba(11,11,11,0) 12%,rgba(11,11,11,.25) 26%,rgba(11,11,11,.72) 40%,rgba(11,11,11,.93) 52%,var(--black) 62%,var(--black) 100%)}
   .capa .content{position:absolute;left:var(--px);right:var(--px);bottom:150px;z-index:3}
   .capa .h-capa{margin-top:28px}
   .capa .foot{background:var(--black)}
@@ -62,7 +63,8 @@
 
   /* 5. FECHAMENTO — foto cheia */
   .fecha .media{inset:0}
-  .fecha .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.25) 0%,rgba(11,11,11,0) 30%,rgba(11,11,11,.25) 60%,rgba(11,11,11,.7) 100%)}
+  .fecha .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.45) 0%,rgba(11,11,11,0) 12%,rgba(11,11,11,.25) 26%,rgba(11,11,11,.72) 40%,rgba(11,11,11,.93) 52%,var(--black) 62%,var(--black) 100%)}
+  .enfase .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,0) 55%,rgba(11,11,11,.55) 78%,rgba(11,11,11,.9) 100%)}
   .fecha .content{position:absolute;left:var(--px);right:var(--px);bottom:150px;text-align:right;z-index:3}
   .fecha .quote{font-weight:700;font-size:84px;line-height:1.08;letter-spacing:-.03em;margin-top:24px}
   .fecha .foot{background:transparent}

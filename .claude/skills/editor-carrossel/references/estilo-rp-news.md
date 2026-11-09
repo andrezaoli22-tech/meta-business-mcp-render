@@ -47,6 +47,20 @@ barras coloridas e pílulas preenchidas.
 5. **Fechamento:** foto cheia com escurecimento leve embaixo, kicker + frase final
    alinhados à direita, todos brancos.
 
+## Degradê preto (regra do cliente)
+Sempre que houver **letra branca sobre foto**, o degradê preto sobe alto: quase transparente
+só no terço de cima, cerca de 72% de opacidade a 40% da altura e **preto sólido a partir
+de cerca de 60%**. O texto inteiro precisa ficar sobre preto quase sólido. Na capa e no
+fechamento isso é obrigatório. Em foto de base com rodapé branco por cima, use escurecimento
+de 55% até 90% na faixa de baixo. Escolha fotos com o assunto principal na **metade de cima**
+(ex.: a árvore, que é vertical) para ele não sumir no preto.
+
+## Variações aprovadas
+- Número gigante (ex.: "55 m", "400 mil") com foto embaixo: em azul quando é a ênfase do
+  carrossel e em preto nos demais.
+- Resumo semanal no layout de assunto único: 1 case por slide alternando foto em cima,
+  número gigante e coluna de foto; fechamento em mosaico 2x2 com degradê alto e a pergunta.
+
 ## Fotos
 - Sempre fotos **reais das ativações e marcas citadas** (assessoria, site oficial,
   perfil oficial da marca ou imagem de imprensa fornecida pelo usuário). Banco de imagem

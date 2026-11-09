@@ -72,6 +72,8 @@ def main(src, dst):
                 extra = max(40, w * 0.3)
                 if t["align"] == "right":
                     x -= extra
+                elif t["align"] == "center":
+                    x -= extra / 2
                 w += extra
             tb = slide.shapes.add_textbox(Emu(int(x * PX)), Emu(int(t["y"] * PX)), Emu(int(w * PX)), Emu(int(t["h"] * PX)))
             tb.name = "Texto " + t["name"][:30]

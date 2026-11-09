@@ -60,6 +60,10 @@ de 55% até 90% na faixa de baixo. Escolha fotos com o assunto principal na **me
   carrossel e em preto nos demais.
 - Resumo semanal no layout de assunto único: 1 case por slide alternando foto em cima,
   número gigante e coluna de foto; fechamento em mosaico 2x2 com degradê alto e a pergunta.
+- **Capa do resumo semanal (aprovada):** mosaico 2x2 com 4 fotos dos cases, título branco
+  **centralizado no meio** ("Campanhas da semana que você precisa saber"), sobretítulo com
+  o período, faixa central escura (cerca de 82–90%) atrás do texto e fotos visíveis em cima e
+  embaixo; barra preta no rodapé com "Edição #NN". Exemplo: `carrosseis/rp-news-semanal-01-v2/`.
 
 ## Fotos
 - Sempre fotos **reais das ativações e marcas citadas** (assessoria, site oficial,

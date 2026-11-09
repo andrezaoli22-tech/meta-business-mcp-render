@@ -1,0 +1,128 @@
+<!doctype html>
+<!--
+  Template RP News SEMANAL (resumo de cases da semana). Ver references/estilo-rp-news-semanal.md.
+  Capa: mosaico 2x2 + degradê preto. Miolo: 1 slide branco por notícia. Fechamento azul (ênfase).
+  Substitua: @HANDLE, EDICAO, PERIODO, N/TOTAL, textos e fotos (img/...).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --w:1080px; --h:1350px; --black:#0B0B0B; --ink:#111111; --text:#2A2A2A; --muted:#6E6E6E; --white:#FFFFFF; --blue:#0025CC; --px:80px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#222;font-family:"Inter Tight",sans-serif;-webkit-font-smoothing:antialiased}
+  .slide{width:var(--w);height:var(--h);position:relative;overflow:hidden;margin:0 auto 40px;background:var(--white);color:var(--ink)}
+
+  /* ---------- CAPA: mosaico 2x2 + degradê preto ---------- */
+  .capa{background:var(--black);color:var(--white)}
+  .capa .media{position:absolute;inset:0;overflow:hidden}
+  .capa .mosaic{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%}
+  .capa .mosaic img{width:100%;height:100%;object-fit:cover;display:block}
+  .capa .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.35) 0%,rgba(11,11,11,0) 14%,rgba(11,11,11,0) 42%,rgba(11,11,11,.55) 62%,rgba(11,11,11,.9) 84%,var(--black) 100%)}
+  .capa .rule-top{position:absolute;left:0;right:0;top:110px;height:2px;background:var(--white);z-index:3}
+  .capa .content{position:absolute;left:var(--px);right:var(--px);bottom:170px;text-align:center;z-index:3}
+  .capa .kicker{font-weight:700;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+  .capa h1{font-weight:700;font-size:100px;line-height:1.02;letter-spacing:-.035em;margin-top:28px;text-wrap:balance}
+  .capa .foot{position:absolute;left:0;right:0;bottom:0;height:97px;display:flex;align-items:center;justify-content:space-between;padding:0 72px;font-size:26px;background:var(--black);z-index:3}
+  .capa .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--white)}
+  .capa .foot .ed{font-weight:800;letter-spacing:-.01em}
+
+  /* ---------- NOTÍCIA: slide branco ---------- */
+  .noticia .head{position:absolute;left:var(--px);right:var(--px);top:64px;display:flex;justify-content:space-between;align-items:center;font-size:26px}
+  .noticia .handle{font-weight:600;color:var(--ink);display:flex;align-items:center;gap:12px}
+  .noticia .handle i{width:30px;height:30px;border:2.5px solid var(--ink);border-radius:9px;display:inline-block;position:relative}
+  .noticia .handle i::after{content:"";position:absolute;inset:6px;border:2.5px solid var(--ink);border-radius:50%}
+  .noticia .count{color:var(--muted);font-weight:500}
+  .noticia h2{position:absolute;left:var(--px);right:var(--px);top:150px;font-weight:800;font-size:76px;line-height:1.04;letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
+  .noticia .media{position:absolute;left:var(--px);right:var(--px);top:420px;height:500px;border-radius:28px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+  .noticia .media img{width:100%;height:100%;object-fit:cover;display:block}
+  .noticia .body{position:absolute;left:var(--px);right:var(--px);top:968px;font-weight:400;font-size:31px;line-height:1.45;letter-spacing:-.005em;color:var(--text);text-wrap:pretty}
+  .noticia .foot{position:absolute;left:var(--px);right:var(--px);bottom:58px;display:flex;justify-content:space-between;align-items:center;font-size:22px;color:var(--ink)}
+  .noticia .foot .ed{font-weight:700;font-style:italic;font-size:26px}
+  .noticia .foot .swipe{text-transform:uppercase;letter-spacing:.04em}
+
+  /* ---------- FECHAMENTO: ênfase azul ---------- */
+  .fecha{background:var(--blue);color:var(--white)}
+  .fecha .rule-top{position:absolute;left:0;right:0;top:110px;height:2px;background:var(--white)}
+  .fecha .content{position:absolute;left:var(--px);right:var(--px);top:50%;transform:translateY(-50%)}
+  .fecha .kicker{font-weight:700;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+  .fecha .q{font-weight:700;font-size:96px;line-height:1.04;letter-spacing:-.035em;margin-top:28px}
+  .fecha .body{font-weight:400;font-size:36px;line-height:1.45;margin-top:36px}
+  .fecha .foot{position:absolute;left:0;right:0;bottom:0;height:97px;display:flex;align-items:center;justify-content:space-between;padding:0 72px;font-size:26px}
+  .fecha .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--white)}
+</style>
+</head>
+<body data-size="1080x1350">
+
+<!-- CAPA -->
+<section class="slide capa">
+  <div class="media"><div class="mosaic">
+    <img src="img/caravana.jpg" alt=""><img src="img/arvore.jpg" alt=""><img src="img/elseve.jpg" style="object-position:100% 50%" alt=""><img src="img/magalu.jpg" alt="">
+  </div></div>
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">9 a 15 de novembro</div>
+    <h1>Campanhas e notícias mais criativas da semana</h1>
+  </div>
+  <div class="foot"><span class="ed">Edição #01</span><span>→</span></div>
+</section>
+
+<!-- NOTÍCIA 1 -->
+<section class="slide noticia">
+  <div class="head"><span class="handle"><i></i>@rpnews</span><span class="count">1/5</span></div>
+  <h2>Caravana de Natal da Coca-Cola leva cinco caminhões a 94 cidades</h2>
+  <div class="media"><img src="img/caravana.jpg" style="object-position:50% 55%" alt=""></div>
+  <p class="body">O Natal mais tradicional do país voltou para a estrada. Desde 9 de novembro, duas comitivas de cinco caminhões iluminados da Coca-Cola FEMSA Brasil percorrem 94 cidades de sete estados, até 22 de dezembro. Os cenários vão da Fábrica da Magia aos Ursos Patinadores. A capital paulista recebe a caravana a partir de 12 de novembro, e a meta é impactar mais de 64 milhões de pessoas.</p>
+  <div class="foot"><span>Melhores da semana</span><span class="ed">Edição #01</span><span class="swipe">Arraste para o lado</span></div>
+</section>
+
+<!-- NOTÍCIA 2 -->
+<section class="slide noticia">
+  <div class="head"><span class="handle"><i></i>@rpnews</span><span class="count">2/5</span></div>
+  <h2>Coca-Cola acende árvore de 55 metros com show do Fat Family</h2>
+  <div class="media"><img src="img/arvore.jpg" style="object-position:50% 40%" alt=""></div>
+  <p class="body">São Paulo ganha um ponto de encontro para o fim de ano. No dia 14 de novembro, a Coca-Cola FEMSA Brasil inaugura a 10ª edição da sua árvore de Natal no Parque Villa-Lobos, com 55 metros e show gratuito do Fat Family. Ao redor dela, uma pista de patinação com 100 pares de patins. A visitação vai até 3 de janeiro, de sexta a domingo, com expectativa de 1,5 milhão de visitantes.</p>
+  <div class="foot"><span>Melhores da semana</span><span class="ed">Edição #01</span><span class="swipe">Arraste para o lado</span></div>
+</section>
+
+<!-- NOTÍCIA 3 -->
+<section class="slide noticia">
+  <div class="head"><span class="handle"><i></i>@rpnews</span><span class="count">3/5</span></div>
+  <h2>Elseve troca óleo grátis por agendamento, experiência e post</h2>
+  <div class="media"><img src="img/elseve.jpg" style="object-position:50% 50%" alt=""></div>
+  <p class="body">Para ganhar, não basta passar na frente. A L’Oréal Paris leva o Pop Up Experiência Elseve Óleo Extraordinário a três shoppings e distribui 40 mil frascos de 100 ml da nova fragrância. O participante agenda pelo site, vive a experiência no espaço e publica a visita marcando @lorealparis. Rio (Shopping Barra, até 13/11), São Paulo (Eldorado, de 18 a 27/11) e Salvador (Shopping Barra, de 4 a 13/12).</p>
+  <div class="foot"><span>Melhores da semana</span><span class="ed">Edição #01</span><span class="swipe">Arraste para o lado</span></div>
+</section>
+
+<!-- NOTÍCIA 4 -->
+<section class="slide noticia">
+  <div class="head"><span class="handle"><i></i>@rpnews</span><span class="count">4/5</span></div>
+  <h2>Magalu resgata a Black Box e transforma desconto em surpresa</h2>
+  <div class="media"><img src="img/magalu.jpg" style="object-position:50% 35%" alt=""></div>
+  <p class="body">Desconto virou jogo de adivinhação. Nas lojas físicas, o Magalu retoma a Black Box, ação em que o cliente compra uma caixa-surpresa com produtos em condições especiais. Ela faz parte de um novembro de ofertas diárias, descontos de até 80% e dois picos de venda: o 11.11 e a Black Friday, no dia 27, com 14 horas de lives e mais de 40 personalidades, incluindo a Lu.</p>
+  <div class="foot"><span>Melhores da semana</span><span class="ed">Edição #01</span><span class="swipe">Arraste para o lado</span></div>
+</section>
+
+<!-- NOTÍCIA 5 -->
+<section class="slide noticia">
+  <div class="head"><span class="handle"><i></i>@rpnews</span><span class="count">5/5</span></div>
+  <h2>O Boticário distribui 400 mil miniaturas do novo Clash Extreme</h2>
+  <div class="media"><img src="img/boticario.jpg" style="object-position:50% 50%" alt=""></div>
+  <p class="body">Quem já é cliente testa o lançamento antes de comprar. O Boticário distribui 400 mil miniaturas de 10 ml do Clash Extreme, com o dobro da concentração aromática da linha Clash, assinada por Dominique Ropion. Membros do Beautybox com compras elegíveis geram o vale no site ou no app e retiram nas lojas até 19 de novembro ou enquanto durar o estoque.</p>
+  <div class="foot"><span>Melhores da semana</span><span class="ed">Edição #01</span><span class="swipe">Arraste para o lado</span></div>
+</section>
+
+<!-- FECHAMENTO (ênfase azul) -->
+<section class="slide fecha last">
+  <div class="rule-top"></div>
+  <div class="content">
+    <div class="kicker">Edição #01</div>
+    <p class="q">Qual desses cases mais chamou sua atenção?</p>
+    <p class="body">Conta nos comentários e salve para consultar depois.</p>
+  </div>
+  <div class="foot"><span>Melhores da semana</span><span>@rpnews</span></div>
+</section>
+
+</body>
+</html>

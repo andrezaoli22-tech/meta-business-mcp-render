@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="340" viewBox="0 0 820 340" font-family="Arial, Helvetica, sans-serif">
+  <rect width="820" height="340" fill="#ffffff"/>
+  <text x="410" y="36" text-anchor="middle" font-size="22" font-weight="bold" fill="#1f2937">Como calcular seu preço</text>
+  <rect x="30" y="60" width="760" height="80" rx="12" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="410" y="92" text-anchor="middle" font-size="18" font-weight="bold" fill="#155e75">Valor-hora = (meta de renda + custos fixos) ÷ horas faturáveis</text>
+  <text x="410" y="120" text-anchor="middle" font-size="14" fill="#155e75">ex.: (R$ 6.000 + R$ 1.000) ÷ 138 h ≈ R$ 51/h</text>
+  <rect x="30" y="160" width="760" height="80" rx="12" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="410" y="192" text-anchor="middle" font-size="18" font-weight="bold" fill="#854d0e">Serviço = horas totais × valor-hora + materiais + margem</text>
+  <text x="410" y="220" text-anchor="middle" font-size="14" fill="#854d0e">planejamento + compras + deslocamento + produção + limpeza (ex.: 8 h → ≈ R$ 480)</text>
+  <rect x="30" y="260" width="760" height="60" rx="12" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="410" y="296" text-anchor="middle" font-size="18" font-weight="bold" fill="#166534">Preço ao cliente = serviço + insumos (pela nota ou com markup)</text>
+</svg>

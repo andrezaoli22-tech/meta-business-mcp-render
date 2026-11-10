@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" font-family="Arial, Helvetica, sans-serif">
+  <rect width="900" height="300" fill="#ffffff"/>
+  <text x="450" y="36" text-anchor="middle" font-size="24" font-weight="bold" fill="#1f2937">Personal Chef Pro — mapa do curso (23 h)</text>
+  <line x1="60" y1="150" x2="840" y2="150" stroke="#d1d5db" stroke-width="6" stroke-linecap="round"/>
+  <g font-size="13" text-anchor="middle">
+    <circle cx="90" cy="150" r="34" fill="#0284c7"/><text x="90" y="156" fill="#fff" font-weight="bold" font-size="18">M1</text>
+    <text x="90" y="210" font-weight="bold" fill="#111827">A profissão</text><text x="90" y="228" fill="#4b5563">mercado e modelos</text>
+
+    <circle cx="232" cy="150" r="34" fill="#7c3aed"/><text x="232" y="156" fill="#fff" font-weight="bold" font-size="18">M2</text>
+    <text x="232" y="210" font-weight="bold" fill="#111827">Base técnica</text><text x="232" y="228" fill="#4b5563">cortes, cocção, lote</text>
+
+    <circle cx="374" cy="150" r="34" fill="#dc2626"/><text x="374" y="156" fill="#fff" font-weight="bold" font-size="18">M3</text>
+    <text x="374" y="210" font-weight="bold" fill="#111827">Segurança</text><text x="374" y="228" fill="#4b5563">RDC 216 e alergênicos</text>
+
+    <circle cx="516" cy="150" r="34" fill="#16a34a"/><text x="516" y="156" fill="#fff" font-weight="bold" font-size="18">M4</text>
+    <text x="516" y="210" font-weight="bold" fill="#111827">Cardápios</text><text x="516" y="228" fill="#4b5563">entrevista e fichas</text>
+
+    <circle cx="658" cy="150" r="34" fill="#d97706"/><text x="658" y="156" fill="#fff" font-weight="bold" font-size="18">M5</text>
+    <text x="658" y="210" font-weight="bold" fill="#111827">Negócio</text><text x="658" y="228" fill="#4b5563">MEI, preço, cook day</text>
+
+    <circle cx="800" cy="150" r="34" fill="#db2777"/><text x="800" y="156" fill="#fff" font-weight="bold" font-size="18">M6</text>
+    <text x="800" y="210" font-weight="bold" fill="#111827">Diferenciais</text><text x="800" y="228" fill="#4b5563">nicho, vendas, fidelização</text>
+  </g>
+  <text x="450" y="90" text-anchor="middle" font-size="14" fill="#374151">24 aulas · roteiros de vídeo · quizzes · 6 atividades · projeto final · prova com 30 questões</text>
+  <text x="450" y="275" text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">Projeto final: plano de lançamento + vídeo de um cook day</text>
+</svg>

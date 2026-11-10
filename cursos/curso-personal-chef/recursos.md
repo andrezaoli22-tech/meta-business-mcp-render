@@ -32,14 +32,6 @@
 - Become a Personal Chef — Ep. 7, How personal chefs really get clients: https://becomeapersonalchef.buzzsprout.com/2562973/episodes/18304400-episode-7-how-personal-chefs-really-get-clients
 - The do's and don'ts of running a personal chef business: https://www.buzzsprout.com/2414748/episodes/16770059-the-do-s-and-don-ts-of-running-a-personal-chef-business
 
-## Vídeos (termos de busca sugeridos no YouTube)
-> Não incluímos links diretos de vídeos porque não foi possível verificá-los nesta pesquisa.
-> Use os termos abaixo e prefira canais de escolas, chefs com formação comprovada e órgãos oficiais.
-- "day in the life personal chef" / "um dia como personal chef"
-- "personal chef cook day meal prep"
-- "knife skills julienne brunoise" / "cortes clássicos de legumes"
-- "boas práticas manipulação de alimentos RDC 216"
-- "como abrir MEI passo a passo" (canais oficiais do Sebrae/gov.br)
 
 ## Preços e mercado (Brasil, 2026)
 - Catraca Livre: https://catracalivre.com.br/noticias/quanto-custa-contratar-um-chef-de-cozinha-para-um-jantar-intimo-em-2026/

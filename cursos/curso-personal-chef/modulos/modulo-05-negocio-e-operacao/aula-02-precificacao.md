@@ -1,6 +1,6 @@
 # Aula 5.2 — Precificação: quanto cobrar
 
-**Duração estimada:** 15 min · **Formato:** vídeo + planilha
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Calcular** seu valor-hora a partir de meta de renda, custos e horas faturáveis.
@@ -61,18 +61,6 @@ margem) ÷ nº de convidados. Referências: R$ 120–450 por pessoa em jantares 
 - Cobre **sinal** (ex.: 50%) para eventos e reservar a data.
 - Reavalie preços a cada 6 meses.
 - Não dispute por preço: dispute por valor (Módulo 6).
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: as horas invisíveis | Relógio |
-| 1:00 | Serviço + insumos | Infográfico |
-| 3:00 | Cálculo do valor-hora | Planilha ao vivo |
-| 6:30 | Horas reais do cook day | Tabela |
-| 9:00 | Preço do pacote | Planilha |
-| 11:30 | Eventos | Exemplo |
-| 13:30 | Regras de ouro + prática | Slide |
 
 ## Prática (20 min)
 Use `extras/modelo-planilha-precificacao.md` para calcular: (1) seu valor-hora;

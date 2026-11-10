@@ -13,9 +13,9 @@
 - **Nível:** iniciante na profissão → intermediário. Pressupõe cozinhar com segurança no
   dia a dia; a base técnica profissional é revisada no Módulo 2.
 - **Pré-requisitos:** saber preparar refeições completas; acesso a uma cozinha para praticar.
-- **Formato:** online gravado (videoaulas + materiais + exercícios práticos).
+- **Formato:** curso completo em texto (aulas para leitura + exercícios práticos + modelos prontos). Não depende de vídeos.
 - **Carga horária total:** 23 h
-  - 5 h 05 min de videoaulas (24 aulas)
+  - 5 h 05 min de leitura das aulas (24 aulas)
   - 8 h de práticas das aulas (24 × 20 min)
   - 3 h de atividades avaliativas dos módulos (6 × 30 min)
   - 6 h de projeto final
@@ -46,11 +46,11 @@ Ao concluir, o aluno será capaz de:
 ## Projeto final
 **Plano de lançamento do seu serviço de personal chef**: nicho, cardápio semanal de um
 cliente fictício com fichas técnicas, precificação, contrato, checklist do cook day e
-vídeo curto de um cook day simulado. Ver `projeto-final.md`.
+relatório fotográfico de um cook day. Ver `projeto-final.md`.
 
 ## Grade curricular
 
-| Módulo | Objetivo | Aulas | Vídeo | Entregável | Avaliação |
+| Módulo | Objetivo | Aulas | Leitura | Entregável | Avaliação |
 |---|---|---|---|---|---|
 | 1. A profissão | Decidir o modelo de atuação e o plano de transição | 4 | 44 min | Autodiagnóstico + plano de 90 dias | Quiz + atividade |
 | 2. Base técnica | Produzir em lote com padrão profissional fora da própria cozinha | 4 | 54 min | Kit do chef + teste de produção | Quiz + atividade |
@@ -107,7 +107,7 @@ vídeo curto de um cook day simulado. Ver `projeto-final.md`.
 
 ## Arquivos do curso
 - `pesquisa/` — 33 fontes (64 links) e benchmark de 10 cursos/certificações
-- `modulos/` — 24 aulas com roteiro de vídeo, imagens, prática, quiz e referências
+- `modulos/` — 24 aulas com conteúdo completo, passo a passo, imagens, prática, quiz e referências
 - `imagens/` — infográficos (SVG) usados nas aulas
 - `projeto-final.md`, `avaliacao-final.md` (prova com 30 questões), `glossario.md`, `recursos.md`
 - `extras/` — modelos (entrevista, ficha técnica, contrato, checklist), página de vendas e certificado

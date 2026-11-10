@@ -1,6 +1,6 @@
 # Aula 5.4 — O cook day de ponta a ponta
 
-**Duração estimada:** 15 min · **Formato:** vídeo (acompanhando um cook day real ou simulado)
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Executar** um cook day completo seguindo checklist, dentro do tempo planejado.
@@ -48,19 +48,6 @@ Lista do que foi preparado, ordem de consumo sugerida, validades, reaquecimento 
 | Equipamento do cliente quebrado | Kit próprio; ajustar técnica; registrar |
 | Atraso | Avisar antes; priorizar pratos de maior validade |
 | Cliente presente e conversando muito | Simpatia + limites ("vou terminar esta etapa e já te mostro") |
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho [F30] | Timelapse completo |
-| 1:00 | Véspera | Mesa com fichas e lista |
-| 3:30 | Compras e chegada | Câmera na mão |
-| 6:00 | Produção | Timelapse + cortes |
-| 10:00 | Porcionamento, rótulos, geladeira | Close |
-| 12:00 | Bilhete e mensagem | Tela do celular |
-| 13:00 | Indicadores e imprevistos | Tabela |
-| 14:30 | Prática | Slide |
 
 ## Prática (20 min + cook day)
 Faça um cook day completo (para você, família ou cliente-teste) com o

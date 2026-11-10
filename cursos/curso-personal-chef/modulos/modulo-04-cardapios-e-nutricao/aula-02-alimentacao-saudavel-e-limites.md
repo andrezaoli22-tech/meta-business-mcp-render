@@ -1,6 +1,6 @@
 # Aula 4.2 — Alimentação saudável e os limites da sua atuação
 
-**Duração estimada:** 12 min · **Formato:** vídeo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Aplicar** os princípios do Guia Alimentar para a População Brasileira na montagem de cardápios.
@@ -41,16 +41,7 @@ culinária com ingredientes frescos.
 A prescrição dietética é atividade privativa do nutricionista (Lei nº 8.234/1991
 **[a verificar]**). **Parceria com nutricionistas** é ótima fonte de clientes (Aula 6.2).
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Prato colorido |
-| 1:00 | Regra de ouro e NOVA | 4 grupos com exemplos |
-| 5:00 | Aplicando no cardápio | Cardápio de exemplo |
-| 8:00 | Pode × não pode | Tabela |
-| 11:00 | Parceria com nutricionista + prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** infográfico dos 4 grupos NOVA com exemplos (milho → óleo → milho em
 conserva → salgadinho de milho).
 

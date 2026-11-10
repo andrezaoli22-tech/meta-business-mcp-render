@@ -1,6 +1,6 @@
 # Aula 3.1 — Perigos, zona de perigo e controle de temperatura
 
-**Duração estimada:** 12 min · **Formato:** vídeo + infográfico
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Identificar** os perigos biológicos, químicos e físicos nos alimentos.
@@ -38,18 +38,6 @@ Entre **5 °C e 60 °C** os microrganismos se multiplicam rapidamente [F11, cart
 - Confira a temperatura da geladeira do cliente na chegada (termômetro de geladeira).
 - Se a geladeira do cliente estiver acima de 5 °C, **avise por escrito** e reduza a
   validade das refeições.
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Texto: "1 erro = fim da reputação" |
-| 0:45 | 3 tipos de perigo | Ícones |
-| 2:30 | Zona de perigo | Infográfico `zona-de-perigo.svg` |
-| 4:30 | Tabela de temperaturas | Tabela animada |
-| 8:00 | Demonstração do termômetro | Close em frango assado |
-| 10:30 | Geladeira do cliente | Termômetro de geladeira |
-| 11:30 | Prática | Slide |
 
 ## Prática (20 min)
 Com um termômetro: meça (1) o centro de uma carne assada, (2) a temperatura da sua

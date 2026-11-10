@@ -1,6 +1,6 @@
 # Aula 1.1 — O que faz (e o que não faz) um personal chef
 
-**Duração estimada:** 10 min · **Formato:** vídeo + texto
+**Tempo de leitura:** 10 min · **Formato:** leitura + prática
 
 ## Objetivos
 Ao final desta aula, você será capaz de:
@@ -57,17 +57,7 @@ aponta média anual de US$ 51.657 para private chef e US$ 47.681 para personal c
 > própria casa e vendido a desconhecidos. Isso é comércio de alimentos e tem exigências
 > sanitárias próprias de licenciamento (Aula 5.1).
 
-## Roteiro de gravação
-
-| Tempo | Fala (resumo) | Tela / imagem |
-|---|---|---|
-| 0:00 | Gancho: "vender comida" são 4 negócios diferentes | Chef em close, cozinha residencial |
-| 0:45 | Definição de personal chef [F08, F23] | Texto na tela com a definição |
-| 2:00 | Tabela comparativa, linha a linha | Tabela animada (4 colunas) |
-| 5:00 | O ciclo de atendimento em 6 passos | Infográfico `fluxo-cook-day.svg` |
-| 7:30 | O que NÃO faz (nutrição, doméstica, regulamentação) | Ícones de "proibido" |
-| 9:00 | Chamada para a prática | Slide com o exercício |
-
+## Imagem da aula
 **Imagem sugerida (para gerar ou fotografar):** "chef de dólmã branco organizando potes
 rotulados em geladeira de cozinha residencial, luz natural, estilo editorial".
 
@@ -114,8 +104,6 @@ rotulados em geladeira de cozinha residencial, luz natural, estilo editorial".
 ## Para ir além
 - Take a Chef — diferenças entre private e personal chef: https://www.takeachef.com/blog/private-chef-vs-personal-chef-differences
 - CIA — How to become a personal chef: https://www.ciachef.edu/blog/how-to-become-a-personal-chef/
-- **Vídeos de referência (buscar no YouTube):** "day in the life personal chef",
-  "um dia como personal chef", "cook day personal chef".
 
 ## Referências
 - [F08] Culinary Institute of America. How to become a personal chef. https://www.ciachef.edu/blog/how-to-become-a-personal-chef/

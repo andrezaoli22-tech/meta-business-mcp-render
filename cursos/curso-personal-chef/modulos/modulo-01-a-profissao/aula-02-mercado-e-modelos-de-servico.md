@@ -1,6 +1,6 @@
 # Aula 1.2 — Mercado e modelos de serviço no Brasil
 
-**Duração estimada:** 12 min · **Formato:** vídeo + texto
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Comparar** os 4 principais modelos de serviço de personal chef quanto a preço,
@@ -46,17 +46,7 @@ Metrópoles [F32].
 3. Anote: serviço, nicho, preço (se divulgado), diferenciais, nº de avaliações.
 4. Faça 1 contato como cliente para ouvir a proposta (pesquisa de "cliente oculto").
 
-## Roteiro de gravação
-
-| Tempo | Fala (resumo) | Tela / imagem |
-|---|---|---|
-| 0:00 | Gancho com Forbes 2018 e Tribuna 2026 | Recortes de manchete (com crédito) |
-| 1:00 | Os 4 modelos | Tabela animada |
-| 5:00 | O que o cliente compra: tempo, saúde, experiência | 3 ícones |
-| 7:00 | Perfis de cliente | Fotos ilustrativas de cada perfil |
-| 9:00 | Pesquisa de mercado em 1 hora | Gravação de tela buscando no Google |
-| 11:30 | Chamada para prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "mesa de jantar posta em apartamento, chef servindo prato autoral a
 casal, ambiente aconchegante".
 

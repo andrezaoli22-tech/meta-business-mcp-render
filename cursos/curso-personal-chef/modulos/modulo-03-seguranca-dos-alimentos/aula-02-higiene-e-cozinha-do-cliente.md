@@ -1,6 +1,6 @@
 # Aula 3.2 — Higiene pessoal, contaminação cruzada e a cozinha do cliente
 
-**Duração estimada:** 12 min · **Formato:** vídeo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Aplicar** as regras de higiene pessoal do manipulador.
@@ -40,18 +40,15 @@ Transferência de microrganismos de um alimento/superfície para outro.
 3. Retirar seu lixo (ou destinar conforme combinado).
 4. Foto da cozinha limpa e da geladeira organizada (registro para você e para o cliente).
 
-## Roteiro de gravação
+## Passo a passo: lavagem correta das mãos
+1. Molhe as mãos e os antebraços.
+2. Aplique sabonete e esfregue palmas, dorsos, entre os dedos, polegares, pontas dos dedos e unhas, e punhos, por pelo menos 20 segundos.
+3. Enxágue em água corrente.
+4. Seque com papel-toalha descartável (não use o pano de prato da casa).
+5. Feche a torneira com o papel-toalha.
+6. Se quiser, aplique álcool 70% depois de secar.
 
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Pano de prato duvidoso |
-| 0:45 | Higiene pessoal | Chef se paramentando |
-| 3:00 | Lavagem correta das mãos | Passo a passo |
-| 5:00 | Contaminação cruzada e tábuas por cor | Tábuas |
-| 7:30 | Protocolo de chegada | Encenação |
-| 10:00 | Protocolo de saída | Antes/depois |
-| 11:30 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "quatro tábuas de corte coloridas com ícones de carne, peixe, vegetal e
 pão sobre bancada de inox".
 

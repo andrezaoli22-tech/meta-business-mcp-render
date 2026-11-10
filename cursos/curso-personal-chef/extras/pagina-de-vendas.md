@@ -31,7 +31,7 @@ conquistar clientes recorrentes.
 - Quem procura receitas (há receitas, mas o foco é a profissão)
 - Quem quer abrir restaurante ou fábrica de marmitas
 
-## O que você vai aprender (6 módulos, 24 aulas, 23 h)
+## O que você vai aprender (6 módulos, 24 aulas, 23 h — tudo em texto, para estudar no seu ritmo, sem precisar assistir vídeos)
 1. A profissão e o mercado
 2. Base técnica para cozinhar fora de casa
 3. Segurança dos alimentos (RDC 216 e alergênicos)

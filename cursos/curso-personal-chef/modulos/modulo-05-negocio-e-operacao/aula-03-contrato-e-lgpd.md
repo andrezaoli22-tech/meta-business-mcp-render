@@ -1,6 +1,6 @@
 # Aula 5.3 — Contrato, políticas e proteção de dados
 
-**Duração estimada:** 12 min · **Formato:** vídeo + modelo de contrato
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Redigir** um contrato de prestação de serviços com escopo, preço, pagamento e cancelamento.
@@ -39,16 +39,6 @@ Você coleta dados pessoais e **dados sensíveis de saúde** (alergias, doenças
 ### 3. Relação de consumo
 O cliente é consumidor: informações claras, cumprimento do ofertado e canal de atendimento
 (Código de Defesa do Consumidor — Lei 8.078/1990 **[a verificar]**).
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho do cancelamento | Nota de mercado |
-| 1:00 | 10 cláusulas | Contrato na tela, destaque por cláusula |
-| 7:00 | LGPD na prática | Checklist |
-| 10:00 | Relação de consumo | Texto |
-| 11:00 | Prática | Slide |
 
 ## Prática (20 min)
 Adapte o modelo de contrato ao seu serviço principal, definindo sua política de

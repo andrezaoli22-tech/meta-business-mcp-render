@@ -1,6 +1,6 @@
 # Aula 4.3 — Engenharia de cardápio, ficha técnica e lista de compras
 
-**Duração estimada:** 12 min · **Formato:** vídeo + planilha
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Elaborar** um cardápio semanal equilibrado, com rotação e aproveitamento de insumos.
@@ -45,17 +45,6 @@ Modelo: `extras/modelo-ficha-tecnica.md`.
 ### 3. Lista de compras consolidada
 Some os ingredientes de todas as fichas, converta pelo FC e agrupe por **setor do mercado**
 (hortifrúti, açougue, mercearia, laticínios). Verifique o que o cliente já tem.
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho do coentro | Close |
-| 1:00 | Princípios do cardápio | Cardápio semanal exemplo |
-| 4:30 | Ficha técnica campo a campo | Planilha |
-| 8:30 | FC e custo por porção | Cálculo na tela |
-| 10:30 | Lista consolidada | Planilha |
-| 11:30 | Prática | Slide |
 
 ## Prática (20 min)
 Para o cliente da sua entrevista (Aula 4.1), monte um cardápio de 5 refeições com pelo menos

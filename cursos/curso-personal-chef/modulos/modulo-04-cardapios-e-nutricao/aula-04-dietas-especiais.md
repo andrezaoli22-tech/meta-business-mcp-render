@@ -1,6 +1,6 @@
 # Aula 4.4 — Dietas especiais e públicos específicos
 
-**Duração estimada:** 12 min · **Formato:** vídeo + receitas adaptadas
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Adaptar** receitas para dietas comuns (vegana/vegetariana, sem glúten, sem lactose,
@@ -40,16 +40,18 @@ demandas que exigem adaptação [F28]."
 ### 3. Nicho = diferencial
 Dominar 1–2 dessas dietas pode virar seu nicho (Aula 6.1).
 
-## Roteiro de gravação
+## Exemplo resolvido: estrogonofe de frango em 3 versões
+| Ingrediente | Tradicional | Sem lactose | Vegano |
+|---|---|---|---|
+| Proteína | Frango em cubos | Frango em cubos | Cogumelos paris e shiitake + grão-de-bico |
+| Gordura | Manteiga | Azeite | Azeite |
+| Creme | Creme de leite | Creme de leite zero lactose (conferir rótulo) | Creme de castanha-de-caju* ou leite de coco |
+| Base | Cebola, alho, tomate, mostarda, ketchup | Igual | Igual (ketchup e mostarda conferidos) |
+| Acompanhamento | Arroz e batata palha | Arroz e batata palha (conferir rótulo) | Arroz e batata palha (conferir rótulo) |
 
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Pratos coloridos de várias dietas |
-| 1:00 | Tabela de adaptações | Tabela |
-| 5:00 | Demonstração: estrogonofe em 3 versões (tradicional, sem lactose, vegano) | Fogão |
-| 9:00 | Públicos específicos | Cards |
-| 11:00 | Prática | Slide |
+*Castanhas são alergênicas: confira a entrevista antes. Use a mesma base de molho para as três versões e separe na hora de juntar a proteína e o creme. Prepare a versão com restrição primeiro, com utensílios limpos.
 
+## Imagem da aula
 **Imagem sugerida:** "três potes lado a lado com a mesma receita em versões tradicional,
 vegana e sem glúten, com etiquetas".
 

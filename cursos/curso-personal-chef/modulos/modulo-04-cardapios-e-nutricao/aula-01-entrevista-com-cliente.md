@@ -1,6 +1,6 @@
 # Aula 4.1 — A entrevista com o cliente
 
-**Duração estimada:** 15 min · **Formato:** vídeo (encenação) + formulário
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Conduzir** uma entrevista inicial estruturada com o cliente.
@@ -42,17 +42,17 @@ Formulário completo: `extras/modelo-entrevista-cliente.md`.
 Alguns profissionais oferecem um primeiro serviço "teste" ou degustação paga — reduz risco
 para o cliente e acelera o fechamento (Aula 6.3).
 
-## Roteiro de gravação
+## Exemplo de diálogo
+> **Chef:** Me conta como é a semana de vocês. Quem janta em casa e a que horas?
+> **Cliente:** Nós dois chegamos às 20h, e meu filho janta às 19h com a babá.
+> **Chef:** Entendi. Alguém tem alergia, intolerância ou acompanhamento com nutricionista?
+> **Cliente:** Meu filho tem alergia a ovo. Eu tento evitar fritura.
+> **Chef:** Que tipo de reação ele já teve? Vocês têm medicação de emergência em casa?
+> **Cliente:** Teve placas na pele uma vez. O pediatra pediu para tirar o ovo totalmente.
+> **Chef:** Combinado: nada de ovo, nem em massas, pães ou molhos, e a comida dele sai separada e com etiqueta. Qual foi o último prato que vocês pediram por delivery e adoraram?
+> **Chef (fechando):** Então, resumindo: 5 jantares para 3 pessoas, sem ovo para todos por segurança, pouca fritura, entrega às segundas. Te mando isso por escrito agora.
 
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho com reclamações reais [F29] | Prints sem identificação de pessoas |
-| 1:30 | Por que estruturar | Texto |
-| 3:00 | Os 7 blocos | Formulário na tela |
-| 8:00 | Encenação de entrevista | Chef + cliente (atores) |
-| 13:00 | Resumo por escrito | Mensagem de WhatsApp modelo |
-| 14:30 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "chef e cliente conversando em mesa de cozinha com prancheta e
 cardápio impresso".
 

@@ -1,6 +1,6 @@
 # Aula 6.4 — Experiência, qualidade e crescimento
 
-**Duração estimada:** 12 min · **Formato:** vídeo + estudo de caso
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Criar** rotinas de qualidade e feedback que reduzam reclamações.
@@ -47,18 +47,6 @@ especial." Peça indicações no momento de maior satisfação (logo após um el
 | Novos serviços | Aulas de culinária em casa, jantares, eventos, consultoria de cozinha |
 | Produtos | Molhos e temperos (exigem licenciamento de produção) |
 | Certificações | ACF PCC/USPCA como diferencial internacional [F01–F03] |
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho com reclamações reais [F29] | Prints anonimizados |
-| 1:30 | Prevenção | Checklist |
-| 4:00 | Rotina de feedback | Formulário |
-| 6:00 | Detalhes que encantam | Fotos |
-| 8:00 | Programa de indicação | Card |
-| 9:30 | Caminhos de crescimento | Tabela |
-| 11:30 | Prática | Slide |
 
 ## Prática (20 min)
 Crie seu formulário de feedback (Google Forms ou mensagem pronta), seu programa de

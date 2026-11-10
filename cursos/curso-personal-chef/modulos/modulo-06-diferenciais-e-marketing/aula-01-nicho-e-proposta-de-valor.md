@@ -1,6 +1,6 @@
 # Aula 6.1 — Nicho e proposta de valor
 
-**Duração estimada:** 12 min · **Formato:** vídeo + canvas
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Avaliar** nichos possíveis com base em demanda, competência e rentabilidade.
@@ -37,17 +37,6 @@ sem perder horas no fogão."
 ### 5. Pratos-assinatura
 Desenvolva 3–5 pratos que representem seu nicho [F28] — eles viram portfólio, degustação e
 conteúdo.
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho "faço de tudo" | Texto |
-| 1:00 | Por que nichar | 3 benefícios |
-| 3:00 | Exemplos de nicho | Cards com fotos |
-| 6:00 | Matriz de escolha | Planilha |
-| 8:30 | Fórmula de proposta de valor | Texto animado |
-| 10:30 | Pratos-assinatura + prática | Pratos |
 
 ## Prática (20 min)
 Preencha a matriz com 4 nichos, escolha 1 e escreva sua proposta de valor. Liste 3 pratos-assinatura.

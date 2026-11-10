@@ -1,6 +1,6 @@
 # Aula 2.3 — Métodos de cocção e preparações-base
 
-**Duração estimada:** 15 min · **Formato:** vídeo demonstrativo
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Classificar** os métodos de cocção (calor seco, úmido e misto).
@@ -35,17 +35,16 @@ do cliente na quinta-feira."
 4. Folhas e emulsões frágeis (holandês) não vão para meal prep; prepare na hora em jantares.
 5. Cocção completa: centro do alimento a no mínimo 70 °C (Aula 3.1) [F11].
 
-## Roteiro de gravação
+## Passo a passo: sobrecoxa braseada (receita-modelo de meal prep)
+1. Seque bem 1,5 kg de sobrecoxa e tempere com sal e pimenta.
+2. Doure em panela pesada com fio de azeite, pele para baixo, até ficar bem dourada (8–10 min). Retire.
+3. Na mesma gordura, refogue cebola, alho e cenoura em cubos médios.
+4. Deglaceie com 100 ml de vinho ou caldo, raspando o fundo.
+5. Junte 500 g de tomate picado e ervas; volte o frango com a pele para cima, sem cobrir a pele com líquido.
+6. Tampe e cozinhe em fogo baixo ou forno a 160 °C por 45–60 min.
+7. Confira o centro com o termômetro (≥ 70 °C), acerte o sal e resfrie rápido antes de porcionar.
 
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: frango grelhado × braseado no 3º dia | Comparação lado a lado |
-| 1:30 | Tabela dos 3 grupos | Animação |
-| 4:00 | Demonstração: brasear sobrecoxas | Fogão |
-| 8:00 | Caldo e molhos-mãe | Panelas |
-| 11:30 | Regras de ouro do meal prep | Lista |
-| 14:00 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "panela de ferro com sobrecoxas braseadas em molho de tomate e ervas".
 
 ## Prática (20 min)

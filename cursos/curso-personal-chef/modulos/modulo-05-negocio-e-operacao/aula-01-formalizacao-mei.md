@@ -1,6 +1,6 @@
 # Aula 5.1 — Formalização: MEI, CNAE e licenças
 
-**Duração estimada:** 12 min · **Formato:** vídeo + passo a passo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Identificar** o enquadramento adequado (MEI, CNAE) para o seu modelo de serviço.
@@ -39,16 +39,6 @@ maquininha com taxa menor. E formalizar como MEI pode custar menos de R$ 100 por
 - Seguro de responsabilidade civil profissional (cotar com corretor).
 - Separar finanças pessoais e da empresa.
 - Guardar notas e recibos de mercado (reembolso e controle).
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: vantagens da formalização | Ícones |
-| 1:30 | MEI: CNAE, limites, DAS | Cards |
-| 5:00 | Passo a passo no portal | Gravação de tela (sem dados pessoais) |
-| 8:00 | Licenças: casa do cliente × cozinha própria | Comparativo |
-| 10:30 | Proteções extras + prática | Slide |
 
 ## Prática (20 min)
 Simule a abertura do MEI (sem concluir, se não quiser): identifique o CNAE, verifique a

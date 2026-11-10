@@ -1,6 +1,6 @@
 # Aula 1.3 — Formação, cursos e certificações
 
-**Duração estimada:** 12 min · **Formato:** vídeo + texto
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Identificar** os caminhos de formação (superior, técnico/livre, internacional, autodidata).
@@ -47,18 +47,7 @@ O Le Cordon Bleu lista: **criatividade, gestão do tempo, habilidade de negócio
 atualizada, simpatia e versatilidade** [F07]. Experiência profissional é vantagem, mas não
 pré-requisito [F07].
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: "precisa de faculdade?" | Chef olhando para a câmera |
-| 1:00 | Não regulamentada, mas confiança importa | Texto |
-| 2:30 | Tabela de caminhos | Tabela animada com logos neutros (sem marcas) |
-| 6:30 | Certificações internacionais | Cards PCC / CPC / ServSafe |
-| 8:30 | O mínimo recomendado no Brasil | Checklist |
-| 10:30 | As 6 qualidades segundo Le Cordon Bleu | Lista |
-| 11:30 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "certificado de curso de boas práticas pendurado ao lado de facas
 organizadas em barra magnética".
 

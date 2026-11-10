@@ -1,6 +1,6 @@
 # Aula 2.4 — Produção em lote, porcionamento e reaquecimento
 
-**Duração estimada:** 12 min · **Formato:** vídeo demonstrativo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Produzir** 4–6 receitas em lote em até 4 h.
@@ -36,17 +36,7 @@ temperaturas na Aula 3.1. Nunca coloque panela grande quente fechada na geladeir
 
 ![Fluxo do cook day](../../imagens/fluxo-cook-day.svg)
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: geladeira do cliente organizada | Abertura de geladeira |
-| 1:00 | Lógica do lote | Timelapse de cook day |
-| 4:00 | Porcionamento na balança | Close |
-| 7:00 | Resfriamento rápido | Banho de gelo |
-| 9:00 | Rótulo e cartão de reaquecimento | Close da etiqueta |
-| 11:00 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "potes de vidro idênticos com refeições porcionadas e etiquetas,
 alinhados em geladeira".
 

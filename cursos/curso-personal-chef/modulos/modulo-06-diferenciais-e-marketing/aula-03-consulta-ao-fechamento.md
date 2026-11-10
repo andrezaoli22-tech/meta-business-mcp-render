@@ -1,6 +1,6 @@
 # Aula 6.3 — Da consulta ao fechamento
 
-**Duração estimada:** 15 min · **Formato:** vídeo (encenação de vendas)
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Conduzir** uma consulta de vendas que transforme interesse em contrato.
@@ -47,17 +47,11 @@ perguntas rápidas para te mandar o valor exato?"
 Ofereça **pacotes mensais** (4 visitas) com pagamento antecipado — previsibilidade para os
 dois lados.
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Print de conversa |
-| 1:00 | Funil em 7 etapas | Diagrama |
-| 4:00 | Resposta ao "quanto custa?" | Encenação |
-| 7:00 | Proposta de 1 página | Documento |
-| 10:00 | Objeções | Encenação |
-| 13:30 | Recorrência + prática | Slide |
-
+## Exemplo de diálogo: objeção de preço
+> **Cliente:** Achei caro. O restaurante aqui do lado faz marmita por menos.
+> **Chef:** Faz sentido comparar. A diferença é que o cardápio é montado para a sua família, sem ovo para o seu filho, com ingredientes que você escolhe, e vocês não perdem tempo com pedido, entrega nem louça. Se fizer sentido, começamos com um pacote menor, de 3 jantares, e vocês avaliam.
+> **Cliente:** E se a gente não gostar?
+> **Chef:** Depois do primeiro serviço eu peço uma avaliação de cada prato e ajusto o tempero e as escolhas na semana seguinte. Isso já está no meu processo.
 ## Prática (20 min)
 Monte sua proposta de 1 página para a Família Lima e grave (só áudio) suas respostas às 4
 objeções.

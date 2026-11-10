@@ -1,6 +1,6 @@
 # Aula 1.4 — Autodiagnóstico e plano de transição
 
-**Duração estimada:** 10 min · **Formato:** vídeo + planilha
+**Tempo de leitura:** 10 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Avaliar** seu perfil nas competências-chave do personal chef.
@@ -38,16 +38,7 @@ Baseado nas qualidades citadas por Le Cordon Bleu [F07] e Escoffier [F09].
 | Dias 31–60 | Testes | 3 cook days para amigos/familiares (pagos ou com custo), com feedback escrito |
 | Dias 61–90 | Lançamento | MEI aberto; perfil profissional; 2 clientes pagantes recorrentes |
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: histórias reais de transição [F22, F31] | B-roll de cozinha |
-| 1:30 | Roda de competências | Gráfico radar preenchível |
-| 4:30 | 3 modelos de transição | 3 colunas |
-| 6:30 | Plano de 90 dias | Linha do tempo |
-| 9:00 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** gráfico radar com 8 eixos (pode ser gerado na planilha).
 
 ## Prática (20 min)

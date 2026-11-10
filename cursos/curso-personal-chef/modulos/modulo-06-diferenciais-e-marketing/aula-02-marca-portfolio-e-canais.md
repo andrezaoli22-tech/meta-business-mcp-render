@@ -1,6 +1,6 @@
 # Aula 6.2 — Marca pessoal, portfólio e canais
 
-**Duração estimada:** 12 min · **Formato:** vídeo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Construir** um portfólio e perfis profissionais que transmitam confiança.
@@ -44,17 +44,7 @@ O cliente vai abrir a casa para você. Sinais de confiança:
 - Depoimentos em vídeo
 - **Cuidado:** nunca exponha a casa ou a família do cliente sem autorização por escrito.
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Celular com perfil |
-| 1:00 | Sinais de confiança | Checklist |
-| 3:00 | Fotografando pratos com celular | Demonstração |
-| 6:00 | Canais | Tabela |
-| 9:30 | Conteúdo que vende + cuidado com privacidade | Exemplos |
-| 11:30 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "mockup de perfil de Instagram de chef com grade de fotos de pratos e
 destaques".
 

@@ -1,6 +1,6 @@
 # Aula 2.1 — Mise en place e o kit do chef itinerante
 
-**Duração estimada:** 12 min · **Formato:** vídeo demonstrativo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Organizar** a mise en place de um cook day por ordem de tempo de preparo.
@@ -46,16 +46,7 @@ Para o personal chef, a mise en place começa **na véspera**:
 
 > **Dica:** tábuas por cor ajudam a evitar contaminação cruzada (Aula 3.2).
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho: a cozinha que falha | Cena encenada |
-| 1:00 | Conceito de mise en place | Top-down de bancada organizada |
-| 3:00 | Cronograma reverso | Linha do tempo na tela |
-| 6:00 | Abrindo o kit item a item | Câmera em cima das caixas |
-| 10:30 | Checklist e prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** "vista de cima de bancada com mise en place em bowls de inox,
 legumes cortados, tábuas coloridas, etiquetas".
 

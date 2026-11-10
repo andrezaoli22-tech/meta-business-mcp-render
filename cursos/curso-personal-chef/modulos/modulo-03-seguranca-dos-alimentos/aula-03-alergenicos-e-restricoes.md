@@ -1,6 +1,6 @@
 # Aula 3.3 — Alergênicos, intolerâncias e restrições
 
-**Duração estimada:** 15 min · **Formato:** vídeo + protocolo
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Identificar** os principais alimentos alergênicos listados pela ANVISA.
@@ -43,17 +43,7 @@ castanha-do-pará; macadâmia; nozes; pecã; pistache; pinoli; castanhas; látex
 Doença celíaca, diabetes, doença renal etc.: **execute o plano do nutricionista ou médico**
 do cliente; não prescreva (Aula 4.2).
 
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Texto contrastante |
-| 1:00 | Alergia × intolerância × preferência | Tabela |
-| 4:00 | Lista de alergênicos RDC 26 | Grade de ícones |
-| 7:00 | Lendo rótulos ("contém" × "pode conter") | Close de embalagens reais |
-| 10:00 | Protocolo em 6 passos | Checklist animado |
-| 14:00 | Prática | Slide |
-
+## Imagem da aula
 **Imagem sugerida:** grade de ícones dos alergênicos (amendoim, ovo, leite, trigo, peixe,
 camarão, soja, castanhas).
 

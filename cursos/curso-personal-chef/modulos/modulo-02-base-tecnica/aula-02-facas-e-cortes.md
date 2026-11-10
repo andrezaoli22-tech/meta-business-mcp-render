@@ -1,6 +1,6 @@
 # Aula 2.2 — Facas e cortes clássicos
 
-**Duração estimada:** 15 min · **Formato:** vídeo demonstrativo (close nas mãos)
+**Tempo de leitura:** 15 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Executar** os cortes clássicos com medidas padronizadas.
@@ -38,19 +38,16 @@ as tiras de julienne, gire 90° e corte em cubos de 3 mm [F26].
 - Corte **todos os legumes de uma vez**, separando por receita (Aula 2.1).
 - Guarde aparas para caldos (aproveitamento integral reduz custo).
 
-## Roteiro de gravação
+## Passo a passo: da cenoura à brunoise
+1. Descasque a cenoura e corte um lado no comprimento para ela ficar apoiada sem rolar.
+2. Corte em toras de 5 cm.
+3. Fatie cada tora em lâminas de 3 mm de espessura.
+4. Empilhe 3–4 lâminas e corte em tiras de 3 mm: isso é a **julienne**.
+5. Junte as tiras, gire 90° e corte a cada 3 mm: isso é a **brunoise**.
+6. Para o **bâtonnet**, repita com lâminas e tiras de 6 mm; corte o bâtonnet a cada 6 mm para obter **cubos pequenos**.
+7. **Chiffonade:** empilhe folhas de manjericão, enrole como um charuto e fatie bem fino.
 
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Close de cortes rápidos |
-| 1:00 | Empunhadura e mão em garra | Câmera lateral |
-| 3:00 | Chaira × pedra | Demonstração |
-| 5:00 | Julienne → brunoise com cenoura | Câmera de cima + régua |
-| 9:00 | Bâtonnet e cubos com batata | Câmera de cima |
-| 12:00 | Chiffonade com manjericão | Close |
-| 13:30 | Produtividade e aparas | Bancada |
-| 14:30 | Prática | Slide |
-
+## Imagem da aula
 **Imagem de referência:** foto de brunoise de cenoura no Wikimedia Commons (arquivo
 "Karotten_brunoise.jpg" — confira a licença antes de usar) e o infográfico do curso.
 

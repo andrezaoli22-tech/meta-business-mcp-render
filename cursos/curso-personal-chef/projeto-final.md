@@ -19,8 +19,8 @@ de mercado: até R$ 500/semana.
    ao cliente; modelo de etiqueta.
 4. **Negócio (M5):** valor-hora; preço do pacote semanal e do pacote mensal; contrato adaptado;
    plano de formalização (CNAE, passos, dúvidas resolvidas).
-5. **Execução (M2, M5):** **vídeo de 3–5 min** de um cook day (real ou simulado) mostrando
-   chegada, produção, porcionamento, rotulagem e limpeza + relatório com os 4 indicadores.
+5. **Execução (M2, M5):** **relatório fotográfico** de um cook day (real ou simulado) com 8–12 fotos
+   legendadas mostrando chegada, produção, termômetro, porcionamento, rotulagem e limpeza + os 4 indicadores.
 6. **Vendas (M6):** bio, plano de canais, proposta comercial de 1 página, rotina de pós-venda.
 
 ## Rubrica (100 pontos)
@@ -28,13 +28,13 @@ de mercado: até R$ 500/semana.
 | Critério | Peso | Insuficiente | Adequado | Excelente |
 |---|---|---|---|---|
 | 1. Posicionamento e proposta de valor | 15 | Genérico | Nicho definido | Nicho justificado por dados locais + frase completa + pratos coerentes |
-| 2. Segurança dos alimentos | 25 | Falhas com alergênicos ou temperatura | Protocolos presentes | Protocolos aplicados em todo o fluxo, visíveis no vídeo |
+| 2. Segurança dos alimentos | 25 | Falhas com alergênicos ou temperatura | Protocolos presentes | Protocolos aplicados em todo o fluxo, visíveis nas fotos do relatório |
 | 3. Cardápio e fichas técnicas | 20 | Ignora restrições | Atende restrições, fichas incompletas | Atende todos os perfis, ingredientes-ponte, fichas completas |
 | 4. Precificação e formalização | 20 | Preço sem método | Método parcial | Valor-hora, todas as horas, insumos separados, contrato e plano de MEI |
-| 5. Execução do cook day | 20 | Sem vídeo/relatório | Vídeo sem indicadores | Vídeo + indicadores + análise de melhoria |
+| 5. Execução do cook day | 20 | Sem relatório | Fotos sem indicadores | Fotos + indicadores + análise de melhoria |
 
 **Aprovação:** ≥ 70 pontos.
 
 ## Dicas
-- Grave na horizontal, com boa luz; mostre termômetro e etiquetas.
+- Fotografe com boa luz; mostre termômetro e etiquetas em close.
 - Não exponha rostos ou casa de terceiros sem autorização por escrito.

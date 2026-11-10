@@ -1,6 +1,6 @@
 # Aula 3.4 — Armazenamento, rotulagem, transporte e Manual de Boas Práticas
 
-**Duração estimada:** 12 min · **Formato:** vídeo + modelo
+**Tempo de leitura:** 12 min · **Formato:** leitura + prática
 
 ## Objetivos
 - **Rotular** refeições com as informações exigidas para alimentos preparados armazenados.
@@ -53,17 +53,6 @@ simplificado mostra profissionalismo e organiza sua rotina. Conteúdo mínimo su
 8. Registros (planilha de temperaturas, checklist do cook day)
 
 Modelo: `extras/modelo-manual-boas-praticas.md`.
-
-## Roteiro de gravação
-
-| Tempo | Fala | Tela |
-|---|---|---|
-| 0:00 | Gancho | Pote sem etiqueta |
-| 0:45 | Itens obrigatórios do rótulo | Etiqueta na tela |
-| 3:00 | Organização da geladeira | Antes/depois |
-| 6:00 | Transporte | Caixa térmica |
-| 8:00 | Manual de Boas Práticas | Folhear o modelo |
-| 11:00 | Prática | Slide |
 
 ## Prática (20 min)
 Crie seu modelo de etiqueta (no Canva, editor de texto ou etiquetadora) e imprima 5. Comece

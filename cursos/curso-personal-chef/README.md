@@ -1,12 +1,14 @@
 # Curso: Personal Chef Pro — Da cozinha ao negócio
 
-O curso é 100% em texto, sem depender de vídeos. Há três formas de usar:
+**Versão essencial (recomendada):** `curso-essencial.md` / `curso-essencial.html` / `apostila-essencial-personal-chef.pdf` — os pontos principais em 6 páginas.
+
+Versão completa (24 aulas), em texto, sem depender de vídeos:
 
 - **`curso-completo.html`**: página navegável com menu de aulas, progresso, respostas ocultas nos quizzes e prova final com correção automática.
 - **`apostila-personal-chef-pro.pdf`**: apostila A4 com todo o conteúdo, gabaritos inclusos (144 páginas).
 - **`curso-completo.md`**: todo o curso em um único arquivo de texto.
 
-Os arquivos separados por módulo continuam em `modulos/`. Para regenerar o HTML e o Markdown único depois de editar uma aula:
+Os arquivos separados por módulo continuam em `modulos/`. Para regenerar a versão essencial: `python3 ferramentas/build_essencial.py .`. Para regenerar o HTML e o Markdown único da versão completa depois de editar uma aula:
 `python3 ferramentas/build_course.py . ferramentas/template.html` (requer `pip install markdown`).
 
 | Pasta/arquivo | Conteúdo |

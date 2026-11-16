@@ -45,7 +45,7 @@ linhas brancas finas no topo e no rodapé, sem logo no topo e com foto real das 
 Uma referência nova muda só o que ela mostrar; o resto continua no padrão da casa.
 
 **Qual formato usar:**
-- **Assunto único** (um evento ou tema, como o GP de São Paulo): `estilo-rp-news.md` + `templates/rp-news.html`
+- **Assunto único** (um evento ou tema, como o GP de São Paulo): **formato oficial fixado pelo cliente** = as 5 imagens de `references/exemplos/assunto-unico/` (abra e siga à risca), descrito em "FORMATO OFICIAL" de `estilo-rp-news.md`; base de código: `templates/rp-news.html` ou `carrosseis/gta-vi/carrossel.html`
 - **Resumo semanal** ("assunto da semana", "melhores da semana", vários cases): **também no
   layout de assunto único** (`templates/rp-news.html`), 1 case por slide; veja "Variações
   aprovadas" em `estilo-rp-news.md` e o exemplo `carrosseis/rp-news-semanal-01-v2/`. O formato

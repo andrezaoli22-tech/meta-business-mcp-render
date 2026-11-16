@@ -34,6 +34,26 @@ barras coloridas e pílulas preenchidas.
 - Itens de lista sobre preto: 700, 30 px, **azul `#0025CC`**, sem fundo, um por linha
 - Título e corpo ficam colados (espaço de 12–16 px), não espaçados
 
+## FORMATO OFICIAL — CARROSSEL DE ASSUNTO ÚNICO (fixado pelo cliente)
+O formato de assunto único é **exatamente** o das 5 imagens em
+`references/exemplos/assunto-unico/01.jpg` a `05.jpg` (RP News #01, GP de São Paulo, versão
+editada e aprovada pelo cliente). **Antes de montar qualquer carrossel de assunto único,
+abra essas 5 imagens e reproduza a mesma estrutura, na mesma ordem:**
+
+| # | Slide | Como é |
+|---|---|---|
+| 1 | Capa | Foto real cheia da ação principal, linha branca no topo (y=110), degradê preto subindo do rodapé; sobretítulo em caixa alta (ex.: "GP DE SÃO PAULO · EDIÇÃO 2026") e manchete branca em 3 linhas curtas com ponto final; barra preta no rodapé com a linha de apoio + seta → |
+| 2 | Contexto | Fundo preto; faixa de foto no topo (y=112 a 675) em **mosaico de 3 fotos** das marcas/ativações; título em CAIXA ALTA ("A F1 VIROU EXPERIÊNCIA") + 2 frases com destaques em negrito |
+| 3 | Ênfase azul | Fundo azul #0025CC; número gigante à direita ("10"), título em CAIXA ALTA, texto alinhado à direita; foto da ação na metade de baixo, com o rodapé por cima |
+| 4 | Coluna | Fundo preto; texto à esquerda (título, texto e lista de 3 itens em azul); foto em coluna à direita, entre as duas linhas |
+| 5 | Fechamento | Foto cheia; sobretítulo "O QUE FICA" e frase final grande alinhados à direita, em branco; rodapé com o tema e **sem seta** |
+
+Fixos em todos: linha branca no topo e linha branca acima do rodapé; rodapé com o tema
+(ex.: "GP de São Paulo") à esquerda e seta → à direita (exceto no último); sem logo.
+Quando houver mais conteúdo, repita os layouts 2–4 alternando; capa e fechamento são sempre
+esses. CTA, quando pedido, entra no slide de fechamento.
+Exemplos produzidos nesse formato: `carrosseis/rp-news-01-gp-sao-paulo/`, `carrosseis/gta-vi/`.
+
 ## Estrutura dos slides
 1. **Capa (sempre):** foto cheia + **degradê preto** de baixo para cima (do preto sólido
    no rodapé até transparente por volta de 40% da altura), para harmonizar com os slides pretos.

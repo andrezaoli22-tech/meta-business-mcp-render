@@ -1,0 +1,160 @@
+<!doctype html>
+<!--
+DNA (referências: mynd news + publicitarioscriativos)
+- Paleta: preto asfalto #0B0B0B, vermelho F1 #E10600, verde #0A6B3B, amarelo #FFC700, branco
+- Tipografia: Inter Tight 800, caixa alta nos títulos de bloco, tracking negativo; corpo Inter Tight 500
+- Grid: barra superior com marca + linha branca fina; blocos de cor chapada + foto; rodapé com linha + data
+- Imagem: foto real, recorte em faixa (full-width) ou coluna; full-bleed com gradiente na capa/fechamento
+- Fixos: "RP NEWS #01" no topo, linha fina, rodapé "GP DE SÃO PAULO" + data, seta (exceto último)
+- Tom: manchete jornalística curta, frases de impacto, sem emoji
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --w:1080px; --h:1350px;
+    --black:#0B0B0B; --red:#E10600; --green:#0A6B3B; --yellow:#FFC700; --white:#FFFFFF;
+    --px:72px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#222;font-family:"Inter Tight",sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+  .slide{width:var(--w);height:var(--h);position:relative;overflow:hidden;margin:0 auto 40px;display:flex;flex-direction:column;background:var(--black)}
+
+  /* barra superior e rodapé (fixos) */
+  .bar{height:112px;flex:0 0 112px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);position:relative;z-index:3}
+  .bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:currentColor;opacity:.9}
+  .brand{font-weight:900;font-size:40px;letter-spacing:-.05em;text-transform:lowercase}
+  .brand b{font-weight:900;color:var(--red)}
+  .tag{font-weight:600;font-size:24px;letter-spacing:.02em;opacity:.9}
+  .foot{height:96px;flex:0 0 96px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);font-size:26px;font-weight:500;position:relative;z-index:3}
+  .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:currentColor;opacity:.9}
+  .foot .arrow{font-weight:800}
+  .last .arrow{display:none}
+
+  /* tipografia */
+  .kicker{font-weight:800;font-size:28px;letter-spacing:.06em;text-transform:uppercase}
+  .h-capa{font-weight:900;font-size:112px;line-height:.94;letter-spacing:-.05em}
+  .h-bloco{font-weight:900;font-size:58px;line-height:1;letter-spacing:-.04em;text-transform:uppercase}
+  .body{font-weight:500;font-size:38px;line-height:1.24;letter-spacing:-.025em;text-wrap:pretty}
+  .h-bloco,.s5 .quote{text-wrap:balance}
+  .body strong{font-weight:800}
+  .stack>*+*{margin-top:28px}
+
+  .photo{display:block;width:100%;height:100%;object-fit:cover}
+  .media{position:relative;overflow:hidden}
+
+  /* 1. capa */
+  .s1{background:var(--black)}
+  .s1 .media{flex:0 0 640px}
+  .s1 .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.35) 0%,rgba(11,11,11,0) 30%,rgba(11,11,11,0) 70%,rgba(225,6,0,.55) 100%)}
+  .s1 .red{flex:1;background:var(--red);padding:0 var(--px);display:flex;flex-direction:column;justify-content:center}
+  .s1 .red .kicker{color:var(--black)}
+  .s1 .foot{background:var(--red);color:var(--white)}
+  .s1 .hl{color:var(--black)}
+
+  /* 2. foto + bloco vermelho */
+  .s2 .media{flex:0 0 560px}
+  .s2 .block{flex:1;background:var(--red);padding:72px var(--px);display:flex;flex-direction:column;justify-content:center}
+  .s2 .bar{background:var(--red)}
+  .s2 .foot{background:var(--red)}
+
+  /* 3. bloco verde + foto */
+  .s3{background:var(--green)}
+  .s3 .block{flex:0 0 620px;padding:64px var(--px);display:flex;flex-direction:column;justify-content:center;text-align:right;align-items:flex-end}
+  .s3 .big10{font-weight:900;font-size:200px;line-height:.8;letter-spacing:-.06em;color:var(--white)}
+  .s3 .media{flex:1}
+  .s3 .foot{position:absolute;left:0;right:0;bottom:0;background:transparent}
+  .s3 .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 65%,rgba(0,0,0,.6) 100%)}
+
+  /* 4. split amarelo + foto */
+  .s4{background:var(--yellow);color:var(--black)}
+  .s4 .row{flex:1;display:flex}
+  .s4 .block{flex:1;padding:72px 56px 72px var(--px);display:flex;flex-direction:column;justify-content:center}
+  .s4 .media{flex:0 0 430px}
+  .s4 .chips{display:flex;flex-direction:column;gap:14px;margin-top:36px}
+  .s4 .chip{align-self:flex-start;background:var(--black);color:var(--yellow);font-weight:800;font-size:28px;letter-spacing:-.01em;padding:12px 22px;border-radius:999px}
+
+  /* 5. foto cheia */
+  .s5 .media{position:absolute;inset:0;z-index:0}
+  .s5 .media img{filter:saturate(1.15) contrast(1.05)}
+  .s5 .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.92) 0%,rgba(11,11,11,.55) 9%,rgba(11,11,11,0) 24%,rgba(11,11,11,.15) 45%,rgba(140,4,0,.82) 72%,rgba(11,11,11,1) 100%)}
+  .s5 .spacer{flex:1}
+  .s5 .block{position:relative;z-index:2;padding:0 var(--px) 64px;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+  .s5 .quote{font-weight:900;font-size:84px;line-height:1;letter-spacing:-.045em}
+  .s5 .quote .r{color:var(--yellow)}
+  .s5 .rule{width:120px;height:10px;background:var(--yellow)}
+</style>
+</head>
+<body data-size="1080x1350">
+
+<!-- 1. CAPA -->
+<section class="slide s1">
+  <div class="bar" style="color:#fff;position:absolute;left:0;right:0;top:0"><span class="brand">rp<b>.</b>news</span><span class="tag">#01</span></div>
+  <div class="media"><img class="photo" src="img/capa.jpg" style="object-position:62% 55%" alt=""></div>
+  <div class="red stack">
+    <div class="kicker">GP de São Paulo · edição 2026</div>
+    <h1 class="h-capa">O GP saiu da pista.<br><span class="hl">E foi parar<br>no varejo.</span></h1>
+  </div>
+  <div class="foot"><span>Como as marcas transformaram a F1 em ponto de venda</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 2. A F1 VIROU EXPERIÊNCIA -->
+<section class="slide s2">
+  <div class="bar"><span class="brand">rp<b style="color:#000">.</b>news</span><span class="tag">#01</span></div>
+  <div class="media"><img class="photo" src="img/torcida-sp.jpg" style="object-position:50% 40%" alt=""></div>
+  <div class="block stack">
+    <h2 class="h-bloco">A F1 virou experiência</h2>
+    <p class="body">Na semana do GP, a corrida não coube no autódromo. As marcas espalharam ativações pela cidade e levaram a F1 a <strong>quem nem tinha ingresso</strong>.</p>
+    <p class="body">A disputa deixou de ser só por pódio. Passou a ser <strong>por atenção</strong>.</p>
+  </div>
+  <div class="foot"><span>GP de São Paulo</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 3. DEZ ANOS DE HEINEKEN -->
+<section class="slide s3">
+  <div class="bar"><span class="brand">rp<b>.</b>news</span><span class="tag">#01</span></div>
+  <div class="block stack">
+    <div class="big10">10</div>
+    <h2 class="h-bloco">Dez anos de Heineken</h2>
+    <p class="body">Para celebrar a década, a marca montou o <strong>Heineken Village</strong>: telões para a corrida, lounges, DJs, degustação e brindes.</p>
+    <p class="body">Não era só assistir ao GP. Era <strong>viver o GP com a marca na mão</strong>.</p>
+  </div>
+  <div class="media"><img class="photo" src="img/brinde.jpg" style="object-position:50% 45%" alt=""></div>
+  <div class="foot"><span>GP de São Paulo</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 4. A PISTA NO VAREJO -->
+<section class="slide s4">
+  <div class="bar"><span class="brand">rp<b>.</b>news</span><span class="tag">#01</span></div>
+  <div class="row">
+    <div class="block">
+      <h2 class="h-bloco">A pista no varejo</h2>
+      <p class="body" style="margin-top:28px">A velocidade entrou no ponto de venda. Quem passava parava para pilotar, <strong>olhava o placar e voltava</strong> para tentar de novo.</p>
+      <div class="chips">
+        <span class="chip">Circuito de drones FPV</span>
+        <span class="chip">Ranking ao vivo</span>
+        <span class="chip">Brindes para quem acelera</span>
+      </div>
+    </div>
+    <div class="media"><img class="photo" src="img/drones.jpg" style="object-position:55% 35%" alt=""></div>
+  </div>
+  <div class="foot"><span>GP de São Paulo</span><span class="arrow">→</span></div>
+</section>
+
+<!-- 5. O QUE FICA -->
+<section class="slide s5 last">
+  <div class="media"><img class="photo" src="img/podio.jpg" style="object-position:62% 40%" alt=""></div>
+  <div class="bar" style="position:relative"><span class="brand">rp<b>.</b>news</span><span class="tag">#01</span></div>
+  <div class="spacer"></div>
+  <div class="block stack">
+    <div class="kicker" style="color:var(--yellow)">O que fica</div>
+    <p class="quote">Quando o evento sai da pista, o fã vira <span class="r">consumidor.</span></p>
+    <div class="rule"></div>
+  </div>
+  <div class="foot" style="background:var(--black)"><span>GP de São Paulo</span><span>10.11.2026</span></div>
+</section>
+
+</body>
+</html>

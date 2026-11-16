@@ -1,0 +1,158 @@
+<!doctype html>
+<!--
+  Template de carrossel. data-size no <body>: "1080x1350" (4:5) ou "1080x1080".
+  Edite :root com o DNA da referência. Um <section class="slide"> por slide.
+  Renderize com: node .claude/skills/editor-carrossel/scripts/render.mjs <este-arquivo>
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --w: 1080px; --h: 1350px;
+    --bg: #F6F1EA;        /* fundo (60%) */
+    --ink: #1B1B1B;       /* texto */
+    --muted: #6B6B6B;     /* texto secundário */
+    --accent: #E4572E;    /* destaque (10%) */
+    --card: #FFFFFF;      /* apoio (30%) */
+    --dark-bg: #1B1B1B;   /* fundo dos slides .dark */
+    --dark-ink: #F6F1EA;  /* texto dos slides .dark */
+    --font-title: "Playfair Display", serif;
+    --font-body: "Inter", sans-serif;
+    --pad-x: 80px; --pad-y: 96px; --radius: 24px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #222; font-family: var(--font-body); color: var(--ink); }
+  .slide {
+    width: var(--w); height: var(--h); position: relative; overflow: hidden;
+    background: var(--bg); padding: var(--pad-y) var(--pad-x);
+    display: flex; flex-direction: column; margin: 0 auto 40px;
+  }
+  .slide.dark { background: var(--dark-bg); color: var(--dark-ink); }
+  .slide.dark h1, .slide.dark h2, .slide.dark li, .slide.dark .foot .handle { color: var(--dark-ink); }
+  .slide.dark p, .slide.dark .top, .slide.dark .foot { color: #BDBDBD; }
+  .slide.dark .lista li, .slide.dark li { border-bottom-color: rgba(255,255,255,.12); }
+
+  /* tipografia */
+  h1 { font-family: var(--font-title); font-size: 104px; line-height: 1.02; letter-spacing: -0.02em; font-weight: 800; }
+  h2 { font-family: var(--font-title); font-size: 72px; line-height: 1.05; letter-spacing: -0.015em; font-weight: 700; }
+  p  { font-size: 38px; line-height: 1.38; color: var(--muted); }
+  p strong, .hl { color: var(--accent); font-weight: 700; }
+  .kicker { font-size: 26px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
+  .stack > * + * { margin-top: 32px; }
+
+  /* elementos fixos */
+  .top { position: absolute; top: 48px; left: var(--pad-x); right: var(--pad-x); display: flex; justify-content: space-between; font-size: 24px; color: var(--muted); font-weight: 500; z-index: 3; }
+  .foot { position: absolute; bottom: 48px; left: var(--pad-x); right: var(--pad-x); display: flex; justify-content: space-between; align-items: center; font-size: 26px; color: var(--muted); z-index: 3; }
+  .foot .handle { display: flex; align-items: center; gap: 14px; font-weight: 700; color: var(--ink); }
+  .foot .avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); }
+  .foot .swipe::after { content: "arrasta →"; font-weight: 700; color: var(--accent); }
+  .slide.last .foot .swipe { display: none; }
+  .progress { position: absolute; top: 0; left: 0; height: 10px; background: var(--accent); z-index: 3; }
+
+  /* imagens */
+  .photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .full { position: absolute; inset: 0; z-index: 0; }
+  .shade::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.72) 100%); }
+
+  /* layouts */
+  .capa { justify-content: flex-end; color: #fff; padding-bottom: 180px; }
+  .capa > .content { position: relative; z-index: 2; }
+  .capa h1, .capa p { color: #fff; }
+  .texto { justify-content: center; }
+  .imagem-topo .media { height: 640px; margin: 0 calc(-1 * var(--pad-x)); margin-top: calc(-1 * var(--pad-y)); }
+  .imagem-topo .content { margin-top: 64px; }
+  .split { flex-direction: row; gap: 48px; align-items: center; }
+  .split .media { flex: 0 0 44%; height: 820px; border-radius: var(--radius); overflow: hidden; }
+  .split h2 { font-size: 60px; }
+  .lista ol { list-style: none; counter-reset: i; }
+  .lista li { counter-increment: i; display: flex; gap: 28px; font-size: 38px; line-height: 1.3; padding: 28px 0; border-bottom: 2px solid rgba(0,0,0,.08); }
+  .lista li::before { content: counter(i, decimal-leading-zero); font-family: var(--font-title); color: var(--accent); font-weight: 800; min-width: 72px; }
+  .numero { justify-content: center; }
+  .numero .big { font-family: var(--font-title); font-size: 300px; line-height: 1; margin-bottom: 24px; color: var(--accent); font-weight: 800; }
+  .citacao { justify-content: center; }
+  .citacao blockquote { font-family: var(--font-title); font-size: 70px; line-height: 1.15; }
+  .citacao blockquote::before { content: "“"; display: block; font-size: 200px; line-height: .6; color: var(--accent); }
+  .cta { justify-content: center; text-align: center; align-items: center; }
+  .cta .btn { display: inline-block; margin-top: 48px; padding: 28px 56px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 36px; font-weight: 800; }
+</style>
+</head>
+<body data-size="1080x1350">
+
+<!-- 1. CAPA -->
+<section class="slide capa">
+  <div class="full shade"><img class="photo" src="img/capa.jpg" alt=""></div>
+  <div class="progress" style="width: 14.3%"></div>
+  <div class="content stack">
+    <div class="kicker">Guia rápido</div>
+    <h1>7 erros que <span class="hl">travam</span> suas vendas</h1>
+  </div>
+  <div class="foot" style="color:#fff"><span class="handle" style="color:#fff"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 2. TEXTO -->
+<section class="slide texto">
+  <div class="progress" style="width: 28.6%"></div>
+  <div class="top"><span>02/07</span><span>Tema do carrossel</span></div>
+  <div class="stack">
+    <h2>Título que já entrega a ideia</h2>
+    <p>Texto de apoio curto, com no máximo 30 palavras e <strong>1 a 3 palavras</strong> em destaque.</p>
+  </div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 3. IMAGEM NO TOPO -->
+<section class="slide imagem-topo">
+  <div class="media"><img class="photo" src="img/slide3.jpg" alt=""></div>
+  <div class="content stack">
+    <h2>Ideia principal</h2>
+    <p>Explicação curta da ideia.</p>
+  </div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 4. SPLIT -->
+<section class="slide split">
+  <div class="media"><img class="photo" src="img/slide4.jpg" alt=""></div>
+  <div class="stack">
+    <div class="kicker">Erro 03</div>
+    <h2>Título do lado da foto</h2>
+    <p>Texto curto de apoio.</p>
+  </div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 5. LISTA -->
+<section class="slide lista dark">
+  <div class="top"><span>05/07</span><span>Checklist</span></div>
+  <div class="stack" style="margin-top:80px">
+    <h2>Faça assim</h2>
+    <ol><li>Primeiro passo curto</li><li>Segundo passo curto</li><li>Terceiro passo curto</li></ol>
+  </div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 6. NÚMERO -->
+<section class="slide numero">
+  <div class="stack">
+    <div class="big">73%</div>
+    <h2>dos clientes decidem pelo perfil</h2>
+    <p>Fonte: cite a fonte do dado.</p>
+  </div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+<!-- 7. CTA (último: classe "last" esconde a seta) -->
+<section class="slide cta last">
+  <div class="stack">
+    <h2>Salve para consultar depois</h2>
+    <p>E mande para quem precisa ver isso.</p>
+  </div>
+  <div class="btn">Siga @perfil</div>
+  <div class="foot"><span class="handle"><span class="avatar"></span>@perfil</span><span class="swipe"></span></div>
+</section>
+
+</body>
+</html>

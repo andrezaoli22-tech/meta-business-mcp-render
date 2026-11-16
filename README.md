@@ -75,3 +75,17 @@ Exemplos de pedidos:
 - Se o servidor reiniciar no meio de uma publicação, o post vai para "erro" em vez de tentar de novo (para evitar post duplicado). Confira no Instagram antes de reagendar.
 - A Meta limita quantos posts por dia uma conta pode publicar via API.
 - Vídeo no Facebook é publicado como vídeo da Página, não como Reels do Facebook.
+
+---
+
+## Skill: Editor de Carrossel
+
+Em `.claude/skills/editor-carrossel/` há uma skill do Claude Code que cria carrosséis a partir de uma referência: extrai o estilo (paleta, fontes, grid), escreve o roteiro, busca imagens licenciadas (Unsplash, Pexels, Pixabay), monta os slides em HTML e renderiza em PNG 1080x1350. Se você pedir, ela agenda o post com `agendar_post_instagram`.
+
+Como usar: abra o Claude Code nesta pasta e peça, por exemplo, *"cria um carrossel de 7 slides sobre clareamento dental para @clinica, no estilo desta referência"* (anexe a imagem). Para renderizar manualmente:
+
+```bash
+node .claude/skills/editor-carrossel/scripts/render.mjs carrosseis/<pasta>/carrossel.html
+```
+
+Requer Playwright (`npm i -D playwright && npx playwright install chromium`).

@@ -60,13 +60,20 @@ def main(src, dst):
         r, g, b, _ = rgba(sd["bg"])
         slide.background.fill.solid(); slide.background.fill.fore_color.rgb = RGBColor(r, g, b)
         # blocos grandes primeiro, fotos, depois chips/barras pequenas, linhas e textos
-        big = [s for s in sd["shapes"] if not s["chip"]]
-        small = [s for s in sd["shapes"] if s["chip"]]
+        # ordem: blocos de fundo -> fotos de fundo -> cartões que contêm foto -> fotos dentro deles -> etiquetas
+        big = [s for s in sd["shapes"] if not s["chip"] and not s.get("container")]
+        cont = [s for s in sd["shapes"] if s.get("container")]
+        small = [s for s in sd["shapes"] if s["chip"] and not s.get("container")]
+        def pics(ms):
+            for m in ms:
+                pic = slide.shapes.add_picture(os.path.join(base, m["file"]), Emu(int(m["x"] * PX)), Emu(int(m["y"] * PX)), Emu(int(m["w"] * PX)), Emu(int(m["h"] * PX)))
+                pic.name = "Foto (substituir)"
         for s in big:
             rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"], border=s.get("border")).name = "Bloco de cor"
-        for m in sd["medias"]:
-            pic = slide.shapes.add_picture(os.path.join(base, m["file"]), Emu(int(m["x"] * PX)), Emu(int(m["y"] * PX)), Emu(int(m["w"] * PX)), Emu(int(m["h"] * PX)))
-            pic.name = "Foto (substituir)"
+        pics([m for m in sd["medias"] if not m.get("nested")])
+        for s in cont:
+            rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"], border=s.get("border")).name = "Cartão"
+        pics([m for m in sd["medias"] if m.get("nested")])
         for s in small:
             rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"], border=s.get("border")).name = "Cartão / etiqueta"
         for l in sd["lines"]:

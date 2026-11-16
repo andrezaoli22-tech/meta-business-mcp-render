@@ -25,7 +25,7 @@ await page.addStyleTag({ content: ".slide{margin:0 0 40px 0!important}" });
 const [W, H] = (await page.getAttribute("body", "data-size") || "1080x1350").split("x").map(Number);
 
 const layout = await page.$$eval("section.slide", (slides) => {
-  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span,.head>span,.n,.cap,.live,.count,.bub,.sig>span";
+  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span,.head>span,.n,.cap,.live,.count,.bub,.sig>span,.match,.k,.v,.sub,.legend>span,.note,.badge,.where>span,.t,.ps,.xb,.stub,.foot";
   const transparent = (c) => !c || c === "transparent" || /rgba\(.*,\s*0\)$/.test(c);
   const isInMedia = (el) => !!el.closest(".media,.full");
   return slides.map((s) => {
@@ -44,7 +44,7 @@ const layout = await page.$$eval("section.slide", (slides) => {
         const r = box(el.getBoundingClientRect());
         // fundos grandes (> 60% do slide) vão atrás das fotos; cartões e etiquetas vão na frente
         const isBackdrop = (hasBg && r.w * r.h > 0.6 * R.width * R.height) || !!el.querySelector(".media,.full"); // moldura de foto vai atrás
-        shapes.push({ ...r, color: hasBg ? st.backgroundColor : "rgba(0,0,0,0)", radius: parseFloat(st.borderTopLeftRadius) || 0, chip: !isBackdrop, border: bw > 0 ? { w: bw, color: st.borderTopColor } : null });
+        shapes.push({ ...r, color: hasBg ? st.backgroundColor : "rgba(0,0,0,0)", radius: parseFloat(st.borderTopLeftRadius) || 0, chip: !isBackdrop, container: !!el.querySelector(".media,.full") && !(hasBg && r.w * r.h > 0.6 * R.width * R.height), border: bw > 0 ? { w: bw, color: st.borderTopColor } : null });
       }
       // linhas finas feitas com ::before/::after
       for (const pseudo of ["::before", "::after"]) {
@@ -85,7 +85,11 @@ const layout = await page.$$eval("section.slide", (slides) => {
       if (!txt.trim() || texts.some((t) => t.runs.some((r) => r.text === txt))) return;
       texts.push({ ...box(el.getBoundingClientRect()), align: "right", lineHeight: 1.2, runs: [{ text: txt, color: st.color, weight: +st.fontWeight, size: parseFloat(st.fontSize), font: st.fontFamily.split(",")[0].replace(/["']/g, ""), spacing: 0 }], padTop: 0, padLeft: 0, name: "arrow" });
     });
-    const medias = [...s.querySelectorAll(".media,.full")].map((m) => ({ ...box(m.getBoundingClientRect()) }));
+    const medias = [...s.querySelectorAll(".media,.full")].map((m) => {
+      let nested = false;
+      for (let p = m.parentElement; p && p !== s; p = p.parentElement) if (!transparent(getComputedStyle(p).backgroundColor)) nested = true;
+      return { ...box(m.getBoundingClientRect()), nested };
+    });
     return { bg: cs.backgroundColor, shapes, lines, texts, medias };
   });
 });

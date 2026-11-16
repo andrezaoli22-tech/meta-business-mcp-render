@@ -1,0 +1,174 @@
+<!doctype html>
+<!-- Stories GTA VI — 5 layouts inéditos (não repetem os da semana 02): ingresso, infográfico, meio a meio, linha do tempo, grade 2x2. Área segura 250px. -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --w:1080px; --h:1920px; --black:#0B0B0B; --white:#FFFFFF; --blue:#0025CC; --px:80px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#222;font-family:"Inter Tight",sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+  .slide{width:var(--w);height:var(--h);position:relative;overflow:hidden;margin:0 auto 40px;background:var(--black)}
+  .media{position:absolute;overflow:hidden}
+  .media img{display:block;width:100%;height:100%;object-fit:cover}
+  .tag{font-weight:700;font-size:28px;letter-spacing:.08em;text-transform:uppercase}
+  .h{font-weight:800;font-size:76px;line-height:1.02;letter-spacing:-.04em;text-transform:uppercase;text-wrap:balance}
+  .p{font-weight:400;font-size:36px;line-height:1.45;letter-spacing:-.01em;text-wrap:pretty}
+  .p strong{font-weight:700}
+
+  /* ===== F. MIAMI HEAT — ingresso ===== */
+  .f .media{inset:0}
+  .f .media img{filter:blur(2px) brightness(.45)}
+  .f .head{position:absolute;left:var(--px);right:var(--px);top:270px}
+  .f .head .h{margin-top:16px}
+  .f .ticket{position:absolute;left:70px;right:70px;top:620px;height:1020px;background:var(--white);color:var(--black);border-radius:32px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .f .ticket .art{position:absolute;left:0;right:0;top:0;height:420px}
+  .f .ticket .art img{width:100%;height:100%;object-fit:cover;display:block}
+  .f .perf{position:absolute;left:0;right:0;top:420px;height:0;border-top:4px dashed #CFCFCF}
+  .f .perf::before,.f .perf::after{content:"";position:absolute;top:-34px;width:64px;height:64px;border-radius:50%;background:#2a2a2a}
+  .f .perf::before{left:-32px} .f .perf::after{right:-32px}
+  .f .info{position:absolute;left:56px;right:56px;top:470px}
+  .f .match{font-weight:800;font-size:52px;line-height:1.05;letter-spacing:-.035em}
+  .f .grid{display:grid;grid-template-columns:1fr 1fr;gap:26px 30px;margin-top:34px}
+  .f .grid .k{font-weight:700;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+  .f .grid .v{font-weight:500;font-size:30px;line-height:1.3;margin-top:6px}
+  .f .stub{position:absolute;left:0;right:0;bottom:0;height:110px;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;letter-spacing:.06em;text-transform:uppercase}
+
+  /* ===== G. PRÉ-VENDAS — infográfico ===== */
+  .g{background:var(--white);color:var(--black)}
+  .g .head{position:absolute;left:var(--px);right:var(--px);top:270px}
+  .g .head .tag{color:var(--blue)}
+  .g .big{position:absolute;left:var(--px);right:var(--px);top:380px;font-weight:900;font-size:250px;line-height:.85;letter-spacing:-.07em}
+  .g .big small{font-size:110px;letter-spacing:-.04em}
+  .g .sub{position:absolute;left:var(--px);right:var(--px);top:620px;font-weight:800;font-size:54px;line-height:1.05;letter-spacing:-.035em;text-transform:uppercase}
+  .g .bar{position:absolute;left:var(--px);right:var(--px);top:830px;height:120px;display:flex;border-radius:20px;overflow:hidden}
+  .g .bar div{display:flex;align-items:center;padding:0 30px;font-weight:800;font-size:40px;color:#fff}
+  .g .ps{width:74%;background:var(--blue)} .g .xb{width:26%;background:var(--black)}
+  .g .legend{position:absolute;left:var(--px);right:var(--px);top:975px;display:flex;justify-content:space-between;font-size:30px;font-weight:500}
+  .g .facts{position:absolute;left:var(--px);right:var(--px);top:1100px;display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .g .fact{border-top:3px solid var(--black);padding:26px 26px 0 0}
+  .g .fact .n{font-weight:900;font-size:76px;letter-spacing:-.05em;line-height:1}
+  .g .fact .p{font-size:28px;line-height:1.35;margin-top:10px}
+  .g .note{position:absolute;left:var(--px);right:var(--px);bottom:270px;font-size:24px;color:#6E6E6E}
+
+  /* ===== H. QUIOSQUES — meio a meio ===== */
+  .hh .media{left:0;right:0;top:0;height:960px}
+  .hh .lower{position:absolute;left:0;right:0;top:960px;bottom:0;background:var(--white);color:var(--black);padding:60px var(--px) 0}
+  .hh .badge{position:absolute;left:var(--px);top:925px;background:var(--blue);color:#fff;font-weight:800;font-size:28px;letter-spacing:.06em;text-transform:uppercase;padding:22px 30px;border-radius:14px;z-index:2}
+  .hh .lower .h{font-size:68px;margin-top:40px}
+  .hh .lower .p{margin-top:24px;color:#2A2A2A}
+  .hh .where{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .hh .where span{border:3px solid var(--black);border-radius:999px;padding:12px 24px;font-weight:700;font-size:28px}
+
+  /* ===== I. LINHA DO TEMPO ===== */
+  .i .media{left:0;right:0;top:0;height:720px}
+  .i .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,11,.5) 0%,rgba(11,11,11,0) 25%,rgba(11,11,11,.7) 70%,var(--black) 100%)}
+  .i .head{position:absolute;left:var(--px);right:var(--px);top:480px}
+  .i .head .h{margin-top:14px;font-size:70px}
+  .i .tl{position:absolute;left:var(--px);right:var(--px);top:760px;padding-left:70px}
+  .i .tl::before{content:"";position:absolute;left:16px;top:20px;bottom:40px;width:4px;background:rgba(255,255,255,.35)}
+  .i .ev{position:relative;padding-bottom:46px}
+  .i .ev::before{content:"";position:absolute;left:-70px;top:8px;width:36px;height:36px;border-radius:50%;background:var(--blue);border:5px solid var(--black);box-shadow:0 0 0 3px var(--blue)}
+  .i .ev .t{font-weight:800;font-size:32px;letter-spacing:.04em;text-transform:uppercase;color:#8FA3FF}
+  .i .ev .p{margin-top:8px;font-size:34px}
+
+  /* ===== J. COMO JOGAR — grade 2x2 ===== */
+  .j{background:var(--black)}
+  .j .head{position:absolute;left:var(--px);right:var(--px);top:270px}
+  .j .head .h{margin-top:14px}
+  .j .tiles{position:absolute;left:var(--px);right:var(--px);top:560px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:440px 440px;gap:24px}
+  .j .tile{border-radius:30px;padding:40px 36px;position:relative;overflow:hidden}
+  .j .tile .k{font-weight:700;font-size:24px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+  .j .tile .v{font-weight:900;font-size:66px;line-height:.98;letter-spacing:-.045em;margin-top:18px}
+  .j .tile .p{font-size:28px;line-height:1.35;margin-top:16px}
+  .j .t1{background:var(--blue)}
+  .j .t2{background:var(--white);color:var(--black)}
+  .j .t3{background:#1C1C1C}
+  .j .t4{padding:0}
+  .j .t4 img{width:100%;height:100%;object-fit:cover;display:block}
+  .j .t4 .cap{position:absolute;left:0;right:0;bottom:0;padding:90px 30px 30px;background:linear-gradient(180deg,rgba(11,11,11,0),rgba(11,11,11,.92));font-weight:800;font-size:34px;line-height:1.1}
+  .j .foot{position:absolute;left:var(--px);right:var(--px);top:1520px;font-size:30px;line-height:1.4;color:#CFCFCF}
+</style>
+</head>
+<body data-size="1080x1920">
+
+<!-- F. MIAMI HEAT — ingresso -->
+<section class="slide f">
+  <div class="media"><img src="img/heat-vice.jpg" alt=""></div>
+  <div class="head">
+    <div class="tag">Como acompanhar · GTA VI × NBA</div>
+    <h2 class="h">Uma noite em Vice City</h2>
+  </div>
+  <div class="ticket">
+    <div class="art media"><img src="img/night-vice-city.jpg" alt=""></div>
+    <div class="perf"></div>
+    <div class="info">
+      <div class="match">Miami Heat × Milwaukee Bucks</div>
+      <div class="grid">
+        <div><div class="k">Onde</div><div class="v">Kaseya Center, Miami</div></div>
+        <div><div class="k">Quando</div><div class="v">Na véspera do lançamento</div></div>
+        <div><div class="k">Assista</div><div class="v">Transmissão da ESPN</div></div>
+        <div><div class="k">Camisa</div><div class="v">Rockstar × Nike × Travis Scott, só na arena</div></div>
+      </div>
+    </div>
+    <div class="stub">Quadra feita para Vice City</div>
+  </div>
+</section>
+
+<!-- G. PRÉ-VENDAS — infográfico -->
+<section class="slide g">
+  <div class="head"><div class="tag">Em números · GTA VI</div></div>
+  <div class="big"><small>US$ </small>751<small> mi</small></div>
+  <div class="sub">em pré-vendas digitais antes da estreia</div>
+  <div class="bar"><div class="ps">74%</div><div class="xb">26%</div></div>
+  <div class="legend"><span><strong>PlayStation 5</strong> · 5,74 mi de cópias</span><span><strong>Xbox</strong> · 1,97 mi</span></div>
+  <div class="facts">
+    <div class="fact"><div class="n">7,71 mi</div><p class="p">cópias reservadas</p></div>
+    <div class="fact"><div class="n">Recorde</div><p class="p">de pré-vendas da PlayStation Store</p></div>
+  </div>
+  <div class="note">Estimativa da Sensor Tower. A Rockstar não divulga números oficiais.</div>
+</section>
+
+<!-- H. QUIOSQUES — meio a meio -->
+<section class="slide hh">
+  <div class="media"><img src="img/quiosques.jpg" style="object-position:0% 50%;transform:scale(1.4);transform-origin:8% 88%" alt=""></div>
+  <div class="lower">
+    <h2 class="h">Marcas do jogo invadem Miami</h2>
+    <p class="p">Quiosques digitais exibem anúncios de <strong>marcas que só existem em Vice City</strong>, como a joalheria Kowalski, misturados à publicidade real. Fique de olho nos QR codes.</p>
+    <div class="where"><span>Wynwood, Miami</span><span>Hollywood Boulevard</span><span>Times Square</span></div>
+  </div>
+  <div class="badge">Publicidade de mentira, rua de verdade</div>
+</section>
+
+<!-- I. LINHA DO TEMPO -->
+<section class="slide i">
+  <div class="media"><img src="img/gta-cena.jpg" style="object-position:22% 30%" alt=""></div>
+  <div class="head">
+    <div class="tag">Como acompanhar o lançamento</div>
+    <h2 class="h">A virada para Vice City</h2>
+  </div>
+  <div class="tl">
+    <div class="ev"><div class="t">Véspera</div><p class="p">O Miami Heat entra em quadra como <strong>Vice City</strong>.</p></div>
+    <div class="ev"><div class="t">Antes da estreia</div><p class="p">Começa o <strong>pré-show</strong> da live global no YouTube.</p></div>
+    <div class="ev"><div class="t">Meia-noite (Brasília)</div><p class="p">O jogo é <strong>liberado no Brasil</strong> para PS5 e Xbox Series.</p></div>
+    <div class="ev"><div class="t">Próximas 24 horas</div><p class="p">Live no YouTube <strong>em português</strong> e maratona de gameplay do KaBuM! na Galeria Magalu.</p></div>
+  </div>
+</section>
+
+<!-- J. COMO JOGAR — grade 2x2 -->
+<section class="slide j">
+  <div class="head">
+    <div class="tag">Como jogar no lançamento</div>
+    <h2 class="h">Tudo pronto para Vice City?</h2>
+  </div>
+  <div class="tiles">
+    <div class="tile t1"><div class="k">Onde</div><div class="v">PS5 e Xbox Series</div><p class="p">Sem versão para PC, por enquanto.</p></div>
+    <div class="tile t2"><div class="k">Quanto</div><div class="v">R$ 449,90</div><p class="p">Standard. A Ultimate sai por <strong>R$ 549,90</strong>.</p></div>
+    <div class="tile t3"><div class="k">Antes</div><div class="v">Pré-download</div><p class="p">Já liberado para quem comprou na pré-venda.</p></div>
+    <div class="tile t4"><div class="media" style="inset:0"><img src="img/gta-cena.jpg" style="object-position:30% 40%" alt=""></div><div class="cap">Meia-noite, horário de Brasília</div></div>
+  </div>
+  <p class="foot">Compre na PlayStation Store, na Microsoft Store ou no varejo e deixe o jogo baixado para começar assim que liberar.</p>
+</section>
+
+</body>
+</html>

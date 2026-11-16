@@ -82,6 +82,10 @@ Veja o passo 7 do `SKILL.md`.
   Layouts já usados (exemplo em `carrosseis/stories-semana-02/stories.html`): foto no topo +
   passos com números vazados; azul total com número gigante e 2 colunas; foto cheia + cartão
   branco com checklist; polaroid + ficha Onde/Quando/Como; tela de live com balões.
+- Mais 5 layouts já usados (`carrosseis/stories-gta-vi/stories.html`): ingresso com picote;
+  infográfico em fundo branco com barra de proporção; meio a meio (foto em cima, branco embaixo,
+  selo azul e tags em pílula); linha do tempo vertical com pontos azuis; grade 2x2 de cards.
+  Para o próximo, invente um layout novo ou combine de forma diferente.
 - Conteúdo dentro da área segura: nada importante nos 250 px de cima e de baixo.
 - Texto prático e verificado: onde, como, regras. Sem marca "RP News" e sem datas, salvo pedido.
 - Mesmas cores da casa e degradê preto alto sob texto branco em foto.

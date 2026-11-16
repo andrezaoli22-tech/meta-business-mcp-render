@@ -29,13 +29,21 @@ def set_alpha(fill_shape, alpha):
     srgb.append(a)
 
 
-def rect(slide, x, y, w, h, color, radius=0, alpha=1.0):
+def rect(slide, x, y, w, h, color, radius=0, alpha=1.0, border=None):
     kind = MSO_SHAPE.ROUNDED_RECTANGLE if radius else MSO_SHAPE.RECTANGLE
     s = slide.shapes.add_shape(kind, Emu(int(x * PX)), Emu(int(y * PX)), Emu(int(w * PX)), Emu(int(h * PX)))
     r, g, b, a = rgba(color)
-    s.fill.solid(); s.fill.fore_color.rgb = RGBColor(r, g, b)
-    set_alpha(s, a * alpha)
-    s.line.fill.background(); s.shadow.inherit = False
+    if a * alpha <= 0.001:
+        s.fill.background()
+    else:
+        s.fill.solid(); s.fill.fore_color.rgb = RGBColor(r, g, b)
+        set_alpha(s, a * alpha)
+    if border:
+        br, bg_, bb, _ = rgba(border["color"])
+        s.line.color.rgb = RGBColor(br, bg_, bb); s.line.width = Pt(border["w"] * 0.75)
+    else:
+        s.line.fill.background()
+    s.shadow.inherit = False
     if radius:
         s.adjustments[0] = min(0.5, radius / min(w, h))
     return s
@@ -55,12 +63,12 @@ def main(src, dst):
         big = [s for s in sd["shapes"] if not s["chip"]]
         small = [s for s in sd["shapes"] if s["chip"]]
         for s in big:
-            rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"]).name = "Bloco de cor"
+            rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"], border=s.get("border")).name = "Bloco de cor"
         for m in sd["medias"]:
             pic = slide.shapes.add_picture(os.path.join(base, m["file"]), Emu(int(m["x"] * PX)), Emu(int(m["y"] * PX)), Emu(int(m["w"] * PX)), Emu(int(m["h"] * PX)))
             pic.name = "Foto (substituir)"
         for s in small:
-            rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"]).name = "Etiqueta"
+            rect(slide, s["x"], s["y"], s["w"], s["h"], s["color"], s["radius"], border=s.get("border")).name = "Cartão / etiqueta"
         for l in sd["lines"]:
             rect(slide, l["x"], l["y"], l["w"], l["h"], l["color"], alpha=l.get("opacity", 1)).name = "Linha"
         for t in sd["texts"]:

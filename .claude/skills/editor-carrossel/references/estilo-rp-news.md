@@ -76,3 +76,13 @@ de 55% até 90% na faixa de baixo. Escolha fotos com o assunto principal na **me
 ## Entrega obrigatória
 Todo carrossel sai com o **link de edição** (PPTX em camadas + PDF), além dos PNGs.
 Veja o passo 7 do `SKILL.md`.
+
+## Stories "como participar" (1080x1920)
+- 1 story por case, **cada um com layout diferente** (o cliente pediu para não repetir).
+  Layouts já usados (exemplo em `carrosseis/stories-semana-02/stories.html`): foto no topo +
+  passos com números vazados; azul total com número gigante e 2 colunas; foto cheia + cartão
+  branco com checklist; polaroid + ficha Onde/Quando/Como; tela de live com balões.
+- Conteúdo dentro da área segura: nada importante nos 250 px de cima e de baixo.
+- Texto prático e verificado: onde, como, regras. Sem marca "RP News" e sem datas, salvo pedido.
+- Mesmas cores da casa e degradê preto alto sob texto branco em foto.
+

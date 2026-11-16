@@ -25,7 +25,7 @@ await page.addStyleTag({ content: ".slide{margin:0 0 40px 0!important}" });
 const [W, H] = (await page.getAttribute("body", "data-size") || "1080x1350").split("x").map(Number);
 
 const layout = await page.$$eval("section.slide", (slides) => {
-  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span,.head>span";
+  const TEXT_SEL = "h1,h2,h3,p,li,blockquote,.kicker,.brand,.tag,.chip,.big,.big10,.quote,.btn,.foot>span,.top>span,.head>span,.n,.cap,.live,.count,.bub,.sig>span";
   const transparent = (c) => !c || c === "transparent" || /rgba\(.*,\s*0\)$/.test(c);
   const isInMedia = (el) => !!el.closest(".media,.full");
   return slides.map((s) => {
@@ -37,8 +37,14 @@ const layout = await page.$$eval("section.slide", (slides) => {
     s.querySelectorAll("*").forEach((el) => {
       if (isInMedia(el) || el.matches(".media,.full")) return;
       const st = getComputedStyle(el);
-      if (!transparent(st.backgroundColor) && st.display !== "none") {
-        shapes.push({ ...box(el.getBoundingClientRect()), color: st.backgroundColor, radius: parseFloat(st.borderTopLeftRadius) || 0, chip: el.matches(TEXT_SEL) });
+      const sides = ["Top", "Right", "Bottom", "Left"].map((k) => parseFloat(st["border" + k + "Width"]) || 0);
+      const bw = sides.every((v) => v > 0) ? sides[0] : 0; // só contorno completo vira borda
+      const hasBg = !transparent(st.backgroundColor);
+      if ((hasBg || (bw > 0 && st.borderTopStyle !== "none" && !transparent(st.borderTopColor))) && st.display !== "none") {
+        const r = box(el.getBoundingClientRect());
+        // fundos grandes (> 60% do slide) vão atrás das fotos; cartões e etiquetas vão na frente
+        const isBackdrop = (hasBg && r.w * r.h > 0.6 * R.width * R.height) || !!el.querySelector(".media,.full"); // moldura de foto vai atrás
+        shapes.push({ ...r, color: hasBg ? st.backgroundColor : "rgba(0,0,0,0)", radius: parseFloat(st.borderTopLeftRadius) || 0, chip: !isBackdrop, border: bw > 0 ? { w: bw, color: st.borderTopColor } : null });
       }
       // linhas finas feitas com ::before/::after
       for (const pseudo of ["::before", "::after"]) {
@@ -59,7 +65,8 @@ const layout = await page.$$eval("section.slide", (slides) => {
           const t = node.textContent.replace(/\s+/g, " ");
           if (t.trim() || (t === " " && runs.length)) {
             const st = getComputedStyle(node.parentElement);
-            runs.push({ text: t, color: st.color, weight: +st.fontWeight, size: parseFloat(st.fontSize), font: st.fontFamily.split(",")[0].replace(/["']/g, "").trim(), spacing: parseFloat(st.letterSpacing) || 0, upper: st.textTransform === "uppercase" });
+            const strokeOnly = /rgba\(.*,\s*0\)$/.test(st.color) && parseFloat(st.webkitTextStrokeWidth) > 0;
+            runs.push({ text: t, color: strokeOnly ? st.webkitTextStrokeColor : st.color, weight: +st.fontWeight, size: parseFloat(st.fontSize), font: st.fontFamily.split(",")[0].replace(/["']/g, "").trim(), spacing: parseFloat(st.letterSpacing) || 0, upper: st.textTransform === "uppercase" });
           }
         } else if (node.nodeName === "BR") runs.push({ br: true });
         else if (node.nodeType === 1 && getComputedStyle(node).display !== "none") node.childNodes.forEach(walk);

@@ -50,6 +50,7 @@ Recomendado: o plano **Workers Paid** (US$ 5/mês). A IA e os painéis fazem cha
 3. **Publicar:** menu **Workers & Pages → Create → Import a repository** e escolha este repositório.
    - Root directory: `plataforma-flamme`.
    - Deploy command: `npx wrangler deploy`.
+   - Branch de produção: `main`. O arquivo `.npmrc` (`legacy-peer-deps=true`) é necessário para o `npm ci` do Cloudflare.
    - A cada alteração enviada ao GitHub, a plataforma se atualiza sozinha.
 4. Abra o endereço que o Cloudflare mostrar, algo como `https://plataforma-flamme.SEU-USUARIO.workers.dev`. No **primeiro acesso** você cria a sua conta de administradora.
 

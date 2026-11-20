@@ -43,7 +43,7 @@ Recomendado: o plano **Workers Paid** (US$ 5/mês). A IA e os painéis fazem cha
 
 1. **Banco:** menu **Storage & Databases → D1 → Create**.
    - Dê o nome `plataforma-flamme`.
-   - Copie o **Database ID** e cole em `wrangler.toml`, no lugar de `COLE-AQUI-O-ID-DO-BANCO-D1`.
+   - O **Database ID** já está em `wrangler.toml`.
 2. **Arquivos:** menu **R2 Object Storage**.
    - Ative o R2.
    - Clique em **Create bucket** e dê o nome `plataforma-flamme-midia`.

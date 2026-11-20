@@ -11,11 +11,11 @@ binding = "ASSETS"
 run_worker_first = true
 not_found_handling = "single-page-application"
 
-# Banco de dados (crie no painel: D1 → "plataforma-flamme" e cole o ID abaixo)
+# Banco de dados D1 "plataforma-flamme" (conta da Flamme)
 [[d1_databases]]
 binding = "DB"
 database_name = "plataforma-flamme"
-database_id = "COLE-AQUI-O-ID-DO-BANCO-D1"
+database_id = "a652935d-9ad7-4707-b0cd-adc21c921836"
 
 # Arquivos (artes, vídeos, estratégias em PDF)
 [[r2_buckets]]

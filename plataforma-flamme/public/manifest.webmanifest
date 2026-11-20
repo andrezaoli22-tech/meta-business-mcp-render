@@ -1,0 +1,14 @@
+{
+  "name": "Flamme",
+  "short_name": "Flamme",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#922f11",
+  "theme_color": "#922f11",
+  "icons": [
+    { "src": "/marca/flamme-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/marca/flamme-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

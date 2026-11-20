@@ -1,0 +1,17 @@
+{
+  "name": "flamme-plataforma",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma da agência Flamme: social media completo por cliente (demandas, aprovação, estratégia, IA, Instagram, painel)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.42.0"
+  }
+}

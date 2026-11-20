@@ -1,7 +1,8 @@
-// Banco de dados (Cloudflare D1 / SQLite).
+// Banco de dados (Cloudflare D1 / SQLite) da plataforma Alldres (empresas: Alldres, RP e Citrino Luz).
 // As tabelas são criadas sozinhas no primeiro acesso: não precisa rodar nada no painel.
 
 export const EMPRESAS = {
+  alldres: { id: 'alldres', nome: 'Alldres' },
   rp: { id: 'rp', nome: 'RP' },
   citrino: { id: 'citrino', nome: 'Citrino Luz' },
 };
@@ -113,7 +114,7 @@ const SCHEMA = [
     endpoint TEXT NOT NULL UNIQUE,
     p256dh TEXT NOT NULL,
     auth TEXT NOT NULL,
-    empresas TEXT NOT NULL DEFAULT '["rp","citrino"]',
+    empresas TEXT NOT NULL DEFAULT '["alldres","rp","citrino"]',
     nome TEXT NOT NULL DEFAULT '',
     criado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
   )`,

@@ -1,4 +1,4 @@
-// Plataforma RP + Citrino Luz — servidor (Cloudflare Worker).
+// Plataforma Alldres (Alldres, RP e Citrino Luz) — servidor (Cloudflare Worker).
 
 import { migrar, EMPRESAS, STATUS, STATUS_IDS, TIPOS, statusNome, getConfig, setConfig, agoraIso } from './db.js';
 import { json, falha, ErroHttp, lerJson, lerCookie, hashSenha, iguais, sha256, aleatorio, b64url } from './util.js';
@@ -45,13 +45,14 @@ export default {
 // ---------------- Páginas (HTML, ícones e manifestos por marca) ----------------
 
 const MARCAS_HTML = {
+  alldres: { manifest: '/manifest-alldres.webmanifest', icone: '/marca/alldres-apple.png', cor: '#0c0b0b', titulo: 'Alldres · Demandas' },
   rp: { manifest: '/manifest-rp.webmanifest', icone: '/marca/rp-apple.png', cor: '#0e0e0e', titulo: 'RP · Demandas' },
   citrino: { manifest: '/manifest-citrino.webmanifest', icone: '/marca/citrino-apple.png', cor: '#ffffff', titulo: 'Citrino Luz · Demandas' },
 };
 
 async function paginas(request, env, url) {
   const primeiro = url.pathname.split('/')[1];
-  const ehPagina = url.pathname === '/' || primeiro === 'rp' || primeiro === 'citrino' || primeiro === 'equipe' || primeiro === 'entrar';
+  const ehPagina = url.pathname === '/' || Boolean(EMPRESAS[primeiro]) || primeiro === 'equipe' || primeiro === 'entrar';
   if (!ehPagina) return env.ASSETS.fetch(request);
   const html = await env.ASSETS.fetch(new Request(new URL('/', url), request));
   const marca = MARCAS_HTML[primeiro];
@@ -284,7 +285,7 @@ async function rotasPush(request, env, ctx, eu, seg, m) {
   if (seg[1] === 'chave' && m === 'GET') return json({ chave: (await chavesVapid(env)).publica });
   if (!eu.id) falha(400, 'Usuário de API não recebe notificações.');
   if (seg[1] === 'inscrever' && m === 'POST') {
-    const { inscricao, empresas = ['rp', 'citrino'], nome = '' } = await lerJson(request);
+    const { inscricao, empresas = Object.keys(EMPRESAS), nome = '' } = await lerJson(request);
     if (!inscricao?.endpoint || !inscricao?.keys?.p256dh || !inscricao?.keys?.auth) falha(400, 'Inscrição inválida.');
     if (!/^https:\/\//.test(inscricao.endpoint)) falha(400, 'Endereço de push inválido.');
     const emp = empresas.filter((e) => EMPRESAS[e]);

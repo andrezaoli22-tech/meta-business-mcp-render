@@ -1,32 +1,35 @@
 /* ===== Tokens por marca ===== */
-:root {
-  --bg: #f6f5f2;
-  --surface: #ffffff;
-  --surface-2: #f0eee9;
-  --text: #1c1c1a;
-  --muted: #6f6c66;
-  --line: #e3e0d9;
-  --accent: #1c1c1a;
+:root,
+html[data-marca='alldres'] {
+  /* Alldres: preto profundo, vermelho da marca e branco quente, com o degradê granulado da identidade */
+  --bg: #0c0b0b;
+  --surface: #151313;
+  --surface-2: #1e1b1a;
+  --text: #f7f2ef;
+  --muted: rgba(247, 242, 239, 0.58);
+  --line: rgba(247, 242, 239, 0.1);
+  --accent: #e8320f;
+  --accent-2: #c01b06;
   --accent-text: #ffffff;
-  --danger: #c4462f;
-  --ok: #2f8a57;
-  --warn: #b7791f;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --font-title: 'DM Sans', system-ui, sans-serif;
+  --danger: #ff7a5c;
+  --ok: #6fd49b;
+  --warn: #ffc46b;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --font-title: 'Outfit', 'DM Sans', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --title-transform: none;
-  --title-spacing: -0.01em;
-  --title-weight: 700;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --st-briefing: #9b9a97;
-  --st-producao: #4a8fd4;
-  --st-aprovacao: #d99a2b;
-  --st-ajustes: #d4604a;
-  --st-aprovado: #3f9c63;
-  --st-agendado: #8a63d2;
-  --st-publicado: #1f7a8c;
-  color-scheme: light;
+  --title-spacing: -0.025em;
+  --title-weight: 500;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --st-briefing: #a59d99;
+  --st-producao: #7fb0ff;
+  --st-aprovacao: #ffc46b;
+  --st-ajustes: #ff8d6b;
+  --st-aprovado: #6fd49b;
+  --st-agendado: #c4a6ff;
+  --st-publicado: #ff5a36;
+  color-scheme: dark;
 }
 
 /* RP: preto e creme, formas arredondadas e fortes como a logo */
@@ -68,6 +71,10 @@ html[data-marca='citrino'] {
   --accent: #c8b28d;
   --accent-text: #1d1d1b;
   --gold-strong: #a88d5f;
+  --danger: #b5432c;
+  --ok: #3f8a5c;
+  --warn: #a66d16;
+  color-scheme: light;
   --radius: 4px;
   --radius-sm: 2px;
   --font-title: 'Poiret One', 'Jost', sans-serif;
@@ -141,34 +148,78 @@ textarea.entrada { resize: vertical; min-height: 90px; }
 .grade-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 560px) { .grade-2 { grid-template-columns: 1fr; } }
 
-/* ===== Login ===== */
-.tela-login { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background:
-  linear-gradient(90deg, #0e0e0e 0 50%, #ffffff 50% 100%); }
-.cartao-login { width: min(420px, 100%); background: #fff; color: #1c1c1a; border-radius: 18px; padding: 28px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.25); display: grid; gap: 14px; }
-.cartao-login .logos { display: flex; align-items: center; justify-content: center; gap: 18px; margin-bottom: 4px; }
-.cartao-login .logos .rp { background: #0e0e0e; border-radius: 14px; padding: 10px; width: 64px; height: 64px; display: grid; place-items: center; }
-.cartao-login .logos img.cl { width: 160px; }
-.cartao-login h1 { font-size: 20px; margin: 0; text-align: center; }
-.cartao-login .entrada { background: #f6f5f2; border-color: #e3e0d9; color: #1c1c1a; }
-.cartao-login .btn.primario { background: #1c1c1a; color: #fff; border-color: #1c1c1a; }
+/* ===== Login (Alldres) ===== */
+.tela-login {
+  min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; align-content: center; gap: 22px;
+  padding: calc(24px + env(safe-area-inset-top)) 16px 24px;
+  background: #0c0b0b url('/marca/alldres-fundo.jpg') center / cover no-repeat;
+}
+.cartao-login {
+  width: min(420px, 100%); display: grid; gap: 14px; padding: 34px 26px 28px; border-radius: 26px;
+  background: rgba(12, 11, 11, 0.62); color: #f7f2ef; border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px) saturate(1.2); -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.45);
+}
+.cartao-login .pilula { width: 150px; justify-self: center; margin-bottom: 10px; filter: drop-shadow(0 8px 24px rgba(0,0,0,.35)); }
+.cartao-login h1 { font-size: 26px; margin: 0; text-align: center; }
+.cartao-login .sub { margin: -4px 0 6px; text-align: center; color: rgba(247, 242, 239, 0.65); font-size: 14px; }
+.cartao-login .entrada { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.14); color: #fff; }
+.cartao-login .entrada::placeholder { color: rgba(255, 255, 255, 0.45); }
+.cartao-login .btn.primario { min-height: 48px; font-size: 15.5px; }
+.rodape-login { color: rgba(255, 255, 255, 0.75); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
 .erro { color: var(--danger); font-size: 14px; }
 
-/* ===== Início (escolha de marca) ===== */
-.inicio { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
-.inicio a.marca { display: grid; place-items: center; text-decoration: none; padding: 40px 16px; position: relative; min-height: 50vh; }
-.inicio a.marca.rp { background: #0e0e0e; color: #fefaf0; }
-.inicio a.marca.citrino { background: #fff; color: #1d1d1b; }
-.inicio a.marca .conteudo { display: grid; gap: 18px; justify-items: center; text-align: center; transition: transform .2s; }
-.inicio a.marca:hover .conteudo { transform: translateY(-4px); }
-.inicio a.marca.rp img { width: min(150px, 40vw); }
-.inicio a.marca.citrino img { width: min(340px, 70vw); }
-.inicio .contador { font-size: 14px; opacity: .75; }
-.inicio .contador b { font-size: 22px; display: block; opacity: 1; }
-.inicio .rp .contador b { font-family: 'Fredoka'; }
-.inicio .citrino .contador b { font-family: 'Poiret One'; letter-spacing: .1em; }
-.inicio .barra-topo { position: fixed; top: 12px; right: 12px; z-index: 5; display: flex; gap: 8px; }
-.inicio .barra-topo .btn { background: rgba(255,255,255,.92); color: #1c1c1a; border-color: #ddd; backdrop-filter: blur(8px); }
-@media (max-width: 700px) { .inicio { grid-template-columns: 1fr; } }
+/* botão primário Alldres: vermelho com leve degradê */
+html[data-marca='alldres'] .btn.primario { background: linear-gradient(135deg, #f0401a, #c01b06); border-color: transparent; color: #fff; box-shadow: 0 8px 24px rgba(232, 50, 15, 0.28); }
+html[data-marca='alldres'] .btn.primario:hover { filter: brightness(1.06); }
+html[data-marca='alldres'] body { background: radial-gradient(1200px 500px at 85% -10%, rgba(232, 50, 15, 0.16), transparent 60%), var(--bg); background-attachment: fixed; }
+
+/* ===== Início (Alldres) ===== */
+.inicio { min-height: 100vh; min-height: 100dvh; position: relative; padding: 0 16px 40px; background: #0c0b0b; isolation: isolate; }
+.inicio::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 560px; z-index: -1;
+  background: url('/marca/alldres-fundo.jpg') center 35% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(#000 35%, transparent); mask-image: linear-gradient(#000 35%, transparent); opacity: .92; }
+.inicio-topo { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: calc(16px + env(safe-area-inset-top)) 0 10px; }
+.pilula.pequena { height: 34px; width: auto; filter: drop-shadow(0 6px 18px rgba(0,0,0,.3)); }
+.inicio-topo .acoes { display: flex; gap: 6px; }
+.inicio-topo .btn.icone { background: rgba(12, 11, 11, 0.35); border-color: rgba(255,255,255,.18); color: #fff; backdrop-filter: blur(10px); }
+.inicio-hero { max-width: 1180px; margin: 0 auto; padding: 70px 0 34px; color: #fff; }
+.inicio-hero .data { text-transform: uppercase; letter-spacing: .18em; font-size: 12px; opacity: .85; }
+.inicio-hero h1 { font-size: clamp(36px, 7vw, 64px); line-height: 1.02; margin: 10px 0 12px; text-shadow: 0 2px 30px rgba(0,0,0,.18); }
+.inicio-hero .resumo { margin: 0; font-size: 17px; opacity: .92; max-width: 560px; }
+.inicio > .aviso { max-width: 1180px; margin: 0 auto 16px; background: rgba(12,11,11,.55); border-color: rgba(255,255,255,.14); backdrop-filter: blur(14px); }
+.grade-marcas { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card-marca { display: grid; gap: 34px; padding: 22px; min-height: 240px; text-decoration: none; border-radius: 24px; position: relative; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1); transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s; align-content: space-between; }
+.card-marca:hover { transform: translateY(-4px); box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+.card-marca .topo-card { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-marca .seta { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; border: 1px solid currentColor; opacity: .55; transition: .2s; }
+.card-marca:hover .seta { opacity: 1; transform: translateX(3px); }
+.card-marca .numeros-card { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.card-marca .numeros-card b { display: block; font-size: 34px; line-height: 1; font-weight: 400; }
+.card-marca .numeros-card span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; opacity: .62; margin-top: 6px; }
+.card-marca.alldres { background: linear-gradient(150deg, #e8320f 0%, #a8180a 55%, #2a0d08 100%); color: #fff; }
+.card-marca.alldres::after { content: ''; position: absolute; inset: 0; background: url('/marca/alldres-fundo.jpg') center / cover; mix-blend-mode: soft-light; opacity: .55; pointer-events: none; }
+.card-marca.alldres > * { position: relative; z-index: 1; }
+.card-marca.alldres .logo-card { height: 34px; }
+.card-marca.alldres b { font-family: 'Outfit', sans-serif; }
+.card-marca.rp { background: #0e0e0e; color: #fefaf0; border-color: rgba(254,250,240,.14); }
+.card-marca.rp .logo-card { height: 64px; }
+.card-marca.rp b { font-family: 'Fredoka', sans-serif; font-weight: 500; }
+.card-marca.citrino { background: #ffffff; color: #1d1d1b; border-color: #e6dfd2; }
+.card-marca.citrino .logo-card { height: 22px; margin-top: 10px; }
+.card-marca.citrino b { font-family: 'Jost', sans-serif; font-weight: 300; }
+.card-marca.citrino .seta { color: #a88d5f; }
+@media (max-width: 860px) {
+  .grade-marcas { grid-template-columns: 1fr; }
+  .card-marca { min-height: 0; gap: 26px; }
+  .inicio-hero { padding: 44px 0 26px; }
+}
+
+/* selo Alldres no topo das páginas da RP e da Citrino Luz */
+.selo-alldres { border: 0; background: none; padding: 0 6px; cursor: pointer; display: grid; place-items: center; height: 42px; opacity: .9; }
+.selo-alldres img { height: 22px; width: auto; }
+.selo-alldres:hover { opacity: 1; }
 
 /* ===== Cabeçalho da marca ===== */
 .topo {
@@ -179,6 +230,12 @@ textarea.entrada { resize: vertical; min-height: 90px; }
 .topo .logo { display: flex; align-items: center; text-decoration: none; }
 html[data-marca='rp'] .topo .logo img { height: 38px; }
 html[data-marca='citrino'] .topo .logo img { height: 18px; }
+html[data-marca='alldres'] .topo .logo img { height: 22px; }
+html[data-marca='alldres'] .topo { background: color-mix(in srgb, #0c0b0b 78%, transparent); }
+html[data-marca='alldres'] .topo .abas button.ativa { background: rgba(232, 50, 15, 0.16); color: #fff; }
+html[data-marca='alldres'] .coluna { background: #131111; border: 1px solid var(--line); }
+html[data-marca='alldres'] .cartao { background: #1a1716; }
+html[data-marca='alldres'] .avatar { background: linear-gradient(135deg, #f0401a, #c01b06); color: #fff; }
 .topo .abas { display: flex; gap: 4px; margin-left: 12px; }
 .topo .abas button { border: 0; background: transparent; padding: 9px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); font-weight: 500; }
 .topo .abas button.ativa { background: var(--surface-2); color: var(--text); }

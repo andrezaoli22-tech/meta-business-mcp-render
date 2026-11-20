@@ -92,6 +92,7 @@ function midiaEl(chave, mime, extra = {}) {
 
 // ---------------- estado e rotas ----------------
 const MARCAS = {
+  alldres: { id: 'alldres', nome: 'Alldres', logo: '/marca/alldres-logo-branco.png' },
   rp: { id: 'rp', nome: 'RP', logo: '/marca/rp-logo.png' },
   citrino: { id: 'citrino', nome: 'Citrino Luz', logo: '/marca/citrino-logo.png' },
 };
@@ -144,12 +145,12 @@ async function rota() {
   const primeiro = partes[0] || '';
   fecharTudo();
   if (!estado.eu) {
-    document.documentElement.removeAttribute('data-marca');
+    document.documentElement.setAttribute('data-marca', 'alldres');
     return telaLogin();
   }
   await carregarBase();
   if (estado.eu.trocar_senha) {
-    document.documentElement.removeAttribute('data-marca');
+    document.documentElement.setAttribute('data-marca', 'alldres');
     return telaTrocarSenha();
   }
   carregarNotificacoes();
@@ -173,12 +174,14 @@ async function rota() {
     if (d) abrirDemanda(Number(d));
     return;
   }
-  document.documentElement.removeAttribute('data-marca');
+  document.documentElement.setAttribute('data-marca', 'alldres');
   if (primeiro === 'equipe') return telaConfig();
   return telaInicio();
 }
 
 // ---------------- login ----------------
+const pilulaAlldres = (cls = '') => h('img', { class: `pilula ${cls}`, src: '/marca/alldres-pilula.png', alt: 'Alldres' });
+
 function telaLogin() {
   const erro = h('div', { class: 'erro' });
   const setup = !estado.configurado;
@@ -209,16 +212,16 @@ function telaLogin() {
         }
       },
     },
-    h('div', { class: 'logos' }, h('div', { class: 'rp' }, h('img', { src: '/marca/rp-logo.png', alt: 'RP' })), h('img', { class: 'cl', src: '/marca/citrino-logo.png', alt: 'Citrino Luz' })),
-    h('h1', {}, setup ? 'Primeiro acesso' : 'Entrar na plataforma'),
-    setup ? h('p', { class: 'muted pequeno', style: { margin: 0, textAlign: 'center' } }, 'Você será o administrador e poderá convidar a equipe.') : null,
+    pilulaAlldres(),
+    h('h1', { class: 'titulo' }, setup ? 'Primeiro acesso' : 'Bem-vindo de volta'),
+    h('p', { class: 'sub' }, setup ? 'Você será o administrador e poderá convidar a equipe.' : 'Demandas, aprovações e publicações da Alldres, RP e Citrino Luz.'),
     setup ? nome : null,
     email,
     senha,
     erro,
     botao
   );
-  $app.replaceChildren(h('div', { class: 'tela-login' }, form));
+  $app.replaceChildren(h('div', { class: 'tela-login' }, form, h('div', { class: 'rodape-login' }, 'alldres · plataforma de demandas')));
   (setup ? nome : email).focus();
 }
 
@@ -246,8 +249,9 @@ function telaTrocarSenha() {
             }
           },
         },
-        h('h1', {}, `Olá, ${estado.eu.nome.split(' ')[0]}!`),
-        h('p', { class: 'muted pequeno', style: { margin: 0, textAlign: 'center' } }, 'Crie sua senha pessoal para continuar.'),
+        pilulaAlldres(),
+        h('h1', { class: 'titulo' }, `Olá, ${estado.eu.nome.split(' ')[0]}!`),
+        h('p', { class: 'sub' }, 'Crie sua senha pessoal para continuar.'),
         atual,
         nova,
         erro,
@@ -258,31 +262,73 @@ function telaTrocarSenha() {
 }
 
 // ---------------- início ----------------
+function saudacao() {
+  const hora = Number(new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Sao_Paulo' }));
+  return hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+}
+
 async function telaInicio() {
-  const contadores = {};
+  const numeros = {};
+  const resumo = h('p', { class: 'resumo' }, ' ');
   const cartao = (id) => {
-    const c = h('span', { class: 'contador' }, ' ');
-    contadores[id] = c;
-    return h('a', { class: `marca ${id}`, href: `/${id}`, onclick: (e) => (e.preventDefault(), navegar(`/${id}`)) }, h('div', { class: 'conteudo' }, h('img', { src: MARCAS[id].logo, alt: MARCAS[id].nome }), c));
+    const m = MARCAS[id];
+    const n = { abertas: h('b', {}, '–'), aprov: h('b', {}, '–'), agend: h('b', {}, '–') };
+    numeros[id] = n;
+    return h(
+      'a',
+      { class: `card-marca ${id}`, href: `/${id}`, onclick: (e) => (e.preventDefault(), navegar(`/${id}`)) },
+      h('div', { class: 'topo-card' }, h('img', { class: 'logo-card', src: m.logoCard || m.logo, alt: m.nome }), h('span', { class: 'seta' }, '→')),
+      h(
+        'div',
+        { class: 'numeros-card' },
+        h('div', {}, n.abertas, h('span', {}, 'em aberto')),
+        h('div', {}, n.aprov, h('span', {}, 'aprovação')),
+        h('div', {}, n.agend, h('span', {}, 'agendadas'))
+      )
+    );
   };
   $app.replaceChildren(
     h(
       'div',
       { class: 'inicio' },
-      h('div', { class: 'barra-topo' }, botaoSino(), h('button', { class: 'btn icone', title: 'Equipe e configurações', onclick: () => navegar('/equipe') }, icone('config'))),
-      cartao('rp'),
-      cartao('citrino')
+      h(
+        'header',
+        { class: 'inicio-topo' },
+        pilulaAlldres('pequena'),
+        h('div', { class: 'acoes' }, botaoSino(), h('button', { class: 'btn icone fantasma', title: 'Equipe e configurações', onclick: () => navegar('/equipe') }, icone('config')))
+      ),
+      h(
+        'section',
+        { class: 'inicio-hero' },
+        h('div', { class: 'data' }, new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' })),
+        h('h1', { class: 'titulo' }, `${saudacao()}, ${estado.eu.nome.split(' ')[0]}.`),
+        resumo
+      ),
+      avisoNotificacoes() || '',
+      h('section', { class: 'grade-marcas' }, Object.keys(MARCAS).map(cartao))
     )
   );
-  for (const id of Object.keys(MARCAS)) {
-    api(`/api/demandas?empresa=${id}`)
-      .then((lista) => {
-        const abertas = lista.filter((d) => d.status !== 'publicado').length;
-        const aprov = lista.filter((d) => d.status === 'aprovacao').length;
-        contadores[id].replaceChildren(h('b', {}, abertas), `demanda${abertas === 1 ? '' : 's'} em aberto${aprov ? ` · ${aprov} aguardando aprovação` : ''}`);
-      })
-      .catch(() => {});
-  }
+  let total = 0;
+  let totalAprov = 0;
+  await Promise.all(
+    Object.keys(MARCAS).map((id) =>
+      api(`/api/demandas?empresa=${id}`)
+        .then((lista) => {
+          const abertas = lista.filter((d) => !['publicado', 'agendado'].includes(d.status)).length;
+          const aprov = lista.filter((d) => d.status === 'aprovacao').length;
+          const agend = lista.filter((d) => d.status === 'agendado').length;
+          numeros[id].abertas.textContent = abertas;
+          numeros[id].aprov.textContent = aprov;
+          numeros[id].agend.textContent = agend;
+          total += abertas;
+          totalAprov += aprov;
+        })
+        .catch(() => {})
+    )
+  );
+  resumo.textContent = total
+    ? `${total} demanda${total === 1 ? '' : 's'} em andamento${totalAprov ? ` · ${totalAprov} aguardando aprovação` : ''}.`
+    : 'Nenhuma demanda em andamento. Que tal começar uma nova?';
 }
 
 // ---------------- notificações ----------------
@@ -399,7 +445,7 @@ function nomeAparelho() {
   if (/windows/i.test(ua)) return 'Windows';
   return 'Navegador';
 }
-async function ativarPush(empresas = ['rp', 'citrino']) {
+async function ativarPush(empresas = Object.keys(MARCAS)) {
   if (!pushSuportado()) throw new Error('Este navegador não aceita notificações.');
   const permissao = await Notification.requestPermission();
   if (permissao !== 'granted') {
@@ -426,7 +472,6 @@ async function ativarPush(empresas = ['rp', 'citrino']) {
 // ---------------- página da marca ----------------
 async function telaMarca() {
   const m = MARCAS[estado.marca];
-  const outra = estado.marca === 'rp' ? 'citrino' : 'rp';
   const aba = (id, nome, ic) => h('button', { class: estado.aba === id ? 'ativa' : '', onclick: () => trocarAba(id) }, ic ? icone(ic, 22) : null, nome);
   const abas = [
     ['demandas', 'Demandas', 'quadro'],
@@ -446,7 +491,7 @@ async function telaMarca() {
         h(
           'div',
           { class: 'acoes' },
-          h('button', { class: 'btn icone fantasma', title: `Ir para ${MARCAS[outra].nome}`, onclick: () => navegar(`/${outra}`) }, icone('troca')),
+          estado.marca !== 'alldres' ? h('button', { class: 'selo-alldres', title: 'Início · Alldres', onclick: () => navegar('/') }, h('img', { src: '/marca/alldres-pilula.png', alt: 'Alldres' })) : h('button', { class: 'btn icone fantasma', title: 'Início', onclick: () => navegar('/') }, icone('casa')),
           botaoSino(),
           h('button', { class: 'btn icone fantasma', title: 'Equipe e configurações', onclick: () => navegar('/equipe') }, icone('config'))
         )

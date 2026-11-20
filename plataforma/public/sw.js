@@ -5,7 +5,7 @@ self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener('push', (event) => {
   let d = {};
   try { d = event.data ? event.data.json() : {}; } catch { d = { titulo: event.data && event.data.text() }; }
-  const icone = d.empresa === 'rp' ? '/marca/rp-192.png' : '/marca/citrino-192.png';
+  const icone = { rp: '/marca/rp-192.png', citrino: '/marca/citrino-192.png' }[d.empresa] || '/marca/alldres-192.png';
   event.waitUntil(
     self.registration.showNotification(d.titulo || 'Nova atualização', {
       body: d.corpo || '',

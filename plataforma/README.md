@@ -1,7 +1,8 @@
-# Plataforma de demandas · RP e Citrino Luz
+# Plataforma Alldres · demandas da Alldres, RP e Citrino Luz
 
-Sistema próprio da equipe para as duas empresas da mesma dona. Cada marca tem a sua página, com o visual dela:
+Sistema próprio da Alldres. O app inteiro (login, início, ícone no celular e configurações) usa a identidade da Alldres: preto profundo, vermelho da marca e o degradê granulado. Cada empresa tem a sua página:
 
+- **/alldres**: identidade Alldres (preto, vermelho `#e8320f` e branco quente).
 - **/rp**: preto e creme, formas arredondadas como a logo.
 - **/citrino**: branco, dourado e traço fino preto.
 

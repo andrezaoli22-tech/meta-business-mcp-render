@@ -1,16 +1,17 @@
 ---
 name: plataforma-demandas
-description: Desenvolve, mantém, publica e opera a plataforma de demandas da RP e da Citrino Luz (duas empresas da mesma dona, com páginas e identidades visuais separadas), que fica em plataforma/ e roda no Cloudflare Workers + D1 + R2. Use sempre que o usuário pedir para mudar, corrigir, adicionar recurso, publicar (deploy) ou configurar essa plataforma; mexer no quadro de demandas, status, notificações push no celular, aprovação, agendamento/publicação no Instagram, prévia do feed, perfil ao vivo, calendário, equipe ou login; conectar o Instagram da RP ou da Citrino Luz; ou criar, atualizar, anexar arquivos e mandar para aprovação demandas pela API (por exemplo depois de montar um carrossel com a skill editor-carrossel). Também use quando pedirem um sistema parecido para outra empresa.
+description: Desenvolve, mantém, publica e opera a plataforma de demandas da Alldres (app com a identidade da Alldres e três empresas com páginas e visuais próprios: Alldres, RP e Citrino Luz), que fica em plataforma/ e roda no Cloudflare Workers + D1 + R2. Use sempre que o usuário pedir para mudar, corrigir, adicionar recurso, publicar (deploy) ou configurar essa plataforma; mexer no quadro de demandas, status, notificações push no celular, aprovação, agendamento/publicação no Instagram, prévia do feed, perfil ao vivo, calendário, equipe ou login; conectar o Instagram da RP ou da Citrino Luz; ou criar, atualizar, anexar arquivos e mandar para aprovação demandas pela API (por exemplo depois de montar um carrossel com a skill editor-carrossel). Também use quando pedirem um sistema parecido para outra empresa.
 ---
 
-# Plataforma de demandas · RP e Citrino Luz
+# Plataforma Alldres · demandas da Alldres, RP e Citrino Luz
 
 Código em `plataforma/`. Leia `plataforma/README.md` antes de mexer: ele traz o passo a passo de implantação e de conexão com o Instagram.
 
 ## Regras do projeto
 
-1. **Uma página por marca.** `/rp` e `/citrino` são a mesma aplicação com tema diferente. O tema vem de `html[data-marca]`, definido no servidor por HTMLRewriter (`src/index.js → paginas`) e no front pela rota. Nunca misture dados das duas marcas: toda demanda tem `empresa` e toda consulta filtra por ela.
+1. **O app é da Alldres; uma página por empresa.** Login, início, configurações, ícone e manifesto usam a identidade Alldres (tema padrão `:root` / `data-marca="alldres"`). `/alldres`, `/rp` e `/citrino` são a mesma aplicação com tema diferente; nas páginas da RP e da Citrino Luz a pílula da Alldres no topo leva de volta ao início. O tema vem de `html[data-marca]`, definido no servidor por HTMLRewriter (`src/index.js → paginas`) e no front pela rota. Nunca misture dados das duas marcas: toda demanda tem `empresa` e toda consulta filtra por ela.
 2. **Identidade visual:** os tokens ficam em `public/styles.css`.
+   - **Alldres (padrão do app):** fundo `#0c0b0b`, vermelho `#e8320f` → `#c01b06`, texto `#f7f2ef`, títulos em Outfit, fundo degradê granulado `public/marca/alldres-fundo.jpg`. Logos: `alldres-pilula.png` (oficial, pílula branca), `alldres-logo-branco.png`, `alldres-logo-vermelho.png`. Ícones `alldres-192/512/apple.png`.
    - **RP:** fundo `#0e0e0e`, creme `#fefaf0`, títulos em Fredoka, cantos bem arredondados (22px). Logo creme em `public/marca/rp-logo.png`.
    - **Citrino Luz:** fundo branco, dourado `#c8b28d`, traço fino preto `#1d1d1b`, títulos em Poiret One maiúsculos com espaçamento largo, texto em Jost, cantos retos (2–4px). Logo em `public/marca/citrino-logo.png`, estrela em `citrino-estrela.png`.
    - Novos componentes usam só as variáveis (`--bg`, `--surface`, `--accent`…). Nada de cor fixa.
@@ -78,7 +79,7 @@ curl -s localhost:8787/api/estado
 Com o segredo `API_TOKEN` configurado, mande `Authorization: Bearer <API_TOKEN>`. As ações aparecem como feitas por "Claude" e a equipe é notificada.
 
 ```
-POST /api/demandas                      {empresa:"rp"|"citrino", titulo, tipo, prazo:"AAAA-MM-DD", descricao, legenda, links:[{url,titulo}], responsavel_id}
+POST /api/demandas                      {empresa:"alldres"|"rp"|"citrino", titulo, tipo, prazo:"AAAA-MM-DD", descricao, legenda, links:[{url,titulo}], responsavel_id}
 PATCH /api/demandas/:id                 qualquer campo acima
 POST /api/demandas/:id/anexos           corpo = arquivo; headers content-type (image/jpeg, video/mp4…) e x-nome (encodeURIComponent)
 POST /api/demandas/:id/anexos/ordem     {ids:[...]}   ordem do carrossel
@@ -86,7 +87,7 @@ POST /api/demandas/:id/status           {status, comentario?}
 POST /api/demandas/:id/comentarios      {texto}
 POST /api/demandas/:id/agendar          {agendado_para: ISO, publicar_auto: true|false}
 POST /api/demandas/:id/publicar-agora
-GET  /api/demandas?empresa=rp           lista
+GET  /api/demandas?empresa=alldres      lista (alldres, rp ou citrino)
 GET  /api/demandas/:id                  detalhe com anexos, comentários e histórico
 GET  /api/usuarios                      para achar responsavel_id
 ```

@@ -4,7 +4,16 @@
 import { getConfig } from './db.js';
 
 const GRAPH = 'https://graph.instagram.com';
+const GRAPH_FB = 'https://graph.facebook.com';
 const versao = (env) => env.GRAPH_VERSION || 'v23.0';
+
+// Dois tipos de acesso:
+// - token do Instagram (começa com "IG"): API do Instagram com login do Instagram, em graph.instagram.com, dura 60 dias;
+// - token do Facebook/usuário do sistema (começa com "EAA"): login unificado do painel novo da Meta,
+//   em graph.facebook.com, não expira e precisa do ID da conta do Instagram.
+export const ehTokenInstagram = (token) => String(token || '').startsWith('IG');
+const hostDe = (token) => (ehTokenInstagram(token) ? GRAPH : GRAPH_FB);
+const api = (env, token, caminho) => `${hostDe(token)}/${versao(env)}/${caminho}`;
 
 export const ESCOPOS = [
   'instagram_business_basic',
@@ -67,16 +76,21 @@ const CAMPOS_PERFIL = 'user_id,username,name,account_type,profile_picture_url,fo
 const CAMPOS_MIDIA =
   'id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,children{media_type,media_url,thumbnail_url}';
 
-export async function lerPerfil(env, token) {
-  const base = `${GRAPH}/${versao(env)}/me`;
+export async function lerPerfil(env, token, igUserId) {
+  const ig = ehTokenInstagram(token);
+  if (!ig && !igUserId) throw new Error('Informe o ID da conta do Instagram (o número que aparece abaixo do nome no painel da Meta).');
+  const base = api(env, token, ig ? 'me' : igUserId);
+  const campos = ig ? CAMPOS_PERFIL : 'id,username,name,profile_picture_url,followers_count,follows_count,media_count';
+  const t = encodeURIComponent(token);
   let perfil;
   try {
-    perfil = await chamar(`${base}?fields=${CAMPOS_PERFIL},biography,website&access_token=${encodeURIComponent(token)}`);
+    perfil = await chamar(`${base}?fields=${campos},biography,website&access_token=${t}`);
   } catch {
-    // alguns tipos de conta não devolvem bio/site por esta API
-    perfil = await chamar(`${base}?fields=${CAMPOS_PERFIL}&access_token=${encodeURIComponent(token)}`);
+    // alguns tipos de conta não devolvem bio/site
+    perfil = await chamar(`${base}?fields=${campos}&access_token=${t}`);
   }
-  const midias = await chamar(`${base}/media?fields=${CAMPOS_MIDIA}&limit=30&access_token=${encodeURIComponent(token)}`);
+  perfil.user_id = String(perfil.user_id || perfil.id || igUserId);
+  const midias = await chamar(`${base}/media?fields=${CAMPOS_MIDIA}&limit=30&access_token=${t}`);
   return { perfil, midias: midias.data || [] };
 }
 
@@ -85,7 +99,7 @@ export async function sincronizar(env, empresa) {
   const conta = await env.DB.prepare('SELECT * FROM instagram WHERE empresa = ?').bind(empresa).first();
   if (!conta?.token) return null;
   try {
-    const { perfil, midias } = await lerPerfil(env, conta.token);
+    const { perfil, midias } = await lerPerfil(env, conta.token, conta.ig_user_id);
     await env.DB.prepare(
       'UPDATE instagram SET perfil = ?, midias = ?, username = ?, ig_user_id = COALESCE(?, ig_user_id), sincronizado_em = ?, erro = NULL WHERE empresa = ?'
     )
@@ -98,8 +112,8 @@ export async function sincronizar(env, empresa) {
   }
 }
 
-export async function salvarConta(env, empresa, token, expiraEm) {
-  const { perfil } = await lerPerfil(env, token);
+export async function salvarConta(env, empresa, token, expiraEm, igUserId) {
+  const { perfil } = await lerPerfil(env, token, igUserId);
   await env.DB.prepare(
     `INSERT INTO instagram (empresa, ig_user_id, username, token, token_expira_em, token_renovado_em)
      VALUES (?, ?, ?, ?, ?, ?)
@@ -118,12 +132,12 @@ const ehVideo = (a) => a.mime.startsWith('video/');
 
 async function criarContainer(env, conta, params) {
   const corpo = new URLSearchParams({ ...params, access_token: conta.token });
-  const r = await chamar(`${GRAPH}/${versao(env)}/${conta.ig_user_id}/media`, { method: 'POST', body: corpo });
+  const r = await chamar(api(env, conta.token, `${conta.ig_user_id}/media`), { method: 'POST', body: corpo });
   return r.id;
 }
 
 async function statusContainer(env, conta, id) {
-  const r = await chamar(`${GRAPH}/${versao(env)}/${id}?fields=status_code,status&access_token=${encodeURIComponent(conta.token)}`);
+  const r = await chamar(api(env, conta.token, `${id}?fields=status_code,status&access_token=${encodeURIComponent(conta.token)}`));
   return r.status_code || 'FINISHED';
 }
 
@@ -188,10 +202,10 @@ export async function concluirPublicacao(env, empresa, containerId, esperarMs = 
   if (st === 'IN_PROGRESS') return null;
   if (st !== 'FINISHED' && st !== 'PUBLISHED') throw new Error(`O Instagram não processou o arquivo (status ${st}).`);
   const corpo = new URLSearchParams({ creation_id: containerId, access_token: conta.token });
-  const r = await chamar(`${GRAPH}/${versao(env)}/${conta.ig_user_id}/media_publish`, { method: 'POST', body: corpo });
+  const r = await chamar(api(env, conta.token, `${conta.ig_user_id}/media_publish`), { method: 'POST', body: corpo });
   let permalink = null;
   try {
-    const m = await chamar(`${GRAPH}/${versao(env)}/${r.id}?fields=permalink&access_token=${encodeURIComponent(conta.token)}`);
+    const m = await chamar(api(env, conta.token, `${r.id}?fields=permalink&access_token=${encodeURIComponent(conta.token)}`));
     permalink = m.permalink;
   } catch {}
   return { mediaId: r.id, permalink };

@@ -1382,47 +1382,32 @@ async function abaPerfil(main) {
 
 function cartaoConectar() {
   const admin = estado.eu.papel === 'admin';
-  const token = h('input', { class: 'entrada', placeholder: 'Cole aqui o token de acesso (começa com IG…)' });
+  const token = h('input', { class: 'entrada', placeholder: 'Token de acesso (começa com EAA… ou IG…)', autocomplete: 'off' });
+  const idConta = h('input', { class: 'entrada', placeholder: 'ID da conta do Instagram (ex.: 17841452944849437)', inputmode: 'numeric', autocomplete: 'off' });
+  const conectar = tentar(async () => {
+    const r = await api(`/api/instagram/${estado.marca}/token`, { json: { token: token.value, ig_user_id: idConta.value } });
+    toast(`@${r.username} conectado ✅`);
+    abaPerfil(estado.$main);
+  });
   return h(
     'div',
     { class: 'conectar' },
     h('h2', { class: 'titulo', style: { margin: 0 } }, `Conectar o Instagram da ${MARCAS[estado.marca].nome}`),
     h('p', { class: 'muted', style: { margin: 0 } }, 'Depois de conectado, o perfil e o feed aparecem aqui e se atualizam sozinhos, e as demandas aprovadas podem ser agendadas direto daqui.'),
-    h(
-      'ol',
-      {},
-      h('li', {}, 'No app do Instagram da marca: Configurações → Tipo de conta → ', h('b', {}, 'Mudar para conta profissional'), ' (Empresa).'),
-      h('li', {}, 'Toque no botão abaixo e entre com o login do Instagram da marca.')
-    ),
     !admin
       ? h('p', { class: 'aviso' }, 'Peça para um administrador conectar.')
-      : estado.meta.loginInstagram
-        ? h('a', { class: 'btn primario', href: `/api/instagram/${estado.marca}/conectar` }, 'Entrar com Instagram')
-        : h('p', { class: 'aviso' }, 'O login do Instagram ainda não foi configurado no servidor (IG_APP_ID e IG_APP_SECRET). Veja o README ou use o token abaixo.'),
-    admin
-      ? h(
-          'details',
-          {},
-          h('summary', { class: 'muted pequeno', style: { cursor: 'pointer' } }, 'Ou conectar colando um token'),
+      : [
           h(
-            'div',
-            { class: 'linha', style: { marginTop: '10px' } },
-            token,
-            h(
-              'button',
-              {
-                class: 'btn',
-                onclick: tentar(async () => {
-                  const r = await api(`/api/instagram/${estado.marca}/token`, { json: { token: token.value } });
-                  toast(`@${r.username} conectado ✅`);
-                  abaPerfil(estado.$main);
-                }),
-              },
-              'Conectar'
-            )
-          )
-        )
-      : null
+            'ol',
+            {},
+            h('li', {}, 'No painel da Meta (app ', h('b', {}, 'Plataforma Alldres'), ' → Casos de uso → Personalizar → API setup with Unified login), em ', h('b', {}, '2. Gerar tokens de acesso'), ', toque em ', h('b', {}, 'Gerar token'), ' na conta da marca e copie.'),
+            h('li', {}, 'Cole o token abaixo e o ', h('b', {}, 'ID da conta'), ' (o número que aparece abaixo do nome da conta, na mesma tela).')
+          ),
+          h('label', { class: 'campo' }, 'Token de acesso', token),
+          h('label', { class: 'campo' }, 'ID da conta do Instagram', idConta),
+          h('button', { class: 'btn primario', onclick: conectar }, 'Conectar'),
+          estado.meta.loginInstagram ? h('a', { class: 'btn', href: `/api/instagram/${estado.marca}/conectar` }, 'Ou entrar com Instagram') : null,
+        ]
   );
 }
 
@@ -1565,7 +1550,7 @@ async function telaConfig() {
           'tr',
           {},
           h('td', {}, h('b', {}, m.nome)),
-          h('td', {}, r.conectado ? `@${r.username}` : h('span', { class: 'muted' }, 'Não conectado'), r.conectado && dias != null ? h('div', { class: 'muted pequeno' }, `Acesso renova sozinho · expira em ${dias} dias se não renovar`) : null),
+          h('td', {}, r.conectado ? `@${r.username}` : h('span', { class: 'muted' }, 'Não conectado'), r.conectado ? h('div', { class: 'muted pequeno' }, dias == null ? 'Acesso permanente' : `Acesso renova sozinho · expira em ${dias} dias se não renovar`) : null),
           h(
             'td',
             { style: { textAlign: 'right' } },

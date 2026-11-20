@@ -645,17 +645,23 @@ async function rotasInstagram(request, env, ctx, eu, seg, m, url) {
   }
 
   if (seg[2] === 'token' && m === 'POST') {
-    const { token } = await lerJson(request);
+    const { token, ig_user_id } = await lerJson(request);
     if (!token || String(token).length < 20) falha(400, 'Cole o token completo.');
     let final = String(token).trim();
-    let expira = Date.now() + 60 * DIA;
+    const idConta = String(ig_user_id || '').replace(/\D/g, '') || null;
+    let expira = null; // token do usuário do sistema (EAA…) não expira
+    if (ig.ehTokenInstagram(final)) {
+      expira = Date.now() + 60 * DIA;
+      try {
+        const r = await ig.renovarToken(final);
+        final = r.token;
+        expira = r.expiraEm;
+      } catch {}
+    } else if (!idConta) {
+      falha(400, 'Para esse tipo de token, preencha também o ID da conta do Instagram (o número abaixo do nome no painel da Meta).');
+    }
     try {
-      const r = await ig.renovarToken(final);
-      final = r.token;
-      expira = r.expiraEm;
-    } catch {}
-    try {
-      const perfil = await ig.salvarConta(env, empresa, final, expira);
+      const perfil = await ig.salvarConta(env, empresa, final, expira, idConta);
       return json({ ok: true, username: perfil.username });
     } catch (e) {
       falha(400, 'O Instagram não aceitou esse token: ' + e.message);
@@ -749,7 +755,7 @@ async function rotinaFrequente(env) {
 async function rotinaDiaria(env) {
   const contas = (await env.DB.prepare('SELECT * FROM instagram WHERE token IS NOT NULL').all()).results;
   for (const c of contas) {
-    if (c.token_expira_em && c.token_expira_em - Date.now() < 30 * DIA && Date.now() - (c.token_renovado_em || 0) > DIA) {
+    if (ig.ehTokenInstagram(c.token) && c.token_expira_em && c.token_expira_em - Date.now() < 30 * DIA && Date.now() - (c.token_renovado_em || 0) > DIA) {
       try {
         const r = await ig.renovarToken(c.token);
         await env.DB.prepare('UPDATE instagram SET token = ?, token_expira_em = ?, token_renovado_em = ? WHERE empresa = ?').bind(r.token, r.expiraEm, Date.now(), c.empresa).run();

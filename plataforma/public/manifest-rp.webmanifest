@@ -1,0 +1,14 @@
+{
+  "name": "RP · Demandas",
+  "short_name": "RP",
+  "id": "/rp",
+  "start_url": "/rp",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0e0e0e",
+  "theme_color": "#0e0e0e",
+  "icons": [
+    { "src": "/marca/rp-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/marca/rp-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

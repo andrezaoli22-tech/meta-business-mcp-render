@@ -1,0 +1,14 @@
+{
+  "name": "alldres-plataforma",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma de demandas, aprovação e agendamento da RP e da Citrino Luz",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.42.0"
+  }
+}

@@ -11,11 +11,11 @@ binding = "ASSETS"
 run_worker_first = true
 not_found_handling = "single-page-application"
 
-# Banco de dados. Troque o database_id pelo ID do banco criado no painel (veja o README).
+# Banco de dados (criado no painel do Cloudflare)
 [[d1_databases]]
 binding = "DB"
 database_name = "plataforma-alldres"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "e4a0e932-151b-4957-bc7b-555325cd9b7b"
 
 # Arquivos (artes, carrosséis, vídeos)
 [[r2_buckets]]

@@ -1,0 +1,38 @@
+# Plataforma RP + Citrino Luz — Cloudflare Workers (plano gratuito)
+name = "plataforma-alldres"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+# mantém as variáveis criadas no painel a cada novo deploy
+keep_vars = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+not_found_handling = "single-page-application"
+
+# Banco de dados. Troque o database_id pelo ID do banco criado no painel (veja o README).
+[[d1_databases]]
+binding = "DB"
+database_name = "plataforma-alldres"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# Arquivos (artes, carrosséis, vídeos)
+[[r2_buckets]]
+binding = "MIDIA"
+bucket_name = "plataforma-alldres-midia"
+
+# A cada 5 min: publica agendados, lembretes, atualiza o feed. Todo dia 12h UTC (9h Brasília): prazos e renovação do token.
+[triggers]
+crons = ["*/5 * * * *", "0 12 * * *"]
+
+[vars]
+GRAPH_VERSION = "v23.0"
+# IG_APP_ID = "cole aqui o ID do app do Instagram (não é segredo)"
+
+# Segredos (configure no painel em Settings > Variables, tipo "Secret"):
+#   IG_APP_SECRET  -> chave secreta do app do Instagram
+#   API_TOKEN      -> opcional, para o Claude criar demandas pela API
+
+[observability]
+enabled = true

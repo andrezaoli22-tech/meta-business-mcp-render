@@ -89,3 +89,9 @@ node .claude/skills/editor-carrossel/scripts/render.mjs carrosseis/<pasta>/carro
 ```
 
 Requer Playwright (`npm i -D playwright && npx playwright install chromium`).
+
+---
+
+## Plataforma de demandas (RP e Citrino Luz)
+
+A pasta [`plataforma/`](plataforma/) tem o sistema da equipe: quadro de demandas, notificações no celular, aprovação, agendamento no Instagram e perfil ao vivo de cada marca. Roda grátis no Cloudflare. O passo a passo está em [`plataforma/README.md`](plataforma/README.md).

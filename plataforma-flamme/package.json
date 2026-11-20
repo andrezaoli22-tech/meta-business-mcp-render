@@ -1,6 +1,6 @@
 {
   "name": "flamme-plataforma",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Plataforma da agência Flamme: social media completo por cliente (demandas, aprovação, estratégia, IA, Instagram, painel)",
   "type": "module",

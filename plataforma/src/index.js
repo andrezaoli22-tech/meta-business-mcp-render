@@ -146,6 +146,12 @@ async function api(request, env, ctx, url) {
   if (seg[0] === 'demandas') return rotasDemandas(request, env, ctx, eu, seg, m, url);
   if (seg[0] === 'anexos') return rotasAnexos(request, env, eu, seg, m);
   if (seg[0] === 'instagram') return rotasInstagram(request, env, ctx, eu, seg, m, url);
+  if (seg[0] === 'estrategias') return rotasEstrategias(request, env, ctx, eu, seg, m, url);
+  if (seg[0] === 'importar' && seg[1] === 'notion' && m === 'POST') return importarNotion(request, env, ctx, eu);
+  if (seg[0] === 'importar' && seg[1] === 'notion' && m === 'GET') {
+    const r = await env.DB.prepare('SELECT COUNT(*) AS n FROM demandas WHERE origem LIKE ?').bind('notion:%').first();
+    return json({ ja_importadas: r.n });
+  }
   falha(404, 'Rota não encontrada.');
 }
 
@@ -797,4 +803,109 @@ async function rotinaDiaria(env) {
   }
   await env.DB.prepare('DELETE FROM oauth_estados WHERE expira_em < ?').bind(Date.now()).run();
   await env.DB.prepare("DELETE FROM notificacoes WHERE criado_em < strftime('%Y-%m-%dT%H:%M:%fZ','now','-60 days')").run();
+}
+
+
+// ---------------- Estratégia do mês ----------------
+
+const MES_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+async function rotasEstrategias(request, env, ctx, eu, seg, m, url) {
+  if (seg.length === 1 && m === 'GET') {
+    const empresa = url.searchParams.get('empresa');
+    if (!EMPRESAS[empresa]) falha(400, 'Empresa inválida.');
+    const r = await env.DB.prepare('SELECT * FROM estrategias WHERE empresa = ? ORDER BY mes DESC, id DESC').bind(empresa).all();
+    return json(r.results);
+  }
+  if (eu.papel === 'aprovador' && m !== 'GET') falha(403, 'Só a equipe e os administradores editam a estratégia.');
+  if (seg.length === 1 && m === 'POST') {
+    const { empresa, mes, titulo, conteudo = '', link = null } = await lerJson(request);
+    if (!EMPRESAS[empresa]) falha(400, 'Empresa inválida.');
+    if (!MES_RE.test(String(mes))) falha(400, 'Escolha o mês da estratégia.');
+    const t = String(titulo || '').trim() || `Estratégia de ${nomeMes(mes)}`;
+    const r = await env.DB.prepare('INSERT INTO estrategias (empresa, mes, titulo, conteudo, link, criado_por) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(empresa, mes, t.slice(0, 200), String(conteudo), link || null, eu.id || null)
+      .run();
+    ctx.waitUntil(notificar(env, { empresa, titulo: 'Estratégia do mês', corpo: `${eu.nome} publicou: ${t}`, autorId: eu.id }));
+    return json({ id: r.meta.last_row_id });
+  }
+  const id = Number(seg[1]);
+  const e = await env.DB.prepare('SELECT * FROM estrategias WHERE id = ?').bind(id).first();
+  if (!e) falha(404, 'Estratégia não encontrada.');
+  if (seg.length === 2 && m === 'PATCH') {
+    const dados = await lerJson(request);
+    const mes = dados.mes ?? e.mes;
+    if (!MES_RE.test(String(mes))) falha(400, 'Mês inválido.');
+    await env.DB.prepare('UPDATE estrategias SET mes = ?, titulo = ?, conteudo = ?, link = ?, atualizado_em = ? WHERE id = ?')
+      .bind(mes, String(dados.titulo ?? e.titulo).slice(0, 200), String(dados.conteudo ?? e.conteudo), dados.link ?? e.link, agoraIso(), id)
+      .run();
+    return json({ ok: true });
+  }
+  if (seg.length === 2 && m === 'DELETE') {
+    if (eu.papel !== 'admin') falha(403, 'Só administradores excluem a estratégia.');
+    await env.DB.prepare('DELETE FROM estrategias WHERE id = ?').bind(id).run();
+    return json({ ok: true });
+  }
+  falha(404, 'Rota não encontrada.');
+}
+
+function nomeMes(mes) {
+  const [a, m] = String(mes).split('-').map(Number);
+  const n = new Date(Date.UTC(a, m - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', timeZone: 'UTC' });
+  return `${n.charAt(0).toUpperCase()}${n.slice(1)} ${a}`;
+}
+
+// ---------------- Importação do Notion ----------------
+// O arquivo de importação (JSON gerado a partir do Notion) é enviado pela tela de configurações;
+// o conteúdo dos clientes não fica no repositório. Reimportar não duplica: cada item tem 'origem'.
+
+async function importarNotion(request, env, ctx, eu) {
+  if (eu.papel !== 'admin') falha(403, 'Só administradores podem importar.');
+  if (Number(request.headers.get('content-length') || 0) > 5 * 1024 * 1024) falha(413, 'Arquivo grande demais.');
+  const dadosNotion = await lerJson(request);
+  if (!Array.isArray(dadosNotion?.demandas) || !Array.isArray(dadosNotion?.estrategias)) falha(400, 'Arquivo de importação inválido.');
+  const validoD = (d) => d && EMPRESAS[d.empresa] && typeof d.titulo === 'string' && d.titulo.trim() && /^notion:/.test(String(d.origem || ''));
+  const validoE = (e) => e && EMPRESAS[e.empresa] && /^\d{4}-(0[1-9]|1[0-2])$/.test(String(e.mes)) && /^notion:/.test(String(e.origem || ''));
+  dadosNotion.demandas = dadosNotion.demandas.filter(validoD).slice(0, 500);
+  dadosNotion.estrategias = dadosNotion.estrategias.filter(validoE).slice(0, 50);
+  const usuarios = (await env.DB.prepare('SELECT id, nome FROM usuarios WHERE ativo = 1').all()).results;
+  const acharUsuario = (nome) => {
+    if (!nome) return null;
+    const alvo = nome.trim().toLowerCase();
+    return usuarios.find((u) => u.nome.trim().toLowerCase().split(/\s+/)[0] === alvo)?.id || null;
+  };
+  const existentes = new Set(
+    (await env.DB.prepare("SELECT origem FROM demandas WHERE origem IS NOT NULL UNION ALL SELECT origem FROM estrategias WHERE origem IS NOT NULL").all()).results.map((r) => r.origem)
+  );
+  const stmts = [];
+  let novasDemandas = 0;
+  let novasEstrategias = 0;
+  for (const d of dadosNotion.demandas) {
+    if (existentes.has(d.origem)) continue;
+    novasDemandas++;
+    stmts.push(
+      env.DB.prepare(
+        "INSERT INTO demandas (empresa, titulo, descricao, tipo, status, responsavel_id, prazo, legenda, links, criado_por, origem) VALUES (?, ?, ?, ?, 'briefing', ?, ?, '', ?, ?, ?)"
+      ).bind(d.empresa, d.titulo.slice(0, 200), String(d.descricao || ''), TIPOS.includes(d.tipo) ? d.tipo : 'post', acharUsuario(d.responsavel), /^\d{4}-\d{2}-\d{2}$/.test(d.prazo || '') ? d.prazo : null, normalizarLinks(d.links), eu.id || null, d.origem)
+    );
+  }
+  for (const e of dadosNotion.estrategias) {
+    if (existentes.has(e.origem)) continue;
+    novasEstrategias++;
+    stmts.push(
+      env.DB.prepare('INSERT INTO estrategias (empresa, mes, titulo, conteudo, link, origem, criado_por) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(
+        e.empresa, e.mes, String(e.titulo || 'Estratégia do mês').slice(0, 200), String(e.conteudo || ''), /^https?:\/\//.test(e.link || '') ? e.link : null, e.origem, eu.id || null
+      )
+    );
+  }
+  for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
+  await env.DB.prepare(
+    "INSERT INTO historico (demanda_id, usuario_id, acao, de, para) SELECT id, ?, 'importou do Notion', NULL, NULL FROM demandas d WHERE origem LIKE 'notion:%' AND NOT EXISTS (SELECT 1 FROM historico h WHERE h.demanda_id = d.id AND h.acao = 'importou do Notion')"
+  ).bind(eu.id || null).run();
+  if (novasDemandas || novasEstrategias) {
+    ctx.waitUntil(
+      notificar(env, { empresa: null, titulo: 'Importação do Notion', corpo: `${novasDemandas} demandas e ${novasEstrategias} estratégias foram trazidas do Notion.`, autorId: eu.id })
+    );
+  }
+  return json({ ok: true, demandas: novasDemandas, estrategias: novasEstrategias });
 }

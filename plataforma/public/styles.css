@@ -422,3 +422,23 @@ html[data-marca='citrino'] .chip { border-radius: 2px; text-transform: uppercase
 #toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px); background: #1c1c1a; color: #fff; padding: 12px 18px; border-radius: 12px; z-index: 80; opacity: 0; transition: .2s; pointer-events: none; max-width: calc(100vw - 32px); font-size: 14px; }
 #toast.ver { opacity: 1; transform: translateX(-50%); }
 html[data-marca='rp'] #toast { background: #fefaf0; color: #0e0e0e; }
+
+/* ===== Estratégia fixada no Briefing ===== */
+.fixada { cursor: pointer; border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; display: grid; gap: 6px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 18%, var(--surface)), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 14%, transparent); }
+.fixada:hover { border-color: var(--accent); }
+.fixada .nome { font-weight: 600; font-size: 14.5px; }
+.fixada.faixa { margin-bottom: 14px; }
+.rotulo-fixada { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; }
+.resumo-fixada { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.fixada-vazia { width: 100%; border: 1.5px dashed var(--line); background: none; color: var(--muted); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 10px; cursor: pointer; font-size: 13px; }
+.fixada-vazia:hover { border-color: var(--accent); color: var(--text); }
+.texto-rico { display: grid; gap: 4px; line-height: 1.55; }
+.texto-rico h3 { margin: 4px 0 8px; font-size: 22px; }
+.texto-rico h4 { margin: 14px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.texto-rico h5 { margin: 10px 0 0; font-size: 14px; }
+.texto-rico p { margin: 2px 0; }
+.texto-rico ul { margin: 2px 0; padding-left: 20px; display: grid; gap: 3px; }
+html[data-marca='citrino'] .fixada { background: linear-gradient(160deg, #f6efe3, #ffffff); border-color: #c8b28d; box-shadow: none; }
+html[data-marca='rp'] .fixada { background: linear-gradient(160deg, #262420, #181817); border-color: rgba(254,250,240,.35); }

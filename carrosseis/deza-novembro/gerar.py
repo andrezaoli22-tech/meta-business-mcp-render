@@ -23,11 +23,15 @@ body{background:#222;font-family:var(--f);color:var(--ink)}
 .creme .top>span,.creme .rodape>span{color:rgba(30,19,16,.6)} .creme .rodape>span.swipe{color:var(--acc2)}
 .laranja .top>span,.laranja .rodape>span{color:rgba(255,255,255,.85)}
 .media{position:absolute;inset:0;z-index:0;display:flex;align-items:flex-start;justify-content:center;padding-top:300px;background:radial-gradient(circle at 50% 38%,#4a3a33 0,#2a201c 55%,#191312 100%)}
-.media .ph{font-size:30px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.35);border:3px dashed rgba(255,255,255,.25);padding:28px 44px;border-radius:18px}
+.media .ph{font-size:30px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.38);border:3px dashed rgba(255,255,255,.25);padding:28px 44px;border-radius:18px;text-align:center;max-width:760px}
+.media .ph small{display:block;margin-top:12px;font-size:26px;font-weight:500;letter-spacing:0;text-transform:none}
+.foto{justify-content:flex-end}
+.foto h2{font-size:84px}
+.foto p{color:rgba(255,255,255,.85)}
 .scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(20,16,16,0) 35%,rgba(20,16,16,.55) 58%,rgba(20,16,16,.92) 82%)}
 .conteudo{position:relative;z-index:2}
 .capa{justify-content:flex-end}
-.pre{font-size:54px;font-weight:500;letter-spacing:-.02em;line-height:1.05}
+.pre{font-size:54px;font-weight:500;letter-spacing:-.02em;line-height:1.05;margin-bottom:22px}
 h1{font-size:168px;font-weight:900;letter-spacing:-.055em;line-height:.88}
 h1.m{font-size:136px}
 .hl{color:var(--acc)} .creme .hl{color:var(--acc2)}
@@ -63,81 +67,69 @@ def rodape(ultimo):
     sw = '' if ultimo else '<span class="t swipe">arrasta →</span>'
     return f'<div class="rodape"><span class="t">ANDREZA OLIVEIRA | MARKETING</span>{sw}</div>'
 
-def capa(pre, linhas, sub=None, estrelas=((930, 470), (900, 1010))):
+def capa(pre, linhas, sub=None, foto='você olhando para a câmera', estrelas=((930, 470),)):
     hs = ''.join(f'<h1 class="{c}">{t}</h1>' for t, c in linhas)
     st = ''.join(f'<span class="badge" style="left:{x}px;top:{y}px">★</span>' for x, y in estrelas)
     s = f'<p class="pre">{pre}</p>' if pre else ''
     sb = f'<p class="sub">{sub}</p>' if sub else ''
-    return ('capa', '', f'<div class="media"><span class="ph">SUA FOTO AQUI</span></div><div class="scrim"></div>{st}<div class="conteudo">{s}{hs}{sb}</div>')
+    return ('capa', '', f'<div class="media"><span class="ph">SUA FOTO AQUI<small>{foto}</small></span></div><div class="scrim"></div>{st}<div class="conteudo">{s}{hs}{sb}</div>')
 
-def texto(k, titulo, corpo, tema=''):
-    return ('texto', tema, f'<div class="conteudo"><p class="k">{k}</p><h2>{titulo}</h2><p>{corpo}</p></div>')
+def foto(k, titulo, corpo, sugestao):
+    """Slide com a sua foto de fundo e o texto embaixo, como diário."""
+    return ('foto', '', f'<div class="media"><span class="ph">SUA FOTO AQUI<small>{sugestao}</small></span></div><div class="scrim"></div><div class="conteudo"><p class="k">{k}</p><h2>{titulo}</h2><p>{corpo}</p></div>')
 
-def lista(k, titulo, itens, tema=''):
-    li = ''.join(f'<li><span class="n">{i+1:02d}</span>\u2003{t}</li>' for i, t in enumerate(itens))
-    return ('texto lista', tema, f'<div class="conteudo"><p class="k">{k}</p><h2>{titulo}</h2><ul>{li}</ul></div>')
-
-def frase(titulo, corpo=''):
+def nota(k, titulo, corpo=''):
+    """Slide de bilhete/desabafo em fundo creme."""
     c = f'<p>{corpo}</p>' if corpo else ''
-    return ('frase', 'creme', f'<span class="badge" style="left:820px;top:230px">★</span><div class="conteudo"><p class="k">OPINIÃO DA DEZA</p><h2>{titulo}</h2>{c}</div>')
-
-def perfil(k, handle, corpo):
-    return ('perfil', '', f'<div class="media print"><span class="ph">PRINT DO PERFIL</span></div><div class="conteudo"><p class="k">{k}</p><h2><span class="hl">{handle}</span></h2><p>{corpo}</p></div>')
+    return ('frase', 'creme', f'<span class="badge" style="left:860px;top:230px">★</span><div class="conteudo"><p class="k">{k}</p><h2>{titulo}</h2>{c}</div>')
 
 def cta(titulo, corpo, botao):
     return ('cta', 'laranja', f'<span class="badge" style="left:860px;top:250px;color:#fff">★</span><div class="conteudo"><h2>{titulo}</h2><p>{corpo}</p><span class="btn">{botao}</span></div>')
 
 CARROSSEIS = {
- "22-agencia-e-produtora": [
-  capa("o que ninguém te conta sobre ter", [("uma", ""), ('<span class="hl">agência</span>', ""), ('<span class="hl">E</span> uma', ""), ("produtora", "")]),
-  texto("01", 'Não são dois empregos. São dois <span class="hl">calendários.</span>', "De manhã eu penso estratégia. À tarde tem set de gravação. À noite, edição. <b>Trocar de chave várias vezes por dia</b> é o verdadeiro trabalho."),
-  texto("02", 'Cada cliente fala uma <span class="hl">língua.</span>', 'Cliente de agência pergunta: <b>"qual é a estratégia?"</b> Cliente de produtora pergunta: <b>"quando fica pronto?"</b> Os dois estão certos.'),
-  texto("03", 'A vantagem que quase <span class="hl">ninguém</span> tem', "Eu planejo o conteúdo <b>e</b> sei quanto custa produzir. Por isso não prometo o que não dá para entregar."),
-  texto("04", 'O erro que eu já <span class="hl">cometi</span>', "Aceitar tudo. Todo projeto parecia oportunidade, até a agenda virar caos. <b>Dizer não também é estratégia.</b>"),
-  texto("05", 'O que me <span class="hl">salva:</span> processo', "Briefing, calendário, aprovação, checklist. <b>Criatividade sem processo vira correria.</b> Com processo, vira entrega."),
-  frase('Ter duas empresas não é sobre fazer <span class="hl">mais.</span>', "É sobre uma alimentar a outra."),
-  cta("Quer ver os bastidores?", "Essa é a série <b>Bastidores de 2 empresas</b>. Salva e me segue para não perder os próximos episódios.", "Salvar e seguir"),
+ "22-ninguem-sabe-o-que-eu-faco": [
+  capa("trabalho com marketing e até hoje", [("ninguém", ""), ("sabe o que", "m"), ('eu <span class="hl">faço</span>', "")], foto="você no computador, rindo ou com cara de 'oi?'"),
+  foto("07H30", 'cara, deixa eu te contar como é um dia <span class="hl">meu</span>', "Não é só postar foto bonita. Tem planilha, reunião e cliente mandando áudio de 4 minutos. <b>E eu amo.</b>", "café da manhã / planner aberto"),
+  foto("09H00", 'primeiro eu <span class="hl">penso</span>', "Antes de qualquer post: pra quem é, por que alguém pararia pra ver e o que a pessoa faz depois. <b>Isso é a agência.</b>", "você em reunião ou no notebook"),
+  foto("14H00", 'aí eu viro <span class="hl">produtora</span>', "Tenho uma segunda empresa só pra fazer o conteúdo acontecer: gravar, editar, deixar bonito. <b>Sim, são duas.</b>", "set de gravação, câmera, fone"),
+  foto("19H00", 'esse é o meu <span class="hl">combustível</span>', "Entre uma empresa e outra: energético, playlist e muita oração. <b>Quem empreende sabe.</b>", "você no carro ou com o seu energético"),
+  nota("O QUE EU QUERIA QUE TODO MUNDO SOUBESSE", 'marketing não é mágica. é entender <span class="hl">gente.</span>', "Eu só faço isso todo dia, pra muitas marcas ao mesmo tempo."),
+  cta("agora você sabe.", "Manda pra alguém da sua família que também não entende o que você faz.", "Enviar pra alguém"),
  ],
- "24-marca-explicada-stanley": [
-  capa("marca explicada:", [("como um", ""), ('<span class="hl">copo</span>', ""), ("virou febre", "m")], sub="e o que a sua marca aprende com isso"),
-  texto("O CONTEXTO", 'Um copo que vendia <span class="hl">pouco</span>', "O Stanley Quencher existia há anos, sem chamar atenção. <b>O produto era bom. O público é que ainda não tinha encontrado ele.</b>"),
-  texto("A VIRADA", 'Quem <span class="hl">amava</span> o produto falou primeiro', "Um grupo de criadoras de conteúdo começou a indicar o copo por conta própria. <b>A comunidade fez o que nenhum anúncio fazia.</b>"),
-  texto("A ESCUTA", 'A marca <span class="hl">ouviu</span> e mudou', "Mais cores, edições limitadas e comunicação pensada para quem já era fã. <b>Em vez de convencer gente nova, ela abraçou quem já estava ali.</b>"),
-  texto("O EFEITO", 'Escassez + comunidade = <span class="hl">fila</span>', "Lançamento limitado virou evento. Gente esperando a loja abrir e trocando cor como figurinha."),
-  texto("O MOMENTO VIRAL", 'Responder <span class="hl">rápido</span> vale ouro', "Quando um vídeo mostrou o copo intacto depois de um carro pegar fogo, a marca respondeu na hora. <b>Timing transformou um post em notícia.</b>"),
-  lista("O QUE VOCÊ APRENDE", 'Para usar na sua <span class="hl">marca:</span>', ["Escute quem já ama o seu produto", "Comunidade vende mais que anúncio", "Quando o momento vier, responda rápido"]),
-  cta("Qual marca eu explico agora?", "Comenta o nome da marca aqui. A mais pedida vira o próximo episódio de <b>Marca explicada.</b>", "Comenta a marca"),
+ "24-eu-descobri": [
+  capa("cara, deixa eu te contar o que eu", [('<span class="hl">descobri</span>', "m"), ("esse mês", "m")], foto="você com cara de quem vai contar um segredo"),
+  foto("A HISTÓRIA", 'tava olhando os números de um <span class="hl">cliente</span>…', "E percebi que os posts que mais deram resultado não eram os mais bonitos. <b>Eram os que tinham a cara dele.</b>", "você analisando a tela do computador"),
+  nota("O QUE EU DESCOBRI", 'as pessoas não seguem marcas. seguem <span class="hl">pessoas.</span>', "Bastidor, opinião, erro, rotina. É isso que faz alguém confiar em você."),
+  foto("AÍ CAIU A FICHA", 'olhei pro meu próprio <span class="hl">perfil</span>', "E vi que eu fazia o contrário: só conteúdo certinho. <b>Ensinava pros clientes e não fazia pra mim.</b>", "você olhando o celular, pensativa"),
+  foto("A MUDANÇA", 'por isso eu comecei a <span class="hl">aparecer</span>', "Mostrar meu dia, minhas opiniões, minha fé, meu jeito. <b>Sem pose.</b>", "uma foto bem espontânea sua"),
+  nota("SE VOCÊ TRABALHA COM ALGO E NINGUÉM TE CONHECE…", 'talvez você só ainda não <span class="hl">apareceu</span> no seu conteúdo.'),
+  cta("e você, aparece?", "Me conta nos comentários se você mostra a sua cara no seu perfil. <b>Quero ler todos.</b>", "Comenta aqui"),
  ],
- "26-erros-marca-amadora": [
-  capa("5 erros que deixam sua marca com", [("cara de", "m"), ('<span class="hl">amadora</span>', "")]),
-  texto("ERRO 01", 'Falar com <span class="hl">todo mundo</span>', "Quem fala com todo mundo não conversa com ninguém. <b>Escolha para quem você existe</b> e escreva para essa pessoa."),
-  texto("ERRO 02", 'Cada post com uma <span class="hl">cara</span>', "Uma fonte por post, uma cor por semana. <b>Identidade visual é o que faz alguém reconhecer você antes de ler o @.</b>"),
-  texto("ERRO 03", 'Postar só quando <span class="hl">lembra</span>', "O algoritmo e o seu público gostam de previsibilidade. <b>Constância vence perfeição</b>, sempre."),
-  texto("ERRO 04", 'Legenda que não chama para <span class="hl">nada</span>', "Todo post precisa de um próximo passo: <b>salvar, comentar, enviar, chamar no direct.</b> Se não pede, ninguém faz."),
-  texto("ERRO 05", 'Copiar a concorrente <span class="hl">igualzinho</span>', "Referência é ponto de partida, não de chegada. <b>Pegue a ideia, não a cara.</b>"),
-  frase('Marca profissional não é a que tem mais dinheiro. É a que tem mais <span class="hl">clareza.</span>'),
-  cta("Qual desses você comete?", "Seja sincera nos comentários, aqui ninguém julga. E <b>salva para revisar o seu perfil depois.</b>", "Comenta o número"),
+ "26-foi-mal-eu-menti": [
+  capa("foi mal,", [("eu", ""), ('<span class="hl">menti</span>', "")], sub="coisas que eu falava quando comecei no marketing", foto="você com cara de culpada / ombro encolhido"),
+  foto("EU FALAVA", '"aceito qualquer <span class="hl">cliente</span>"', "Hoje eu sei: <b>cliente errado custa mais caro que mês sem cliente.</b>", "você no notebook, séria"),
+  foto("EU FALAVA", '"faço por qualquer <span class="hl">valor</span>"', "Cobrar pouco me fez trabalhar o dobro e entregar menos. <b>Preço também posiciona.</b>", "você com café, cansada (pode ser engraçada)"),
+  foto("EU FALAVA", '"não preciso <span class="hl">aparecer</span>"', "Precisava. <b>As pessoas compram de quem elas conhecem.</b>", "você gravando um vídeo"),
+  foto("EU FALAVA", '"depois eu <span class="hl">organizo</span>"', "Depois nunca chega. <b>Processo é o que me deixa respirar com duas empresas.</b>", "sua mesa de trabalho / agenda"),
+  nota("E PRA DEIXAR CLARO", 'eu não mudo de opinião pra agradar <span class="hl">ninguém.</span>', "Mudei porque aprendi na prática. Errar faz parte. Ficar no erro é escolha."),
+  cta("qual dessas você ainda fala?", "Pode confessar, eu já falei todas. <b>Comenta o número aqui embaixo.</b>", "Comenta o número"),
  ],
- "28-perfis-referencia": [
-  capa("os 5 perfis que eu abro quando a", [('<span class="hl">criatividade</span>', "m"), ("some", "")]),
-  texto("ANTES DE TUDO", 'Repertório é <span class="hl">tudo</span>', "O que separa conteúdo genérico de conteúdo memorável é o que você consome. <b>Esses perfis me fazem pensar diferente.</b>"),
-  perfil("01 · SÉRIES E HUMOR", "@byvickmachado", "Séries com nome próprio e humor com cultura pop. <b>Aprendo a criar formatos que viram marca.</b>"),
-  perfil("02 · STORYTELLING", "@caroleafins", "Frases provocativas e a história de quem começou jovem. <b>Aprendo a contar a minha história sem medo.</b>"),
-  perfil("03 · BASTIDORES", "@liviagarciasm", "Lifestyle e bastidor que vendem o trabalho sem parecer venda. <b>Aprendo a mostrar o processo.</b>"),
-  perfil("04 · CONFIANÇA", "@aliciaalinhares", "Irreverência e segurança no texto. <b>Aprendo a me posicionar com personalidade.</b>"),
-  perfil("05 · PRODUÇÃO", "@dudamareco", "Edição e produção explicadas de um jeito bonito. <b>Aprendo a deixar o técnico gostoso de ver.</b>"),
-  frase('Referência é ponto de <span class="hl">partida</span>, não ponto de chegada.'),
-  cta("Me indica um perfil", "Qual perfil te faz pensar fora da caixa? <b>Deixa nos comentários</b> que eu vou conhecer todos.", "Comenta o @"),
+ "28-parece-outra-vida": [
+  capa("parece outra vida,", [("mas", ""), ('eu <span class="hl">já…</span>', "")], sub="fui a menina que não sabia por onde começar", foto="você no carro, olhando pela janela"),
+  foto("EU JÁ", 'trabalhei sem saber <span class="hl">cobrar</span>', "Achava que todo trabalho era oportunidade. <b>Nem todo é.</b>", "foto antiga sua, do começo"),
+  foto("EU JÁ", 'gravei com o que eu <span class="hl">tinha</span>', "Celular, luz da janela e coragem. <b>O equipamento veio depois. A vontade veio antes.</b>", "bastidor simples de gravação"),
+  foto("EU JÁ", 'achei que não era boa o <span class="hl">suficiente</span>', "Pra abrir uma empresa, pra cobrar mais, pra aparecer. <b>Esse pensamento quase me parou.</b>", "você pensativa, luz suave"),
+  foto("HOJE", 'eu tenho <span class="hl">duas</span>', "Uma agência e uma produtora. Ainda aprendendo todo dia, <b>mas com a certeza de que tô no lugar certo.</b>", "você hoje, confiante (pode ser no set ou no escritório)"),
+  nota("SE VOCÊ TÁ NO COMEÇO, OUVE ISSO", 'ninguém começa <span class="hl">pronta.</span>', "Você vai ficando pronta no caminho. Honra o seu processo. E Deus no centro, sempre."),
+  cta("salva pra lembrar disso", "Nos dias difíceis, volta aqui. <b>E manda pra uma amiga que tá começando.</b>", "Salvar"),
  ],
- "30-agencia-ou-produtora": [
-  capa("", [("agência", ""), ('<span class="hl">ou</span>', ""), ("produtora?", "m")], sub="qual a diferença (e qual você precisa)"),
-  texto("O PROBLEMA", 'Muita gente contrata a <span class="hl">errada</span>', "E depois acha que marketing não funciona. <b>Na maioria das vezes, o problema foi a escolha.</b>"),
-  texto("AGÊNCIA", 'A agência <span class="hl">pensa</span>', "Estratégia, posicionamento, calendário, legenda, análise de números. <b>Ela decide o que dizer e por quê.</b>"),
-  texto("PRODUTORA", 'A produtora <span class="hl">faz acontecer</span>', "Roteiro, gravação, edição, captação de imagens. <b>Ela transforma a ideia em conteúdo com qualidade.</b>"),
-  lista("VOCÊ PRECISA DE AGÊNCIA QUANDO…", 'Falta <span class="hl">direção</span>', ["Não sabe o que postar", "Posta, mas não vê resultado", "Não tem tempo de planejar"]),
-  lista("VOCÊ PRECISA DE PRODUTORA QUANDO…", 'Falta <span class="hl">execução</span>', ["Sabe o que dizer, mas o vídeo não fica bom", "Não tem tempo de gravar e editar", "Quer elevar a qualidade da marca"]),
-  frase('Estratégia sem produção não sai do papel. Produção sem estratégia é só <span class="hl">vídeo bonito.</span>'),
-  cta("Qual é o seu caso?", "Ficou na dúvida? <b>Me chama no direct com a palavra AJUDA</b> que eu te digo por onde começar.", "Direct: AJUDA"),
+ "30-agencia-e-produtora-pra-minha-mae": [
+  capa("deixa eu te explicar a diferença entre", [("agência", "m"), ('<span class="hl">e produtora</span>', "m")], sub="do jeito que eu explico pra minha mãe", foto="você explicando algo, mãos em movimento"),
+  foto("EU: \"MÃE, OLHA SÓ…\"", 'a agência é o <span class="hl">cérebro</span>', "A gente pensa: o que postar, pra quem, quando e por quê.", "você no notebook / quadro de planejamento"),
+  foto("EU, CONTINUANDO", 'e a produtora é a <span class="hl">mão</span>', "A gente faz: grava, edita, deixa bonito e pronto pra postar.", "você com a câmera ou no set"),
+  nota("AÍ ELA PERGUNTOU: \"E PRECISA DAS DUAS?\"", 'cérebro sem mão não faz nada. mão sem cérebro faz <span class="hl">qualquer coisa.</span>'),
+  foto("POR ISSO", 'eu tenho as <span class="hl">duas</span>', "Cansei de ver estratégia boa morrer no papel <b>e vídeo lindo que não vende nada.</b>", "você sorrindo, no seu ambiente de trabalho"),
+  cta("ficou mais fácil?", "Se ainda tá na dúvida de qual você precisa, <b>me chama no direct com a palavra AJUDA.</b>", "Direct: AJUDA"),
  ],
 }
 

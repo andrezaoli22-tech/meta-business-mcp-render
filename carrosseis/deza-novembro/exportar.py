@@ -29,10 +29,11 @@ for pasta in sorted(d for d in os.listdir(AQUI) if os.path.isdir(os.path.join(AQ
     lay_path = os.path.join(d, 'export', 'layout.json')
     lay = json.load(open(lay_path))
     sombra(os.path.join(d, 'export', 'sombra.png'))
-    # capa = slide 1: placeholder da foto + camada de sombra solta por cima (continua valendo ao trocar a foto)
-    s1 = lay['slides'][0]
-    foto = s1['medias'][0]
-    s1['medias'] = [foto, {'x': 0, 'y': 0, 'w': 1080, 'h': 1350, 'nested': False, 'file': 'sombra.png'}]
+    # todo slide com foto de fundo (tela cheia) ganha a camada de sombra solta por cima
+    for sl in lay['slides']:
+        cheias = [m for m in sl['medias'] if m['w'] >= 1070 and m['h'] >= 1340]
+        if cheias:
+            sl['medias'] = sl['medias'] + [{'x': 0, 'y': 0, 'w': 1080, 'h': 1350, 'nested': False, 'file': 'sombra.png'}]
     json.dump(lay, open(lay_path, 'w'))
     nome = f'deza-{pasta}'
     pptx = os.path.join(d, nome + '.pptx')

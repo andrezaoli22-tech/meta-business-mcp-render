@@ -131,12 +131,32 @@ const SCHEMA = [
     erro TEXT
   )`,
   `CREATE TABLE IF NOT EXISTS oauth_estados (estado TEXT PRIMARY KEY, empresa TEXT NOT NULL, usuario_id INTEGER, expira_em INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS estrategias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    empresa TEXT NOT NULL,
+    mes TEXT NOT NULL,
+    titulo TEXT NOT NULL,
+    conteudo TEXT NOT NULL DEFAULT '',
+    link TEXT,
+    origem TEXT,
+    criado_por INTEGER,
+    criado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    atualizado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_estrategias_empresa ON estrategias(empresa, mes)`,
 ];
+
+// Colunas acrescentadas depois que o banco já estava em uso (o SQLite não tem ADD COLUMN IF NOT EXISTS)
+const COLUNAS_NOVAS = [['demandas', 'origem', 'TEXT']];
 
 let migrado = false;
 export async function migrar(env) {
   if (migrado) return;
   await env.DB.batch(SCHEMA.map((s) => env.DB.prepare(s)));
+  for (const [tabela, coluna, tipo] of COLUNAS_NOVAS) {
+    const cols = (await env.DB.prepare(`PRAGMA table_info(${tabela})`).all()).results.map((c) => c.name);
+    if (!cols.includes(coluna)) await env.DB.prepare(`ALTER TABLE ${tabela} ADD COLUMN ${coluna} ${tipo}`).run();
+  }
   migrado = true;
 }
 

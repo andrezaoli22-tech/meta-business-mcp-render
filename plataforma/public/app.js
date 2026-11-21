@@ -524,7 +524,12 @@ async function desenharAba() {
 }
 
 async function carregarDemandas() {
-  estado.demandas = await api(`/api/demandas?empresa=${estado.marca}`);
+  const [demandas, estrategias] = await Promise.all([
+    api(`/api/demandas?empresa=${estado.marca}`),
+    api(`/api/estrategias?empresa=${estado.marca}`).catch(() => []),
+  ]);
+  estado.demandas = demandas;
+  estado.estrategias = estrategias;
 }
 
 async function atualizarSilencioso() {
@@ -631,6 +636,7 @@ function abaDemandas(main) {
     const lista = filtrar(estado.demandas);
     if (estado.visao === 'lista') {
       conteudo.replaceChildren(
+        cartaoEstrategia('faixa') || '',
         lista.length
           ? h(
               'div',
@@ -659,6 +665,7 @@ function abaDemandas(main) {
             'div',
             { class: 'coluna' },
             h('h3', {}, h('span', { class: 'ponto', style: { background: corStatus(s.id) } }), s.nome, h('span', { class: 'n' }, itens.length)),
+            s.id === 'briefing' ? cartaoEstrategia() : null,
             itens.map(cartaoDemanda),
             s.id === 'briefing' ? h('button', { class: 'btn fantasma mini', style: { width: '100%' }, onclick: () => novaDemanda() }, icone('mais', 16), 'Adicionar') : null
           );
@@ -700,6 +707,168 @@ async function mudarStatus(d, status, comentario) {
   } catch (e) {
     toast(e.message);
   }
+}
+
+
+// ---------------- estratégia do mês (fixada no Briefing) ----------------
+const mesAtual = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }).slice(0, 7);
+function nomeMes(mes) {
+  const [a, m] = String(mes).split('-').map(Number);
+  const n = new Date(Date.UTC(a, m - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', timeZone: 'UTC' });
+  return `${n.charAt(0).toUpperCase()}${n.slice(1)} ${a}`;
+}
+function estrategiaVigente() {
+  const lista = estado.estrategias || [];
+  if (!lista.length) return null;
+  const atual = mesAtual();
+  return lista.find((e) => e.mes === atual) || lista.find((e) => e.mes < atual) || lista[0];
+}
+
+// Markdown simples (títulos, listas, negrito) montado com elementos, sem innerHTML.
+function textoRico(txt) {
+  const inline = (linha) => {
+    const partes = [];
+    const re = /\*\*(.+?)\*\*/g;
+    let ult = 0;
+    let m;
+    while ((m = re.exec(linha))) {
+      if (m.index > ult) partes.push(linha.slice(ult, m.index));
+      partes.push(h('b', {}, m[1]));
+      ult = re.lastIndex;
+    }
+    if (ult < linha.length) partes.push(linha.slice(ult));
+    return partes;
+  };
+  const raiz = h('div', { class: 'texto-rico' });
+  let ul = null;
+  for (const bruta of String(txt || '').split('\n')) {
+    const linha = bruta.trimEnd();
+    if (/^\s*[-•]\s+/.test(linha)) {
+      if (!ul) raiz.append((ul = h('ul')));
+      ul.append(h('li', {}, inline(linha.replace(/^\s*[-•]\s+/, ''))));
+      continue;
+    }
+    ul = null;
+    if (!linha.trim()) continue;
+    if (linha.startsWith('### ')) raiz.append(h('h5', {}, inline(linha.slice(4))));
+    else if (linha.startsWith('## ')) raiz.append(h('h4', {}, inline(linha.slice(3))));
+    else if (linha.startsWith('# ')) raiz.append(h('h3', { class: 'titulo' }, inline(linha.slice(2))));
+    else raiz.append(h('p', {}, inline(linha)));
+  }
+  return raiz;
+}
+
+function cartaoEstrategia(variante = 'cartao') {
+  const e = estrategiaVigente();
+  if (!e) {
+    if (estado.eu.papel === 'aprovador') return null;
+    return h('button', { class: `fixada-vazia ${variante}`, onclick: () => editarEstrategia(null) }, '📌 Fixar a estratégia do mês');
+  }
+  const linhas = (e.conteudo || '').split('\n');
+  const iObj = linhas.findIndex((l) => /^##\s+objetivo/i.test(l));
+  const fonte = iObj >= 0 ? linhas.slice(iObj + 1) : linhas;
+  const resumo = fonte.filter((l) => l.trim() && !l.startsWith('#') && !/^documento montado/i.test(l)).slice(0, 2).join(' ').replace(/\*\*/g, '').replace(/^\s*-\s*/, '').slice(0, 170);
+  return h(
+    'div',
+    { class: `fixada ${variante}`, onclick: () => abrirEstrategia(e.id), title: 'Abrir a estratégia' },
+    h('div', { class: 'rotulo-fixada' }, '📌 Estratégia · ', nomeMes(e.mes), e.mes !== mesAtual() ? h('span', { class: 'chip', style: { marginLeft: '6px' } }, 'mês anterior') : null),
+    h('div', { class: 'nome' }, e.titulo),
+    resumo ? h('div', { class: 'resumo-fixada' }, resumo + '…') : null
+  );
+}
+
+function abrirEstrategia(id) {
+  const lista = estado.estrategias || [];
+  const e = lista.find((x) => x.id === id) || estrategiaVigente();
+  if (!e) return;
+  document.querySelectorAll('.fundo').forEach((x) => x.remove());
+  const podeEditar = estado.eu.papel !== 'aprovador';
+  const fundo = h(
+    'div',
+    { class: 'fundo', onclick: (ev) => ev.target === fundo && fundo.remove() },
+    h(
+      'div',
+      { class: 'painel' },
+      h(
+        'div',
+        { class: 'cab' },
+        h('button', { class: 'btn icone fantasma', title: 'Fechar', onclick: () => fundo.remove() }, icone('voltar')),
+        h('div', { style: { flex: 1, minWidth: 0 } }, h('div', { class: 'rotulo-fixada' }, '📌 Estratégia fixada · ', nomeMes(e.mes)), h('div', { class: 'titulo', style: { fontSize: '20px' } }, e.titulo))
+      ),
+      h(
+        'div',
+        { class: 'corpo' },
+        lista.length > 1
+          ? h('div', { class: 'linha' }, h('span', { class: 'muted pequeno' }, 'Meses:'), lista.map((x) => h('button', { class: `btn mini ${x.id === e.id ? 'primario' : ''}`, onclick: () => abrirEstrategia(x.id) }, nomeMes(x.mes))))
+          : null,
+        podeEditar
+          ? h(
+              'div',
+              { class: 'linha' },
+              h('button', { class: 'btn mini', onclick: () => (fundo.remove(), editarEstrategia(e)) }, 'Editar'),
+              h('button', { class: 'btn mini', onclick: () => (fundo.remove(), editarEstrategia(null)) }, icone('mais', 14), 'Estratégia de outro mês'),
+              e.link ? h('a', { class: 'btn mini fantasma', href: e.link, target: '_blank', rel: 'noopener' }, 'Abrir no Notion ↗') : null
+            )
+          : e.link
+            ? h('a', { class: 'btn mini fantasma', href: e.link, target: '_blank', rel: 'noopener' }, 'Abrir no Notion ↗')
+            : null,
+        textoRico(e.conteudo)
+      )
+    )
+  );
+  document.body.append(fundo);
+}
+
+function editarEstrategia(e) {
+  const proximo = (() => {
+    const atual = mesAtual();
+    const usados = new Set((estado.estrategias || []).map((x) => x.mes));
+    if (!usados.has(atual)) return atual;
+    const [a, m] = atual.split('-').map(Number);
+    return m === 12 ? `${a + 1}-01` : `${a}-${String(m + 1).padStart(2, '0')}`;
+  })();
+  const mes = h('input', { class: 'entrada', type: 'month', value: e?.mes || proximo });
+  const titulo = h('input', { class: 'entrada', value: e?.titulo || '', placeholder: 'Ex.: Estratégia de Dezembro 2026' });
+  const link = h('input', { class: 'entrada', value: e?.link || '', placeholder: 'Link do documento (Notion, Drive…) — opcional' });
+  const conteudo = h('textarea', { class: 'entrada', style: { minHeight: '320px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '13px' }, placeholder: '## Objetivo do mês\n- ...\n\n## Pilares\n- **Autoridade:** ...' }, e?.conteudo || '');
+  const f = dialogo([
+    h('h3', { class: 'titulo' }, e ? 'Editar estratégia' : 'Estratégia do mês'),
+    h('div', { class: 'grade-2' }, h('label', { class: 'campo' }, 'Mês', mes), h('label', { class: 'campo' }, 'Título', titulo)),
+    h('label', { class: 'campo' }, 'Conteúdo (use ## para títulos, - para listas e **negrito**)', conteudo),
+    h('label', { class: 'campo' }, 'Link', link),
+    h(
+      'div',
+      { class: 'botoes' },
+      e && estado.eu.papel === 'admin'
+        ? h('button', { class: 'btn perigo', style: { marginRight: 'auto' }, onclick: tentar(async () => {
+            if (!(await confirmar('Excluir estratégia', `Excluir “${e.titulo}”?`, 'Excluir', true))) return;
+            await api(`/api/estrategias/${e.id}`, { method: 'DELETE' });
+            f.remove();
+            await carregarDemandas();
+            desenharAba();
+          }) }, 'Excluir')
+        : null,
+      h('button', { class: 'btn', onclick: () => f.remove() }, 'Cancelar'),
+      h(
+        'button',
+        {
+          class: 'btn primario',
+          onclick: tentar(async () => {
+            if (!mes.value) return mes.focus();
+            const dados = { empresa: estado.marca, mes: mes.value, titulo: titulo.value.trim() || `Estratégia de ${nomeMes(mes.value)}`, conteudo: conteudo.value, link: link.value.trim() || null };
+            if (e) await api(`/api/estrategias/${e.id}`, { method: 'PATCH', json: dados });
+            else await api('/api/estrategias', { json: dados });
+            f.remove();
+            toast('Estratégia salva e fixada no Briefing 📌');
+            await carregarDemandas();
+            desenharAba();
+          }),
+        },
+        'Salvar'
+      )
+    ),
+  ]);
+  f.querySelector('.dialogo').style.width = 'min(760px, 100%)';
 }
 
 // ---------------- diálogos ----------------
@@ -941,7 +1110,7 @@ async function abrirDemanda(id) {
     estado.usuarios.filter((u) => u.ativo || u.id === d.responsavel_id).map((u) => h('option', { value: u.id, selected: u.id === d.responsavel_id }, u.nome))
   );
   const prazo = h('input', { class: 'entrada', type: 'date', value: d.prazo || '', onchange: (e) => salvar('prazo', e.target.value || null) });
-  const desc = h('textarea', { class: 'entrada', placeholder: 'Briefing, referências, observações…', oninput: (e) => salvar('descricao', e.target.value) }, d.descricao || '');
+  const desc = h('textarea', { class: 'entrada', style: { minHeight: `${Math.min(520, 90 + (d.descricao || '').split('\n').length * 19)}px` }, placeholder: 'Briefing, referências, observações…', oninput: (e) => salvar('descricao', e.target.value) }, d.descricao || '');
   const contador = h('div', { class: 'contador-car' });
   const contarLegenda = (txt) => {
     const hashtags = (txt.match(/#[^\s#]+/g) || []).length;
@@ -1440,7 +1609,7 @@ async function telaConfig() {
     const atual = sub && lista.find((a) => a.endpoint === sub.endpoint);
     const caixas = Object.values(MARCAS).map((m) => h('label', { class: 'linha', style: { gap: '6px' } }, h('input', { type: 'checkbox', value: m.id, checked: atual ? atual.empresas.includes(m.id) : true }), m.nome));
     const empresasMarcadas = () => caixas.map((c) => c.querySelector('input')).filter((i) => i.checked).map((i) => i.value);
-    blocoAparelhos.replaceChildren(
+    blocoAparelhos.replaceChildren(...[
       h('h3', {}, 'Notificações neste aparelho'),
       ehIOS() && !instalado() ? h('div', { class: 'aviso' }, 'No iPhone: toque em Compartilhar → Adicionar à Tela de Início, abra pelo ícone e volte aqui para ativar.') : null,
       h('div', { class: 'linha' }, h('span', { class: 'muted' }, 'Receber avisos de:'), caixas),
@@ -1464,8 +1633,8 @@ async function telaConfig() {
             )
           : null
       ),
-      lista.length ? h('p', { class: 'muted pequeno', style: { margin: 0 } }, `Aparelhos conectados na sua conta: ${lista.map((a) => a.nome || 'Navegador').join(', ')}`) : null
-    );
+      lista.length ? h('p', { class: 'muted pequeno', style: { margin: 0 } }, `Aparelhos conectados na sua conta: ${lista.map((a) => a.nome || 'Navegador').join(', ')}`) : null,
+    ].filter(Boolean));
   };
 
   // equipe
@@ -1605,7 +1774,29 @@ async function telaConfig() {
     )
   );
 
-  main.replaceChildren(h('div', { class: 'config' }, blocoAparelhos, blocoEquipe, blocoIg, blocoConta));
+  const blocoImportar = admin ? h('div', { class: 'bloco' }) : null;
+  const desenharImportar = async () => {
+    const st = await api('/api/importar/notion').catch(() => null);
+    if (!st) return blocoImportar.remove();
+    const arquivo = h('input', { type: 'file', accept: 'application/json,.json', class: 'oculto', onchange: tentar(async (ev) => {
+      const f = ev.target.files[0];
+      if (!f) return;
+      let dados;
+      try { dados = JSON.parse(await f.text()); } catch { throw new Error('Esse arquivo não é um JSON válido.'); }
+      const r = await api('/api/importar/notion', { json: dados });
+      toast(r.demandas || r.estrategias ? `Importado: ${r.demandas} demandas e ${r.estrategias} estratégias ✅` : 'Tudo já estava importado.');
+      estado.demandas = [];
+      arquivo.value = '';
+      desenharImportar();
+    }) });
+    blocoImportar.replaceChildren(
+      h('h3', {}, 'Importar do Notion'),
+      h('p', { class: 'muted pequeno', style: { margin: 0 } }, 'Escolha o arquivo de importação (.json) gerado pelo Claude a partir do Notion: ele traz as demandas com roteiros, prazos e links e a estratégia do mês, que fica fixada no topo do Briefing. Pode importar de novo sem medo: nada é duplicado.'),
+      h('div', { class: 'linha' }, h('button', { class: 'btn primario', onclick: () => arquivo.click() }, 'Escolher arquivo e importar'), h('span', { class: 'muted pequeno' }, `${st.ja_importadas} demandas já importadas do Notion`), arquivo)
+    );
+  };
+  main.replaceChildren(h('div', { class: 'config' }, blocoAparelhos, blocoImportar, blocoEquipe, blocoIg, blocoConta));
+  if (blocoImportar) desenharImportar();
   desenharAparelhos();
   desenharEquipe();
   desenharIg();

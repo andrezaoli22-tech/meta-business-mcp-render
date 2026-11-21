@@ -114,6 +114,14 @@ GET  /api/usuarios                      para achar responsavel_id
 - O feed não tem webhook de post novo, por isso a sincronização roda a cada 10 min.
 - Os links `media_url` do Instagram expiram. Nunca guarde esses links como definitivos: a sincronização os renova.
 
+## Estratégia do mês e importação do Notion
+
+- Tabela `estrategias` (empresa, mes `AAAA-MM`, titulo, conteudo em markdown simples, link, origem). A vigente (mês atual ou a mais recente anterior) aparece **fixada no topo da coluna Briefing** e no topo da visão Lista. Rotas: `GET/POST /api/estrategias`, `PATCH/DELETE /api/estrategias/:id`.
+- Importação do Notion: `POST /api/importar/notion` (admin) recebe um JSON `{versao, demandas: [...], estrategias: [...]}`; cada item tem `origem` = `notion:<id>`, então reimportar não duplica. Na tela: ⚙︎ → Importar do Notion → escolher o arquivo.
+- **O conteúdo dos clientes não vai para o repositório.** Para um mês novo: leia o Notion (bases "Produção de Conteúdo — RP"/"— CITRINO", "Demandas — Alldres", calendários), gere o JSON na pasta de rascunho da sessão e entregue o arquivo ao usuário para importar.
+- Campos de cada demanda no JSON: `empresa`, `origem`, `titulo`, `tipo` (post/carrossel/reels/story/video/outro), `prazo` (AAAA-MM-DD), `responsavel` (primeiro nome; liga ao usuário com o mesmo primeiro nome), `descricao` (markdown), `links` [{url, titulo}].
+- Nunca copie senhas ou números pessoais do Notion para a plataforma.
+
 ## Ideias já mapeadas para próximas versões
 
 - Métricas por post (alcance e salvamentos via `/insights`).

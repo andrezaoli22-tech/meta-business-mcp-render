@@ -120,22 +120,6 @@ async function api(request, env, ctx, url) {
     const u = await usuarioAtual(request, env);
     return json({ configurado: n.n > 0, usuario: u ? publico(u) : null });
   }
-  if (p === '/api/diagnostico/chave' && m === 'GET') {
-    // Diagnóstico temporário da chave de API: não revela valores, só nomes, tamanhos e se conferem.
-    const auth = request.headers.get('authorization') || '';
-    const recebida = auth.replace(/^(Bearer\s+)+/i, '').trim();
-    const nomes = Object.keys(env).filter((k) => /api|token/i.test(k));
-    const chave = String(env.API_TOKEN || env.API_TOKEN1 || '').trim();
-    return json({
-      authorization_chegou: Boolean(auth),
-      comeca_com_bearer: /^Bearer\s/i.test(auth),
-      bearer_repetido: /^Bearer\s+Bearer\s/i.test(auth),
-      tamanho_recebido: recebida.length,
-      nomes_configurados: nomes,
-      tamanho_configurado: chave.length,
-      conferem: Boolean(chave) && iguais(recebida, chave),
-    });
-  }
   if (p === '/api/setup' && m === 'POST') return setup(request, env);
   if (p === '/api/entrar' && m === 'POST') return entrar(request, env);
   if (p === '/api/sair' && m === 'POST') return sair(request, env);

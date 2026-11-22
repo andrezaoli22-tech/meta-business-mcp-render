@@ -161,7 +161,9 @@ const publico = (u) => ({ id: u.id, nome: u.nome, email: u.email, papel: u.papel
 
 async function usuarioAtual(request, env) {
   const auth = request.headers.get('authorization') || '';
-  if (env.API_TOKEN && auth.startsWith('Bearer ') && iguais(auth.slice(7), env.API_TOKEN)) {
+  // aceita API_TOKEN (nome padrão) ou API_TOKEN1 (nome usado no painel do Cloudflare)
+  const chaveApi = env.API_TOKEN || env.API_TOKEN1;
+  if (chaveApi && auth.startsWith('Bearer ') && iguais(auth.slice(7).trim(), String(chaveApi).trim())) {
     return { id: 0, nome: 'Claude', email: 'claude@plataforma', papel: 'admin', trocar_senha: 0 };
   }
   const token = lerCookie(request, 'sessao');

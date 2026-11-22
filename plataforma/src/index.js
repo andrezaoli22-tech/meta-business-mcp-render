@@ -161,7 +161,9 @@ const publico = (u) => ({ id: u.id, nome: u.nome, email: u.email, papel: u.papel
 
 async function usuarioAtual(request, env) {
   const auth = request.headers.get('authorization') || '';
-  if (env.API_TOKEN && auth.startsWith('Bearer ') && iguais(auth.slice(7), env.API_TOKEN)) {
+  // aceita API_TOKEN (nome padrão) ou API_TOKEN1 (nome usado no painel do Cloudflare)
+  const chaveApi = env.API_TOKEN || env.API_TOKEN1;
+  if (chaveApi && auth.startsWith('Bearer ') && iguais(auth.slice(7).trim(), String(chaveApi).trim())) {
     return { id: 0, nome: 'Claude', email: 'claude@plataforma', papel: 'admin', trocar_senha: 0 };
   }
   const token = lerCookie(request, 'sessao');
@@ -864,8 +866,10 @@ async function importarNotion(request, env, ctx, eu) {
   if (Number(request.headers.get('content-length') || 0) > 5 * 1024 * 1024) falha(413, 'Arquivo grande demais.');
   const dadosNotion = await lerJson(request);
   if (!Array.isArray(dadosNotion?.demandas) || !Array.isArray(dadosNotion?.estrategias)) falha(400, 'Arquivo de importação inválido.');
-  const validoD = (d) => d && EMPRESAS[d.empresa] && typeof d.titulo === 'string' && d.titulo.trim() && /^notion:/.test(String(d.origem || ''));
-  const validoE = (e) => e && EMPRESAS[e.empresa] && /^\d{4}-(0[1-9]|1[0-2])$/.test(String(e.mes)) && /^notion:/.test(String(e.origem || ''));
+  const validoD = (d) => d && EMPRESAS[d.empresa] && typeof d.titulo === 'string' && d.titulo.trim() && /^(notion|manual):/.test(String(d.origem || ''));
+  // status permitidos na importação (aprovado/agendado/publicado continuam exigindo a ação na plataforma)
+  const statusImport = (st) => (['briefing', 'producao', 'aprovacao', 'ajustes'].includes(st) ? st : 'briefing');
+  const validoE = (e) => e && EMPRESAS[e.empresa] && /^\d{4}-(0[1-9]|1[0-2])$/.test(String(e.mes)) && /^(notion|manual):/.test(String(e.origem || ''));
   dadosNotion.demandas = dadosNotion.demandas.filter(validoD).slice(0, 500);
   dadosNotion.estrategias = dadosNotion.estrategias.filter(validoE).slice(0, 50);
   const usuarios = (await env.DB.prepare('SELECT id, nome FROM usuarios WHERE ativo = 1').all()).results;
@@ -885,8 +889,8 @@ async function importarNotion(request, env, ctx, eu) {
     novasDemandas++;
     stmts.push(
       env.DB.prepare(
-        "INSERT INTO demandas (empresa, titulo, descricao, tipo, status, responsavel_id, prazo, legenda, links, criado_por, origem) VALUES (?, ?, ?, ?, 'briefing', ?, ?, '', ?, ?, ?)"
-      ).bind(d.empresa, d.titulo.slice(0, 200), String(d.descricao || ''), TIPOS.includes(d.tipo) ? d.tipo : 'post', acharUsuario(d.responsavel), /^\d{4}-\d{2}-\d{2}$/.test(d.prazo || '') ? d.prazo : null, normalizarLinks(d.links), eu.id || null, d.origem)
+        "INSERT INTO demandas (empresa, titulo, descricao, tipo, status, responsavel_id, prazo, legenda, links, criado_por, origem) VALUES (?, ?, ?, ?, ?, ?, ?, '', ?, ?, ?)"
+      ).bind(d.empresa, d.titulo.slice(0, 200), String(d.descricao || ''), TIPOS.includes(d.tipo) ? d.tipo : 'post', statusImport(d.status), acharUsuario(d.responsavel), /^\d{4}-\d{2}-\d{2}$/.test(d.prazo || '') ? d.prazo : null, normalizarLinks(d.links), eu.id || null, d.origem)
     );
   }
   for (const e of dadosNotion.estrategias) {
@@ -904,7 +908,7 @@ async function importarNotion(request, env, ctx, eu) {
   ).bind(eu.id || null).run();
   if (novasDemandas || novasEstrategias) {
     ctx.waitUntil(
-      notificar(env, { empresa: null, titulo: 'Importação do Notion', corpo: `${novasDemandas} demandas e ${novasEstrategias} estratégias foram trazidas do Notion.`, autorId: eu.id })
+      notificar(env, { empresa: null, titulo: 'Importação', corpo: `${novasDemandas} demanda(s) e ${novasEstrategias} estratégia(s) foram importadas.`, autorId: eu.id })
     );
   }
   return json({ ok: true, demandas: novasDemandas, estrategias: novasEstrategias });

@@ -120,6 +120,22 @@ async function api(request, env, ctx, url) {
     const u = await usuarioAtual(request, env);
     return json({ configurado: n.n > 0, usuario: u ? publico(u) : null });
   }
+  if (p === '/api/diagnostico/chave' && m === 'GET') {
+    // Diagnóstico temporário da chave de API: não revela valores, só nomes, tamanhos e se conferem.
+    const auth = request.headers.get('authorization') || '';
+    const recebida = auth.replace(/^(Bearer\s+)+/i, '').trim();
+    const nomes = Object.keys(env).filter((k) => /api|token/i.test(k));
+    const chave = String(env.API_TOKEN || env.API_TOKEN1 || '').trim();
+    return json({
+      authorization_chegou: Boolean(auth),
+      comeca_com_bearer: /^Bearer\s/i.test(auth),
+      bearer_repetido: /^Bearer\s+Bearer\s/i.test(auth),
+      tamanho_recebido: recebida.length,
+      nomes_configurados: nomes,
+      tamanho_configurado: chave.length,
+      conferem: Boolean(chave) && iguais(recebida, chave),
+    });
+  }
   if (p === '/api/setup' && m === 'POST') return setup(request, env);
   if (p === '/api/entrar' && m === 'POST') return entrar(request, env);
   if (p === '/api/sair' && m === 'POST') return sair(request, env);
@@ -163,7 +179,7 @@ async function usuarioAtual(request, env) {
   const auth = request.headers.get('authorization') || '';
   // aceita API_TOKEN (nome padrão) ou API_TOKEN1 (nome usado no painel do Cloudflare)
   const chaveApi = env.API_TOKEN || env.API_TOKEN1;
-  if (chaveApi && auth.startsWith('Bearer ') && iguais(auth.slice(7).trim(), String(chaveApi).trim())) {
+  if (chaveApi && /^Bearer\s/i.test(auth) && iguais(auth.replace(/^(Bearer\s+)+/i, '').trim(), String(chaveApi).trim())) {
     return { id: 0, nome: 'Claude', email: 'claude@plataforma', papel: 'admin', trocar_senha: 0 };
   }
   const token = lerCookie(request, 'sessao');

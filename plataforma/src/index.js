@@ -480,6 +480,18 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
       .bind(status, agoraIso(), ...extraVals, id)
       .run();
     await registrar(env, id, eu.id, 'status', d.status, status);
+    if (status === 'aprovado' && d.agendado_para) {
+      const quando = new Date(d.agendado_para);
+      const quandoTxt = quando.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
+      if (quando.getTime() > Date.now() - 60000) {
+        await env.DB.prepare("UPDATE demandas SET status = 'agendado', lembrete_enviado = 0 WHERE id = ?").bind(id).run();
+        await registrar(env, id, eu.id, 'agendou', 'aprovado', d.agendado_para);
+        ctx.waitUntil(notificar(env, { empresa: d.empresa, demandaId: id, titulo: 'Aprovado e agendado ✅', corpo: `“${d.titulo}” ${d.publicar_auto ? 'será publicado sozinho' : 'tem lembrete de publicação'} em ${quandoTxt}.` }));
+      } else {
+        await env.DB.prepare('UPDATE demandas SET agendado_para = NULL WHERE id = ?').bind(id).run();
+        ctx.waitUntil(notificar(env, { empresa: d.empresa, demandaId: id, titulo: 'Horário já passou', corpo: `“${d.titulo}” foi aprovado depois do horário marcado (${quandoTxt}). Agende de novo.` }));
+      }
+    }
     if (comentario && String(comentario).trim()) {
       await env.DB.prepare('INSERT INTO comentarios (demanda_id, usuario_id, texto) VALUES (?, ?, ?)').bind(id, eu.id || null, String(comentario).trim()).run();
     }
@@ -537,11 +549,13 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
   // agendar publicação
   if (seg[2] === 'agendar' && m === 'POST') {
     const d = await carregarDemanda(env, id);
-    const { agendado_para, publicar_auto = true } = await lerJson(request);
+    const { agendado_para, publicar_auto = true, apos_aprovacao = false } = await lerJson(request);
     const quando = new Date(agendado_para);
     if (isNaN(quando)) falha(400, 'Escolha dia e hora.');
     if (quando.getTime() < Date.now() - 60000) falha(400, 'Escolha um horário no futuro.');
-    if (!['aprovado', 'agendado'].includes(d.status) && !podeAprovar(eu)) falha(400, 'A demanda precisa estar aprovada para agendar.');
+    const jaAprovada = ['aprovado', 'agendado'].includes(d.status);
+    // Pré-agendamento: guarda o horário, mas só publica depois que alguém aprovar.
+    const preAgendar = !jaAprovada && (apos_aprovacao || !podeAprovar(eu));
     if (publicar_auto) {
       const conta = await env.DB.prepare('SELECT token FROM instagram WHERE empresa = ?').bind(d.empresa).first();
       if (!conta?.token) falha(400, 'Conecte o Instagram desta marca (aba Perfil) para publicar automaticamente.');
@@ -549,13 +563,31 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
       const erro = ig.validarParaPublicar(d, anexos);
       if (erro) falha(400, erro);
     }
+    const quandoTxt = quando.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
+    if (preAgendar) {
+      await env.DB.prepare(
+        'UPDATE demandas SET agendado_para = ?, publicar_auto = ?, lembrete_enviado = 0, erro_publicacao = NULL, ig_container = NULL, atualizado_em = ? WHERE id = ?'
+      )
+        .bind(quando.toISOString(), publicar_auto ? 1 : 0, agoraIso(), id)
+        .run();
+      await registrar(env, id, eu.id, 'pré-agendou', d.status, quando.toISOString());
+      ctx.waitUntil(
+        notificar(env, {
+          empresa: d.empresa,
+          demandaId: id,
+          titulo: 'Agendado após aprovação',
+          corpo: `“${d.titulo}” está marcado para ${quandoTxt}. Só publica depois de aprovado.`,
+          autorId: eu.id,
+        })
+      );
+      return json({ ok: true, pre_agendado: true });
+    }
     await env.DB.prepare(
       "UPDATE demandas SET status = 'agendado', agendado_para = ?, publicar_auto = ?, lembrete_enviado = 0, erro_publicacao = NULL, ig_container = NULL, atualizado_em = ? WHERE id = ?"
     )
       .bind(quando.toISOString(), publicar_auto ? 1 : 0, agoraIso(), id)
       .run();
     await registrar(env, id, eu.id, 'agendou', d.status, quando.toISOString());
-    const quandoTxt = quando.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
     ctx.waitUntil(
       notificar(env, {
         empresa: d.empresa,
@@ -570,6 +602,11 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
 
   if (seg[2] === 'cancelar-agendamento' && m === 'POST') {
     const d = await carregarDemanda(env, id);
+    if (d.status !== 'agendado' && d.agendado_para && d.status !== 'publicado') {
+      await env.DB.prepare('UPDATE demandas SET agendado_para = NULL, publicar_auto = 0, atualizado_em = ? WHERE id = ?').bind(agoraIso(), id).run();
+      await registrar(env, id, eu.id, 'cancelou agendamento');
+      return json({ ok: true });
+    }
     if (d.status !== 'agendado') falha(400, 'Esta demanda não está agendada.');
     if (d.publicando) falha(409, 'A publicação já está em andamento.');
     await env.DB.prepare("UPDATE demandas SET status = 'aprovado', agendado_para = NULL, publicar_auto = 0, ig_container = NULL, atualizado_em = ? WHERE id = ?")
@@ -752,6 +789,15 @@ async function rotinaFrequente(env) {
       await env.DB.prepare('UPDATE demandas SET lembrete_enviado = 1 WHERE id = ?').bind(d.id).run();
       await notificar(env, { empresa: d.empresa, demandaId: d.id, titulo: 'Hora de publicar ⏰', corpo: `“${d.titulo}” está marcado para agora. Publique pelo app e marque como publicado.` });
     }
+  }
+  const semAprovacao = (
+    await env.DB.prepare(
+      "SELECT id, empresa, titulo FROM demandas WHERE status NOT IN ('agendado','aprovado','publicado') AND arquivada = 0 AND agendado_para IS NOT NULL AND agendado_para <= ? AND lembrete_enviado = 0"
+    ).bind(agora).all()
+  ).results;
+  for (const d of semAprovacao) {
+    await env.DB.prepare('UPDATE demandas SET lembrete_enviado = 1 WHERE id = ?').bind(d.id).run();
+    await notificar(env, { empresa: d.empresa, demandaId: d.id, titulo: 'Não publicado ⚠️', corpo: `“${d.titulo}” chegou no horário marcado, mas ainda não foi aprovado. Aprove e agende de novo.` });
   }
   const contas = (await env.DB.prepare('SELECT empresa, sincronizado_em FROM instagram WHERE token IS NOT NULL').all()).results;
   for (const c of contas) {

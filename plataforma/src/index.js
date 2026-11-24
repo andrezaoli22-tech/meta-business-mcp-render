@@ -608,7 +608,7 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
       return json({ ok: true });
     }
     if (d.status !== 'agendado') falha(400, 'Esta demanda não está agendada.');
-    if (d.publicando) falha(409, 'A publicação já está em andamento.');
+    if (d.publicando && d.publicando > Date.now() - 15 * 60000) falha(409, 'A publicação já está em andamento.');
     await env.DB.prepare("UPDATE demandas SET status = 'aprovado', agendado_para = NULL, publicar_auto = 0, ig_container = NULL, atualizado_em = ? WHERE id = ?")
       .bind(agoraIso(), id)
       .run();
@@ -631,8 +631,9 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
       .bind(agoraIso(), agoraIso(), id)
       .run();
     await registrar(env, id, eu.id, 'publicar agora');
-    ctx.waitUntil(publicarDemanda(env, id, eu));
-    return json({ ok: true, mensagem: 'Enviando para o Instagram. Você recebe um aviso quando terminar.' });
+    // A publicação roda na rotina de 5 minutos (que pode durar vários minutos). Fazer aqui seria cortado
+    // pelo limite de 30 s do Cloudflare em carrosséis e vídeos, deixando a demanda travada.
+    return json({ ok: true, mensagem: 'Vai para o Instagram em até 5 minutos. Você recebe um aviso quando sair.' });
   }
 
   falha(404, 'Rota não encontrada.');
@@ -741,7 +742,11 @@ async function instagramRetorno(request, env, url) {
 
 async function publicarDemanda(env, id, autor = null) {
   // trava para duas rodadas não publicarem a mesma demanda
-  const trava = await env.DB.prepare("UPDATE demandas SET publicando = 1 WHERE id = ? AND publicando = 0 AND status = 'agendado'").bind(id).run();
+  // 'publicando' guarda o horário (ms) em que a publicação começou; uma trava com mais de 15 min é considerada abandonada
+  const agoraMs = Date.now();
+  const trava = await env.DB.prepare("UPDATE demandas SET publicando = ? WHERE id = ? AND (publicando = 0 OR publicando < ?) AND status = 'agendado'")
+    .bind(agoraMs, id, agoraMs - 15 * 60000)
+    .run();
   if (!trava.meta.changes) return;
   const d = await env.DB.prepare('SELECT * FROM demandas WHERE id = ?').bind(id).first();
   try {
@@ -780,7 +785,7 @@ async function publicarDemanda(env, id, autor = null) {
 async function rotinaFrequente(env) {
   const agora = agoraIso();
   const vencidas = (
-    await env.DB.prepare("SELECT id, publicar_auto, lembrete_enviado, empresa, titulo FROM demandas WHERE status = 'agendado' AND arquivada = 0 AND agendado_para <= ? AND publicando = 0").bind(agora).all()
+    await env.DB.prepare("SELECT id, publicar_auto, lembrete_enviado, empresa, titulo FROM demandas WHERE status = 'agendado' AND arquivada = 0 AND agendado_para <= ? AND (publicando = 0 OR publicando < ?)").bind(agora, Date.now() - 15 * 60000).all()
   ).results;
   for (const d of vencidas) {
     if (d.publicar_auto) {

@@ -576,6 +576,7 @@ function cartaoDemanda(d) {
       h('span', { class: 'chip' }, NOMES_TIPO[d.tipo] || d.tipo),
       chipPrazo(d),
       d.status === 'agendado' && d.agendado_para ? h('span', { class: 'chip' }, (d.publicar_auto ? '⏱ ' : '⏰ ') + dataBR(d.agendado_para, true)) : null,
+      d.agendado_para && !['agendado', 'publicado', 'aprovado'].includes(d.status) ? h('span', { class: 'chip', title: 'Publica depois de aprovado' }, '⏳ ' + dataBR(d.agendado_para, true) + ' após aprovação') : null,
       d.erro_publicacao ? h('span', { class: 'chip atrasado' }, 'Falhou ao publicar') : null,
       d.n_comentarios ? h('span', {}, `💬 ${d.n_comentarios}`) : null,
       d.n_anexos > 1 ? h('span', {}, `📎 ${d.n_anexos}`) : null,
@@ -953,7 +954,7 @@ function novaDemanda(prazo) {
   titulo.focus();
 }
 
-function dialogoAgendar(d) {
+function dialogoAgendar(d, aposAprovacao = !['aprovado', 'agendado'].includes(d.status)) {
   const padrao = d.agendado_para ? new Date(d.agendado_para) : new Date(Date.now() + 3600000);
   padrao.setMinutes(Math.ceil(padrao.getMinutes() / 5) * 5, 0, 0);
   const local = new Date(padrao.getTime() - padrao.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -961,7 +962,8 @@ function dialogoAgendar(d) {
   const igOk = estado.ig?.conectado ?? true;
   const auto = h('input', { type: 'checkbox', checked: igOk });
   const f = dialogo([
-    h('h3', { class: 'titulo' }, 'Agendar publicação'),
+    h('h3', { class: 'titulo' }, aposAprovacao ? 'Agendar após aprovação' : 'Agendar publicação'),
+    aposAprovacao ? h('p', { class: 'aviso', style: { margin: 0 } }, 'O horário fica marcado, mas só publica depois que a demanda for aprovada. Se ninguém aprovar até lá, não sai e a equipe recebe um aviso.') : null,
     h('label', { class: 'campo' }, 'Dia e hora', quando),
     h('label', { class: 'linha', style: { gap: '10px', alignItems: 'flex-start' } }, auto, h('span', {}, h('b', {}, 'Publicar sozinho no Instagram'), h('div', { class: 'muted pequeno' }, 'Desmarque se o post precisa de música, enquete ou algo que só o app faz: a equipe recebe um lembrete na hora.'))),
     h('p', { class: 'muted pequeno', style: { margin: 0 } }, 'A publicação sai em até 5 minutos depois do horário escolhido.'),
@@ -975,7 +977,7 @@ function dialogoAgendar(d) {
           class: 'btn primario',
           onclick: tentar(async () => {
             if (!quando.value) return quando.focus();
-            await api(`/api/demandas/${d.id}/agendar`, { json: { agendado_para: new Date(quando.value).toISOString(), publicar_auto: auto.checked } });
+            await api(`/api/demandas/${d.id}/agendar`, { json: { agendado_para: new Date(quando.value).toISOString(), publicar_auto: auto.checked, apos_aprovacao: aposAprovacao } });
             f.remove();
             toast('Agendado ✅');
             await carregarDemandas();
@@ -1065,6 +1067,15 @@ async function abrirDemanda(id) {
   const acoes = [];
   const b = (txt, fn, cls = '') => h('button', { class: `btn mini ${cls}`, onclick: tentar(fn) }, txt);
   if (['briefing', 'producao', 'ajustes'].includes(d.status)) acoes.push(b('Enviar para aprovação', () => mudarStatus(d, 'aprovacao'), 'primario'));
+  if (['briefing', 'producao', 'aprovacao', 'ajustes'].includes(d.status)) {
+    acoes.push(b(d.agendado_para ? 'Mudar horário' : 'Agendar após aprovação', () => dialogoAgendar(d, true)));
+    if (d.agendado_para)
+      acoes.push(b('Cancelar agendamento', async () => {
+        await api(`/api/demandas/${id}/cancelar-agendamento`, { method: 'POST' });
+        toast('Agendamento cancelado.');
+        abrirDemanda(id);
+      }));
+  }
   if (d.status === 'briefing') acoes.push(b('Iniciar produção', () => mudarStatus(d, 'producao')));
   if (d.status === 'aprovacao') {
     if (podeAprovar) acoes.push(b('Aprovar ✓', () => mudarStatus(d, 'aprovado'), 'primario'));
@@ -1096,7 +1107,8 @@ async function abrirDemanda(id) {
   );
 
   let detalheStatus = '';
-  if (d.status === 'agendado') detalheStatus = `${d.publicar_auto ? 'Publica sozinho' : 'Lembrete'} em ${dataBR(d.agendado_para, true)}${d.ig_container ? ' · processando vídeo…' : ''}`;
+  if (d.agendado_para && ['briefing', 'producao', 'aprovacao', 'ajustes'].includes(d.status)) detalheStatus = `Publica em ${dataBR(d.agendado_para, true)} depois de aprovado`;
+  else if (d.status === 'agendado') detalheStatus = `${d.publicar_auto ? 'Publica sozinho' : 'Lembrete'} em ${dataBR(d.agendado_para, true)}${d.ig_container ? ' · processando vídeo…' : ''}`;
   else if (d.status === 'publicado' && d.publicado_em) detalheStatus = `Publicado em ${dataBR(d.publicado_em, true)}`;
   else if (d.aprovado_em && d.status === 'aprovado') detalheStatus = `Aprovado em ${dataBR(d.aprovado_em, true)}`;
 
@@ -1274,7 +1286,7 @@ async function abrirDemanda(id) {
     abrirDemanda(id);
   });
 
-  const NOMES_ACAO = { criou: 'criou a demanda', status: 'mudou o status', anexou: 'anexou', 'removeu anexo': 'removeu o anexo', legenda: 'editou a legenda', prazo: 'mudou o prazo', responsavel: 'definiu o responsável', agendou: 'agendou para', 'cancelou agendamento': 'cancelou o agendamento', 'publicar agora': 'mandou publicar agora', 'publicou no Instagram': 'publicou no Instagram', 'falha ao publicar': 'falha ao publicar', arquivou: 'arquivou' };
+  const NOMES_ACAO = { criou: 'criou a demanda', status: 'mudou o status', anexou: 'anexou', 'removeu anexo': 'removeu o anexo', legenda: 'editou a legenda', prazo: 'mudou o prazo', responsavel: 'definiu o responsável', agendou: 'agendou para', 'pré-agendou': 'marcou para depois da aprovação:', 'cancelou agendamento': 'cancelou o agendamento', 'publicar agora': 'mandou publicar agora', 'publicou no Instagram': 'publicou no Instagram', 'falha ao publicar': 'falha ao publicar', arquivou: 'arquivou' };
   const historico = h(
     'details',
     {},
@@ -1283,7 +1295,7 @@ async function abrirDemanda(id) {
       'div',
       { class: 'historico', style: { marginTop: '8px' } },
       d.historico.map((x) =>
-        h('div', {}, `${dataBR(x.criado_em, true)} · ${x.autor || 'Sistema'} ${NOMES_ACAO[x.acao] || x.acao}${x.acao === 'status' ? `: ${nomeStatus(x.de)} → ${nomeStatus(x.para)}` : x.acao === 'agendou' ? ` ${dataBR(x.para, true)}` : x.para && x.acao !== 'criou' ? ` ${x.para}` : x.de && x.acao === 'removeu anexo' ? ` ${x.de}` : ''}`)
+        h('div', {}, `${dataBR(x.criado_em, true)} · ${x.autor || 'Sistema'} ${NOMES_ACAO[x.acao] || x.acao}${x.acao === 'status' ? `: ${nomeStatus(x.de)} → ${nomeStatus(x.para)}` : ['agendou', 'pré-agendou'].includes(x.acao) ? ` ${dataBR(x.para, true)}` : x.para && x.acao !== 'criou' ? ` ${x.para}` : x.de && x.acao === 'removeu anexo' ? ` ${x.de}` : ''}`)
       )
     )
   );

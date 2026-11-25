@@ -105,7 +105,11 @@ Veja o passo 7 do `SKILL.md`.
 - Mais 5 layouts já usados (`carrosseis/stories-gta-vi/stories.html`): ingresso com picote;
   infográfico em fundo branco com barra de proporção; meio a meio (foto em cima, branco embaixo,
   selo azul e tags em pílula); linha do tempo vertical com pontos azuis; grade 2x2 de cards.
+  Mais 7 (`carrosseis/stories-semana-03/stories.html`): nota fiscal; bilhete da sorte com bolas;
+  crachá com cordão; capa de revista; mapa com pinos; HUD de videogame em pixel; calendário da semana.
   Para o próximo, invente um layout novo ou combine de forma diferente.
+- Entrega no app Alldres (empresa RP): 1 demanda tipo "story" por arte, responsável Priscila
+  (aprovadora), status "Em aprovação"; ver API em plataforma-alldres (/api/demandas, /anexos, /status).
 - Conteúdo dentro da área segura: nada importante nos 250 px de cima e de baixo.
 - Texto prático e verificado: onde, como, regras. Sem marca "RP News" e sem datas, salvo pedido.
 - Mesmas cores da casa e degradê preto alto sob texto branco em foto.

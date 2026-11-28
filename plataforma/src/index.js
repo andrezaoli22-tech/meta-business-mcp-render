@@ -537,6 +537,15 @@ async function rotasDemandas(request, env, ctx, eu, seg, m, url) {
     return json({ id: r.meta.last_row_id, chave });
   }
 
+  // anexar direto do Google Drive (arquivo original, sem passar pelo limite de envio de 95 MB)
+  if (seg[2] === 'anexos' && seg[3] === 'drive' && m === 'POST') {
+    const d = await carregarDemanda(env, id);
+    const { link, nome: nomeInformado } = await lerJson(request);
+    const r = await anexarDoDrive(env, d, link, nomeInformado);
+    await registrar(env, id, eu.id, 'anexou do Drive', null, r.nome);
+    return json(r);
+  }
+
   // reordenar anexos
   if (seg[2] === 'anexos' && seg[3] === 'ordem' && m === 'POST') {
     await carregarDemanda(env, id);
@@ -963,4 +972,76 @@ async function importarNotion(request, env, ctx, eu) {
     );
   }
   return json({ ok: true, demandas: novasDemandas, estrategias: novasEstrategias });
+}
+
+
+// ---------------- Anexar do Google Drive ----------------
+// A plataforma baixa o arquivo direto do Drive e grava no R2 byte a byte (sem recompressão).
+// O arquivo precisa estar aberto para "qualquer pessoa com o link".
+
+function idDoDrive(link) {
+  const t = String(link || '').trim();
+  if (/^[\w-]{20,}$/.test(t)) return t;
+  let u;
+  try {
+    u = new URL(t);
+  } catch {
+    return null;
+  }
+  if (!/(^|\.)google\.com$/.test(u.hostname)) return null;
+  return u.pathname.match(/\/d\/([\w-]{20,})/)?.[1] || u.searchParams.get('id') || null;
+}
+
+function nomeDoCabecalho(cd) {
+  if (!cd) return null;
+  const utf = cd.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf) {
+    try {
+      return decodeURIComponent(utf[1].trim().replace(/^"|"$/g, ''));
+    } catch {}
+  }
+  return cd.match(/filename="?([^";]+)"?/i)?.[1] || null;
+}
+
+async function anexarDoDrive(env, d, link, nomeInformado) {
+  const idArquivo = idDoDrive(link);
+  if (!idArquivo) falha(400, 'Cole o link de um arquivo do Google Drive (drive.google.com/file/d/...).');
+  let resp;
+  try {
+    resp = await fetch(`https://drive.usercontent.google.com/download?id=${encodeURIComponent(idArquivo)}&export=download&confirm=t`, {
+      redirect: 'follow',
+      headers: { 'user-agent': 'Mozilla/5.0 (plataforma-alldres)' },
+    });
+  } catch (e) {
+    falha(502, 'Não consegui acessar o Google Drive agora: ' + e.message);
+  }
+  const tipo = (resp.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  if (!resp.ok || tipo.startsWith('text/html')) {
+    try { await resp.body?.cancel(); } catch {}
+    falha(400, 'O Drive não liberou o download. Confira se o arquivo está como "Qualquer pessoa com o link".');
+  }
+  const tamanho = Number(resp.headers.get('content-length') || 0);
+  if (!tamanho) {
+    try { await resp.body?.cancel(); } catch {}
+    falha(502, 'O Drive não informou o tamanho do arquivo. Tente de novo em alguns minutos.');
+  }
+  const nome = String(nomeInformado || nomeDoCabecalho(resp.headers.get('content-disposition')) || `drive-${idArquivo}`).slice(0, 200);
+  const ext = (nome.match(/\.([a-z0-9]{1,5})$/i)?.[1] || tipo.split('/')[1] || 'bin').toLowerCase();
+  const mime = tipo && tipo !== 'application/octet-stream' ? tipo : ext === 'mov' ? 'video/quicktime' : ext === 'mp4' ? 'video/mp4' : 'application/octet-stream';
+  const chave = `${d.empresa}/${d.id}/${crypto.randomUUID()}.${ext}`;
+  // FixedLengthStream garante ao R2 o tamanho exato e falha se o download vier incompleto
+  const { readable, writable } = new FixedLengthStream(tamanho);
+  const copia = resp.body.pipeTo(writable);
+  await env.MIDIA.put(chave, readable, { httpMetadata: { contentType: mime } });
+  await copia;
+  const gravado = await env.MIDIA.head(chave);
+  if (!gravado || gravado.size !== tamanho) {
+    await env.MIDIA.delete(chave);
+    falha(502, 'O download do Drive veio incompleto. Tente de novo.');
+  }
+  const ordem = await env.DB.prepare('SELECT COALESCE(MAX(ordem), -1) + 1 AS o FROM anexos WHERE demanda_id = ?').bind(d.id).first();
+  const r = await env.DB.prepare('INSERT INTO anexos (demanda_id, chave, nome, mime, tamanho, ordem) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(d.id, chave, nome, mime, tamanho, ordem.o)
+    .run();
+  return { id: r.meta.last_row_id, chave, nome, mime, tamanho };
 }

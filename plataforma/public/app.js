@@ -1186,6 +1186,23 @@ async function abrirDemanda(id) {
   // anexos
   const gradeAnexos = h('div', { class: 'anexos' });
   const barra = h('div', { class: 'progresso oculto' }, h('div'));
+  const linkDrive = h('input', { class: 'entrada', placeholder: 'Ou cole o link de um vídeo/arquivo do Google Drive (arquivo original, sem limite de 95 MB)' });
+  const botaoDrive = h('button', { class: 'btn mini', onclick: tentar(async () => {
+    if (!linkDrive.value.trim()) return linkDrive.focus();
+    botaoDrive.disabled = true;
+    botaoDrive.textContent = 'Baixando do Drive…';
+    try {
+      const r = await api(`/api/demandas/${id}/anexos/drive`, { json: { link: linkDrive.value.trim() } });
+      d.anexos.push({ id: r.id, chave: r.chave, nome: r.nome, mime: r.mime, ordem: d.anexos.length });
+      linkDrive.value = '';
+      desenharAnexos();
+      atualizarPrevia();
+      toast(`${r.nome} anexado (${(r.tamanho / 1048576).toFixed(0)} MB, original) ✅`);
+    } finally {
+      botaoDrive.disabled = false;
+      botaoDrive.textContent = 'Anexar do Drive';
+    }
+  }) }, 'Anexar do Drive');
   const arquivo = h('input', { type: 'file', multiple: true, accept: 'image/*,video/*,application/pdf', class: 'oculto', onchange: (e) => enviarArquivos([...e.target.files]) });
   const desenharAnexos = () => {
     const zona = h('div', { class: 'soltar', onclick: () => arquivo.click() }, h('div', {}, icone('mais', 26), h('div', {}, 'Adicionar arquivos'), h('small', {}, 'ou arraste aqui')));
@@ -1321,7 +1338,7 @@ async function abrirDemanda(id) {
         h('div', { class: 'grade-2' }, h('label', { class: 'campo' }, 'Formato', tipo), h('label', { class: 'campo' }, 'Prazo', prazo)),
         h('label', { class: 'campo' }, 'Responsável', resp),
         h('div', { class: 'secao' }, h('h4', {}, 'Briefing'), desc),
-        h('div', { class: 'secao' }, h('h4', {}, 'Arquivos', h('span', { class: 'muted', style: { textTransform: 'none', letterSpacing: 0, fontWeight: 400 } }, 'A ordem aqui é a ordem do carrossel')), gradeAnexos, barra, arquivo),
+        h('div', { class: 'secao' }, h('h4', {}, 'Arquivos', h('span', { class: 'muted', style: { textTransform: 'none', letterSpacing: 0, fontWeight: 400 } }, 'A ordem aqui é a ordem do carrossel')), gradeAnexos, barra, arquivo, h('div', { class: 'linha' }, linkDrive, botaoDrive)),
         h('div', { class: 'secao' }, h('h4', {}, 'Links'), listaLinks, h('div', { class: 'linha' }, novoLink, novoTitulo, h('button', { class: 'btn mini', onclick: addLink }, 'Adicionar'))),
         h('div', { class: 'secao' }, h('h4', {}, 'Legenda'), legenda, contador),
         h('div', { class: 'secao' }, h('h4', {}, 'Como fica no feed'), previa),

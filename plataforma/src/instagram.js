@@ -149,6 +149,7 @@ export function validarParaPublicar(demanda, anexos) {
   if (demanda.tipo === 'story' && midias.length > 1) return 'Story aceita 1 arquivo por vez.';
   if ((demanda.tipo === 'reels' || demanda.tipo === 'video') && !midias.some(ehVideo)) return 'Reels precisa de um vídeo.';
   if (midias.length > 10) return 'O carrossel aceita no máximo 10 arquivos pela API do Instagram.';
+  if (midias.some((a) => ehVideo(a) && a.tamanho > 300 * 1048576)) return 'O Instagram aceita Reels de até 300 MB pela API. Este vídeo é maior: publique pelo app ou exporte uma versão menor.';
   if ((demanda.legenda || '').length > 2200) return 'A legenda passou de 2.200 caracteres.';
   if (((demanda.legenda || '').match(/#[^\s#]+/g) || []).length > 30) return 'A legenda tem mais de 30 hashtags.';
   return null;
